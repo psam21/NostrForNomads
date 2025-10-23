@@ -275,9 +275,14 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
           } else {
             // No tempId (probably from subscription) - find temp by matching sender/time/content
             // This handles the case where subscription arrives before onSuccess
-            let foundMatch = false;
-            prev.forEach(prevMsg => {
-              if (foundMatch) return; // Only replace first match
+            // BUT: Only match if source is subscription AND we haven't tracked this ID yet
+            // (prevents replacing temp with wrong duplicate message)
+            const shouldAttemptMatch = source === 'subscription' && !recentlyAddedIds.current.has(message.id);
+            
+            if (shouldAttemptMatch) {
+              let foundMatch = false;
+              prev.forEach(prevMsg => {
+                if (foundMatch) return; // Only replace first match
               
               if (prevMsg.tempId && 
                   !prevMsg.id &&
@@ -348,6 +353,7 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
                 }
               }
             });
+            } // Close shouldAttemptMatch block
           }
         }
         

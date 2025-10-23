@@ -206,10 +206,18 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       {messages.map((message) => {
         // Use the isSent flag from the message (already set by business service)
         const isSent = message.isSent ?? (message.senderPubkey === currentUserPubkey);
+        
+        // Create unique key that combines id, tempId, and timestamp
+        // This ensures React treats each message as unique even during temp->real transition
+        const uniqueKey = message.id 
+          ? `id-${message.id}` 
+          : message.tempId 
+            ? `temp-${message.tempId}` 
+            : `fallback-${message.senderPubkey}-${message.createdAt}`;
 
         return (
           <div
-            key={message.id || message.tempId}
+            key={uniqueKey}
             className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-4`}
           >
             <div
