@@ -79,24 +79,6 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
       }
 
       const authPubkey = user.pubkey;
-      // Integrity check against signer.getPublicKey (non-fatal)
-      try {
-        const signerPubkey = await signer.getPublicKey();
-        if (signerPubkey !== authPubkey) {
-          logger.warn('Signer pubkey mismatch detected - ignoring signer identity for message load', {
-            service: 'useMessages',
-            method: 'loadMessages',
-            authPubkey: authPubkey.substring(0, 8) + '...',
-            signerPubkey: signerPubkey.substring(0, 8) + '...',
-          });
-        }
-      } catch (e) {
-        logger.warn('Failed signer pubkey integrity check', {
-          service: 'useMessages',
-          method: 'loadMessages',
-          error: e instanceof Error ? e.message : 'Unknown error',
-        });
-      }
 
       if (currentUserPubkey.current && currentUserPubkey.current !== authPubkey) {
         logger.info('Auth user changed - clearing message state', {

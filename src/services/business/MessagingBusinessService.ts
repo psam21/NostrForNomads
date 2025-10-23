@@ -141,7 +141,17 @@ export class MessagingBusinessService {
         attachmentCount: attachments?.length || 0,
       });
 
-      const senderPubkeyResolved = senderPubkey || await signer.getPublicKey();
+      // senderPubkey MUST be provided from authenticated session (auth store)
+      if (!senderPubkey) {
+        throw new AppError(
+          'Sender pubkey required for authenticated messaging',
+          ErrorCode.VALIDATION_ERROR,
+          HttpStatus.BAD_REQUEST,
+          ErrorCategory.VALIDATION,
+          ErrorSeverity.HIGH
+        );
+      }
+      const senderPubkeyResolved = senderPubkey;
 
       // Upload attachments to Blossom if provided
       const uploadedAttachments: GenericAttachment[] = [];
@@ -331,7 +341,7 @@ export class MessagingBusinessService {
    * @param signer - NIP-07 signer
    * @returns Array of conversations with last message details
    */
-  public async getConversations(signer: NostrSigner, pubkey?: string): Promise<Conversation[]> {
+  public async getConversations(signer: NostrSigner, pubkey: string): Promise<Conversation[]> {
     try {
       logger.info('Loading conversations', {
         service: 'MessagingBusinessService',
@@ -339,8 +349,8 @@ export class MessagingBusinessService {
       });
 
       // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
-      // Use provided pubkey (from auth store) if available, otherwise derive from signer
-      const userPubkey = pubkey || await signer.getPublicKey();
+      // pubkey MUST be provided from authenticated session (auth store)
+      const userPubkey = pubkey;
       
       // CRITICAL: Always re-initialize cache to ensure it's for the correct user
       // This prevents fresh signups from seeing previous users' cached messages
@@ -837,33 +847,20 @@ export class MessagingBusinessService {
   public async getMessages(
     otherPubkey: string,
     signer: NostrSigner,
-    limit?: number | string,
-    pubkey?: string
+    limit: number,
+    pubkey: string
   ): Promise<Message[]> {
-    // Handle overloading: if limit is a string, it's actually pubkey
-    let actualPubkey: string | undefined;
-    let actualLimit: number = 100;
-    
-    if (typeof limit === 'string') {
-      actualPubkey = limit;
-    } else if (typeof limit === 'number') {
-      actualLimit = limit;
-    }
-    if (typeof pubkey === 'string') {
-      actualPubkey = pubkey;
-    }
-
     try {
       logger.info('Loading messages for conversation', {
         service: 'MessagingBusinessService',
         method: 'getMessages',
         otherPubkey,
-        limit: actualLimit,
+        limit,
       });
 
       // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
-      // Use provided pubkey (from auth store) if available, otherwise derive from signer
-      const userPubkey = actualPubkey || await signer.getPublicKey();
+      // pubkey MUST be provided from authenticated session (auth store)
+      const userPubkey = pubkey;
       
       // CRITICAL: Always re-initialize cache to ensure it's for the correct user
       // This prevents fresh signups from seeing previous users' cached messages
@@ -1020,69 +1017,61 @@ export class MessagingBusinessService {
   public subscribeToMessages(
     signer: NostrSigner,
     onMessage: (message: Message) => void,
-    pubkey?: string
+    pubkey: string
   ): () => void {
     logger.info('Subscribing to new messages', {
       service: 'MessagingBusinessService',
       method: 'subscribeToMessages',
     });
 
-    let userPubkey: string | null = pubkey || null;
+    // pubkey MUST be provided from authenticated session (auth store)
+    const userPubkey: string = pubkey;
     let unsubscribe: (() => void) | null = null;
 
-    // Get user public key and set up subscription
-    // If pubkey not provided, derive from signer (fallback)
-    const pubkeyPromise = pubkey ? Promise.resolve(pubkey) : signer.getPublicKey();
-    
-    pubkeyPromise.then(resolvedPubkey => {
-      userPubkey = resolvedPubkey;
+    // Set up subscription with validated user pubkey
+    const filters = [
+      {
+        kinds: [1059],
+        '#p': [userPubkey],
+      },
+    ];
 
-      const filters = [
-        {
-          kinds: [1059],
-          '#p': [resolvedPubkey],
-        },
-      ];
+    // Subscribe to events
+    unsubscribe = subscribeToEvents(
+      filters,
+      async (event: NostrEvent) => {
+        // Only process if event is addressed to authenticated user
+        const pTags = event.tags.filter(tag => tag[0] === 'p');
+        if (!pTags.some(tag => tag[1] === userPubkey)) return;
 
-      // Subscribe to events
-      unsubscribe = subscribeToEvents(
-        filters,
-        async (event: NostrEvent) => {
-          if (!userPubkey) return;
-
-          // Only process if event is addressed to user
-          const pTags = event.tags.filter(tag => tag[0] === 'p');
-          if (!pTags.some(tag => tag[1] === userPubkey)) return;
-
-          try {
-            // Decrypt gift wrap
-            const messages = await this.decryptGiftWraps([event], signer);
-            if (messages.length > 0) {
-              messages[0].isSent = messages[0].senderPubkey === userPubkey;
-              
-              // Cache the message for future access
-              try {
-                await this.cache.cacheMessages([messages[0]]);
-              } catch (cacheError) {
-                logger.warn('Failed to cache incoming message', {
-                  service: 'MessagingBusinessService',
-                  method: 'subscribeToMessages',
-                  error: cacheError instanceof Error ? cacheError.message : 'Unknown error',
-                });
-              }
-              
-              onMessage(messages[0]);
+        try {
+          // Decrypt gift wrap
+          const messages = await this.decryptGiftWraps([event], signer);
+          if (messages.length > 0) {
+            messages[0].isSent = messages[0].senderPubkey === userPubkey;
+            
+            // Cache the message for future access
+            try {
+              await this.cache.cacheMessages([messages[0]]);
+            } catch (cacheError) {
+              logger.warn('Failed to cache incoming message', {
+                service: 'MessagingBusinessService',
+                method: 'subscribeToMessages',
+                error: cacheError instanceof Error ? cacheError.message : 'Unknown error',
+              });
             }
-          } catch (error) {
-            logger.error('Failed to decrypt new message', error instanceof Error ? error : new Error('Unknown error'), {
-              service: 'MessagingBusinessService',
-              method: 'subscribeToMessages',
-              eventId: event.id,
-            });
+            
+            onMessage(messages[0]);
           }
+        } catch (error) {
+          logger.error('Failed to decrypt new message', error instanceof Error ? error : new Error('Unknown error'), {
+            service: 'MessagingBusinessService',
+            method: 'subscribeToMessages',
+            eventId: event.id,
+          });
         }
-      );
-    });
+      }
+    );
 
     // Return unsubscribe function
     return () => {
@@ -1267,11 +1256,11 @@ export const sendMessage = (
 ) =>
   messagingBusinessService.sendMessage(recipientPubkey, content, signer, attachments, context, onUploadProgress);
 
-export const getConversations = (signer: NostrSigner) =>
-  messagingBusinessService.getConversations(signer);
+export const getConversations = (signer: NostrSigner, pubkey: string) =>
+  messagingBusinessService.getConversations(signer, pubkey);
 
-export const getMessages = (otherPubkey: string, signer: NostrSigner, limit?: number) =>
-  messagingBusinessService.getMessages(otherPubkey, signer, limit);
+export const getMessages = (otherPubkey: string, signer: NostrSigner, limit: number, pubkey: string) =>
+  messagingBusinessService.getMessages(otherPubkey, signer, limit, pubkey);
 
-export const subscribeToMessages = (signer: NostrSigner, onMessage: (message: Message) => void, pubkey?: string) =>
+export const subscribeToMessages = (signer: NostrSigner, onMessage: (message: Message) => void, pubkey: string) =>
   messagingBusinessService.subscribeToMessages(signer, onMessage, pubkey);

@@ -53,28 +53,8 @@ export const useConversations = () => {
     }
 
     try {
-      // Use auth store pubkey as single source of truth
+      // Use auth store pubkey as the session identity
       const authPubkey = user.pubkey;
-      // Integrity check: signer.getPublicKey should match auth user; if not, log warning
-      let signerPubkey: string | null = null;
-      try {
-        signerPubkey = await signer.getPublicKey();
-      } catch (e) {
-        logger.warn('Failed to obtain signer pubkey for integrity check', {
-          service: 'useConversations',
-          method: 'loadConversations',
-          error: e instanceof Error ? e.message : 'Unknown error',
-        });
-      }
-
-      if (signerPubkey && signerPubkey !== authPubkey) {
-        logger.warn('Signer pubkey mismatch detected - ignoring signer identity to prevent cross-contamination', {
-          service: 'useConversations',
-          method: 'loadConversations',
-          authPubkey: authPubkey.substring(0, 8) + '...',
-          signerPubkey: signerPubkey.substring(0, 8) + '...',
-        });
-      }
 
       // Detect authenticated user change (auth store only) and clear state
       if (currentUserPubkey.current && currentUserPubkey.current !== authPubkey) {

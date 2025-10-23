@@ -84,7 +84,7 @@ export const useMessageSending = () => {
       setIsSending(true);
       setSendError(null);
 
-      // CRITICAL: Use authenticated user pubkey from auth store, never rely on signer alone
+      // CRITICAL: Use authenticated user pubkey from auth store
       const { user, isAuthenticated } = useAuthStore.getState();
       if (!isAuthenticated || !user) {
         throw new AppError(
@@ -97,41 +97,6 @@ export const useMessageSending = () => {
       }
 
       const authPubkey = user.pubkey;
-
-      // Integrity check: verify signer pubkey matches auth store
-      try {
-        const signerPubkey = await signer.getPublicKey();
-        if (signerPubkey !== authPubkey) {
-          logger.error('Signer pubkey mismatch on send - aborting to prevent identity confusion', new Error('Pubkey mismatch'), {
-            service: 'useMessageSending',
-            method: 'sendMessage',
-            authPubkey: authPubkey.substring(0, 8) + '...',
-            signerPubkey: signerPubkey.substring(0, 8) + '...',
-            recipientPubkey,
-          });
-          throw new AppError(
-            'Identity mismatch detected. Please sign in again.',
-            ErrorCode.SIGNER_NOT_DETECTED,
-            HttpStatus.UNAUTHORIZED,
-            ErrorCategory.AUTHENTICATION,
-            ErrorSeverity.HIGH
-          );
-        }
-      } catch (err) {
-        if (err instanceof AppError) throw err;
-        logger.error('Failed to verify signer identity before sending', err instanceof Error ? err : new Error('Unknown error'), {
-          service: 'useMessageSending',
-          method: 'sendMessage',
-          recipientPubkey,
-        });
-        throw new AppError(
-          'Failed to verify signing credentials. Please sign in again.',
-          ErrorCode.SIGNER_NOT_DETECTED,
-          HttpStatus.UNAUTHORIZED,
-          ErrorCategory.AUTHENTICATION,
-          ErrorSeverity.HIGH
-        );
-      }
 
       // Create temporary message for optimistic UI using authenticated pubkey
       const tempId = `temp-${Date.now()}-${Math.random().toString(36).substring(7)}`;
