@@ -99,6 +99,9 @@ export const useNostrSigner = () => {
         hasNsec: !!nsec,
       });
 
+      // Set loading state
+      useAuthStore.getState().setLoading(true);
+
       // Priority 1: Nsec (persisted from sign-up - maintain consistent identity)
       if (nsec && nsecSigner) {
         try {
@@ -111,6 +114,7 @@ export const useNostrSigner = () => {
           
           setSigner(resolvedSigner);
           setSignerAvailable(true);
+          useAuthStore.getState().setLoading(false);
           
           logger.info('Signer initialized for nsec user with NIP-44 support', {
             service: 'useNostrSigner',
@@ -124,6 +128,7 @@ export const useNostrSigner = () => {
           });
           setSigner(null);
           setSignerAvailable(false);
+          useAuthStore.getState().setLoading(false);
         }
         return;
       }
@@ -132,6 +137,7 @@ export const useNostrSigner = () => {
       if (typeof window !== 'undefined' && window.nostr) {
         setSigner(window.nostr);
         setSignerAvailable(true);
+        useAuthStore.getState().setLoading(false);
         logger.info('Using browser extension signer', {
           service: 'useNostrSigner',
           method: 'initializeSigner',
@@ -146,6 +152,7 @@ export const useNostrSigner = () => {
       });
       setSigner(null);
       setSignerAvailable(false);
+      useAuthStore.getState().setLoading(false);
     };
 
     initializeSigner();
