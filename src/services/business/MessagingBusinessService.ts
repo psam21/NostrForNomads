@@ -129,7 +129,8 @@ export class MessagingBusinessService {
     signer: NostrSigner,
     attachments?: GenericAttachment[],
     context?: ConversationContext,
-    onUploadProgress?: (fileName: string, progress: number) => void
+    onUploadProgress?: (fileName: string, progress: number) => void,
+    senderPubkey?: string
   ): Promise<SendMessageResult> {
     try {
       logger.info('Sending gift-wrapped message', {
@@ -140,7 +141,7 @@ export class MessagingBusinessService {
         attachmentCount: attachments?.length || 0,
       });
 
-      const senderPubkey = await signer.getPublicKey();
+      const senderPubkeyResolved = senderPubkey || await signer.getPublicKey();
 
       // Upload attachments to Blossom if provided
       const uploadedAttachments: GenericAttachment[] = [];
@@ -251,10 +252,10 @@ export class MessagingBusinessService {
       );
 
       // Create gift-wrapped message to ourselves (for message history persistence)
-      // Gift wrap is addressed TO us (senderPubkey) so we can decrypt it
+      // Gift wrap is addressed TO us (senderPubkeyResolved) so we can decrypt it
       // BUT the rumor INSIDE still shows the actual recipient (recipientPubkey)
       const giftWrapToSelf = await nostrEventService.createGiftWrappedMessage(
-        senderPubkey, // Gift wrap TO ourselves (so we can unwrap it)
+        senderPubkeyResolved, // Gift wrap TO ourselves (so we can unwrap it)
         messageContent,
         signer,
         recipientPubkey // BUT rumor shows the actual recipient
@@ -278,7 +279,7 @@ export class MessagingBusinessService {
       // Create message object for return
       const message: Message = {
         id: giftWrapToRecipient.id,
-        senderPubkey,
+        senderPubkey: senderPubkeyResolved,
         recipientPubkey,
         content,
         attachments: uploadedAttachments.length > 0 ? uploadedAttachments : undefined,
@@ -330,7 +331,7 @@ export class MessagingBusinessService {
    * @param signer - NIP-07 signer
    * @returns Array of conversations with last message details
    */
-  public async getConversations(signer: NostrSigner): Promise<Conversation[]> {
+  public async getConversations(signer: NostrSigner, pubkey?: string): Promise<Conversation[]> {
     try {
       logger.info('Loading conversations', {
         service: 'MessagingBusinessService',
@@ -338,7 +339,8 @@ export class MessagingBusinessService {
       });
 
       // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
-      const userPubkey = await signer.getPublicKey();
+      // Use provided pubkey (from auth store) if available, otherwise derive from signer
+      const userPubkey = pubkey || await signer.getPublicKey();
       
       // CRITICAL: Always re-initialize cache to ensure it's for the correct user
       // This prevents fresh signups from seeing previous users' cached messages
@@ -389,7 +391,7 @@ export class MessagingBusinessService {
       });
 
       console.log('[Business] 🌐 Fetching conversations from relays...');
-      const conversations = await this.fetchConversationsFromRelays(signer);
+      const conversations = await this.fetchConversationsFromRelays(signer, userPubkey);
       console.log(`[Business] 📬 Fetched ${conversations.length} conversations from relays`);
 
       // Cache for next time
@@ -736,8 +738,8 @@ export class MessagingBusinessService {
    * Fetch conversations from relays (no cache)
    * Extracted for reusability
    */
-  private async fetchConversationsFromRelays(signer: NostrSigner): Promise<Conversation[]> {
-    const userPubkey = await signer.getPublicKey();
+  private async fetchConversationsFromRelays(signer: NostrSigner, pubkey: string): Promise<Conversation[]> {
+    const userPubkey = pubkey;
 
       // Query for gift-wrapped messages addressed to us (includes received + sent)
       const filters = [
@@ -835,18 +837,33 @@ export class MessagingBusinessService {
   public async getMessages(
     otherPubkey: string,
     signer: NostrSigner,
-    limit: number = 100
+    limit?: number | string,
+    pubkey?: string
   ): Promise<Message[]> {
+    // Handle overloading: if limit is a string, it's actually pubkey
+    let actualPubkey: string | undefined;
+    let actualLimit: number = 100;
+    
+    if (typeof limit === 'string') {
+      actualPubkey = limit;
+    } else if (typeof limit === 'number') {
+      actualLimit = limit;
+    }
+    if (typeof pubkey === 'string') {
+      actualPubkey = pubkey;
+    }
+
     try {
       logger.info('Loading messages for conversation', {
         service: 'MessagingBusinessService',
         method: 'getMessages',
         otherPubkey,
-        limit,
+        limit: actualLimit,
       });
 
       // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
-      const userPubkey = await signer.getPublicKey();
+      // Use provided pubkey (from auth store) if available, otherwise derive from signer
+      const userPubkey = actualPubkey || await signer.getPublicKey();
       
       // CRITICAL: Always re-initialize cache to ensure it's for the correct user
       // This prevents fresh signups from seeing previous users' cached messages
@@ -997,28 +1014,33 @@ export class MessagingBusinessService {
    * 
    * @param signer - NIP-07 signer
    * @param onMessage - Callback function called for each new message
+   * @param pubkey - Optional: explicit user pubkey (from auth store)
    * @returns Unsubscribe function to close the subscription
    */
   public subscribeToMessages(
     signer: NostrSigner,
-    onMessage: (message: Message) => void
+    onMessage: (message: Message) => void,
+    pubkey?: string
   ): () => void {
     logger.info('Subscribing to new messages', {
       service: 'MessagingBusinessService',
       method: 'subscribeToMessages',
     });
 
-    let userPubkey: string | null = null;
+    let userPubkey: string | null = pubkey || null;
     let unsubscribe: (() => void) | null = null;
 
     // Get user public key and set up subscription
-    signer.getPublicKey().then(pubkey => {
-      userPubkey = pubkey;
+    // If pubkey not provided, derive from signer (fallback)
+    const pubkeyPromise = pubkey ? Promise.resolve(pubkey) : signer.getPublicKey();
+    
+    pubkeyPromise.then(resolvedPubkey => {
+      userPubkey = resolvedPubkey;
 
       const filters = [
         {
           kinds: [1059],
-          '#p': [pubkey],
+          '#p': [resolvedPubkey],
         },
       ];
 
@@ -1251,5 +1273,5 @@ export const getConversations = (signer: NostrSigner) =>
 export const getMessages = (otherPubkey: string, signer: NostrSigner, limit?: number) =>
   messagingBusinessService.getMessages(otherPubkey, signer, limit);
 
-export const subscribeToMessages = (signer: NostrSigner, onMessage: (message: Message) => void) =>
-  messagingBusinessService.subscribeToMessages(signer, onMessage);
+export const subscribeToMessages = (signer: NostrSigner, onMessage: (message: Message) => void, pubkey?: string) =>
+  messagingBusinessService.subscribeToMessages(signer, onMessage, pubkey);

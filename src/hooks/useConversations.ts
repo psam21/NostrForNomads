@@ -97,7 +97,7 @@ export const useConversations = () => {
       setIsLoading(true);
       setError(null);
 
-      const conversationList = await messagingBusinessService.getConversations(signer);
+      const conversationList = await messagingBusinessService.getConversations(signer, authPubkey);
 
       logger.info('Conversations loaded successfully', {
         service: 'useConversations',
@@ -274,7 +274,8 @@ export const useConversations = () => {
         });
         
         updateConversationWithMessage(message);
-      }
+      },
+      user.pubkey // Pass authenticated pubkey for subscription
     );
 
     return () => {

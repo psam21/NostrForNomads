@@ -123,7 +123,8 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
       const messageList = await messagingBusinessService.getMessages(
         otherPubkey,
         signer,
-        limit
+        limit,
+        authPubkey
       );
 
       logger.info('Messages loaded successfully', {
@@ -432,6 +433,9 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
   useEffect(() => {
     if (!signer || !otherPubkey) return;
 
+    const { user } = useAuthStore.getState();
+    if (!user) return; // Not authenticated, skip subscription
+
     logger.info('Setting up message subscription for conversation', {
       service: 'useMessages',
       method: 'useEffect[subscribe]',
@@ -465,7 +469,8 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
           
           addMessage(message, 'subscription');
         }
-      }
+      },
+      user.pubkey // Pass authenticated pubkey for subscription
     );
 
     return () => {

@@ -158,7 +158,8 @@ export const useMessageSending = () => {
           signer,
           attachments,
           context,
-          options?.onUploadProgress // Forward upload progress callback
+          options?.onUploadProgress, // Forward upload progress callback
+          authPubkey // Explicit sender pubkey from auth store
         );
 
         if (!result.success || !result.message) {
