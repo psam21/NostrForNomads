@@ -256,8 +256,8 @@ function MessagesPageContent() {
     );
   }
 
-  // Not signed in state
-  if (!signer) {
+  // Not signed in state - only show if not loading and no signer
+  if (!signer && !signerLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary-50">
         <div className="text-center max-w-md px-6">
