@@ -1,7 +1,7 @@
 {
-  "name": "culture-bridge-website",
+  "name": "ncoin",
   "version": "1.0.0",
-  "description": "Culture Bridge - Heritage Preservation Network Website",
+  "description": "Ncoin - Nostr.co.in",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -79,14 +79,12 @@
     "typescript": "~5.5.4"
   },
   "keywords": [
-    "culture",
-    "heritage",
-    "preservation",
+    "ncoin",
     "nostr",
     "decentralized",
-    "indigenous",
-    "traditions"
+    "bitcoin",
+    "lightning"
   ],
-  "author": "Culture Bridge Team",
+  "author": "Ncoin Team",
   "license": "MIT"
 }
