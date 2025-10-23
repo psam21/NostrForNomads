@@ -73,7 +73,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-primary-800 shadow-lg`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg`}
     >
       <nav className="container-width px-4 sm:px-6 lg:px-8">
         {/* Main header content - Logo + Navigation + Auth/Cart */}
