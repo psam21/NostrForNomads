@@ -8,7 +8,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '@/services/core/LoggingService';
 import { messagingBusinessService } from '@/services/business/MessagingBusinessService';
 import { Message } from '@/types/messaging';
@@ -28,6 +28,9 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track message IDs we've added via onSuccess to prevent subscription duplicates
+  const recentlyAddedIds = useRef<Set<string>>(new Set());
 
   /**
    * Load messages for the conversation
@@ -218,6 +221,15 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
         return prev;
       }
       
+      // Track this message ID to prevent subscription from re-adding it
+      if (message.id) {
+        recentlyAddedIds.current.add(message.id);
+        // Clear after 5 seconds to prevent memory leak
+        setTimeout(() => {
+          recentlyAddedIds.current.delete(message.id!);
+        }, 5000);
+      }
+      
       // Check if it's a duplicate by tempId
       const isDuplicate = messageMap.has(messageKey);
       
@@ -367,6 +379,16 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
         if (
           (message.senderPubkey === otherPubkey || message.recipientPubkey === otherPubkey)
         ) {
+          // Skip if we just added this message via onSuccess
+          if (message.id && recentlyAddedIds.current.has(message.id)) {
+            logger.info('⏭️ Skipping message - already added via onSuccess', {
+              service: 'useMessages',
+              method: 'messageCallback',
+              messageId: message.id,
+            });
+            return;
+          }
+          
           logger.info('New message received for conversation', {
             service: 'useMessages',
             method: 'messageCallback',
