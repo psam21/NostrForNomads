@@ -155,26 +155,63 @@ export const useNostrSigner = () => {
         return;
       }
 
-      // Priority 2: Browser extension (ONLY for non-authenticated users during sign-in)
-      if (typeof window !== 'undefined' && window.nostr && !isAuthenticated) {
-        setSigner(window.nostr);
-        setSignerAvailable(true);
-        useAuthStore.getState().setLoading(false);
-        logger.info('Using browser extension signer for sign-in flow', {
-          service: 'useNostrSigner',
-          method: 'initializeSigner',
-        });
-        return;
+      // Priority 2: Browser extension (for authenticated extension-only sessions or non-auth sign-in)
+      if (typeof window !== 'undefined' && window.nostr) {
+        try {
+          // For authenticated users: verify extension pubkey matches auth user
+          if (isAuthenticated && user) {
+            const extPubkey = await window.nostr.getPublicKey();
+            if (extPubkey === user.pubkey) {
+              setSigner(window.nostr);
+              setSignerAvailable(true);
+              useAuthStore.getState().setLoading(false);
+              logger.info('Using extension signer for authenticated user (extension-only session)', {
+                service: 'useNostrSigner',
+                method: 'initializeSigner',
+                userPubkey: user.pubkey.substring(0, 8) + '...',
+              });
+              return;
+            } else {
+              // Mismatch: authenticated user != extension user
+              logger.error('Extension pubkey mismatch - forcing re-authentication', new Error('Signer pubkey mismatch'), {
+                service: 'useNostrSigner',
+                method: 'initializeSigner',
+                authPubkey: user.pubkey.substring(0, 8) + '...',
+                extPubkey: extPubkey.substring(0, 8) + '...',
+              });
+              useAuthStore.getState().logout();
+              setSigner(null);
+              setSignerAvailable(false);
+              useAuthStore.getState().setLoading(false);
+              return;
+            }
+          }
+
+          // For non-authenticated users: use extension for sign-in
+          setSigner(window.nostr);
+          setSignerAvailable(true);
+          useAuthStore.getState().setLoading(false);
+          logger.info('Using browser extension signer for sign-in flow', {
+            service: 'useNostrSigner',
+            method: 'initializeSigner',
+          });
+          return;
+        } catch (error) {
+          logger.error('Failed to verify extension signer', error instanceof Error ? error : new Error('Unknown error'), {
+            service: 'useNostrSigner',
+            method: 'initializeSigner',
+          });
+          // Fall through to no signer state
+        }
       }
 
-      // Priority 3: No signer available or authenticated user without valid signer
+      // Priority 3: No signer available
       if (isAuthenticated && user) {
         logger.error('Authenticated user has no valid signer - forcing re-authentication', new Error('No valid signer for authenticated user'), {
           service: 'useNostrSigner',
           method: 'initializeSigner',
           userPubkey: user.pubkey.substring(0, 8) + '...',
         });
-        // Force logout to prevent security issues
         useAuthStore.getState().logout();
       } else {
         logger.info('No signer available for non-authenticated user', {

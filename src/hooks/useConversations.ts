@@ -19,6 +19,7 @@ import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '@/errors/Er
 
 export const useConversations = () => {
   const { signer } = useNostrSigner();
+  const { isAuthenticated } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,7 +245,19 @@ export const useConversations = () => {
    * Subscribe to new messages for real-time updates
    */
   useEffect(() => {
-    if (!signer) return;
+    const { isAuthenticated, user } = useAuthStore.getState();
+    
+    // Guard: only subscribe if fully authenticated
+    if (!signer || !isAuthenticated || !user) {
+      logger.warn('Skipping subscription - not authenticated', {
+        service: 'useConversations',
+        method: 'useEffect[subscribe]',
+        hasSigner: !!signer,
+        isAuthenticated,
+        hasUser: !!user,
+      });
+      return;
+    }
 
     logger.info('Setting up message subscription', {
       service: 'useConversations',
@@ -280,6 +293,21 @@ export const useConversations = () => {
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+
+  /**
+   * Clear conversations on logout
+   */
+  useEffect(() => {
+    if (!isAuthenticated) {
+      logger.info('Auth state changed to unauthenticated - clearing conversations', {
+        service: 'useConversations',
+        method: 'useEffect[logout]',
+      });
+      setConversations([]);
+      processedMessageIds.current.clear();
+      currentUserPubkey.current = null;
+    }
+  }, [isAuthenticated]);
 
   /**
    * Refresh conversations manually
