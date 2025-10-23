@@ -118,6 +118,7 @@ export class MessagingBusinessService {
    * @param content - Message content (plaintext)
    * @param signer - NIP-07 signer
    * @param context - Optional conversation context (product/heritage reference)
+   * @param onUploadProgress - Optional callback for tracking upload progress
    * @returns SendMessageResult with success status and message details
    */
   public async sendMessage(
@@ -125,7 +126,8 @@ export class MessagingBusinessService {
     content: string,
     signer: NostrSigner,
     attachments?: GenericAttachment[],
-    context?: ConversationContext
+    context?: ConversationContext,
+    onUploadProgress?: (fileName: string, progress: number) => void
   ): Promise<SendMessageResult> {
     try {
       logger.info('Sending gift-wrapped message', {
@@ -158,7 +160,13 @@ export class MessagingBusinessService {
           }
 
           try {
+            // Report progress: authenticating
+            onUploadProgress?.(attachment.name, 25);
+            
             const result = await uploadFile(attachment.originalFile, signer);
+            
+            // Report progress: upload complete
+            onUploadProgress?.(attachment.name, 100);
             
             if (!result.success || !result.metadata) {
               throw new Error(result.error || 'Upload failed');
@@ -1226,9 +1234,10 @@ export const sendMessage = (
   content: string, 
   signer: NostrSigner, 
   attachments?: GenericAttachment[],
-  context?: ConversationContext
+  context?: ConversationContext,
+  onUploadProgress?: (fileName: string, progress: number) => void
 ) =>
-  messagingBusinessService.sendMessage(recipientPubkey, content, signer, attachments, context);
+  messagingBusinessService.sendMessage(recipientPubkey, content, signer, attachments, context, onUploadProgress);
 
 export const getConversations = (signer: NostrSigner) =>
   messagingBusinessService.getConversations(signer);

@@ -24,6 +24,8 @@ interface SendMessageOptions {
   onSuccess?: (message: Message) => void;
   /** Callback when sending fails */
   onError?: (error: string, tempMessageId?: string) => void;
+  /** Callback for upload progress (fileName, progress 0-100) */
+  onUploadProgress?: (fileName: string, progress: number) => void;
 }
 
 export const useMessageSending = () => {
@@ -108,7 +110,8 @@ export const useMessageSending = () => {
           content,
           signer,
           attachments,
-          context
+          context,
+          options?.onUploadProgress // Forward upload progress callback
         );
 
         if (!result.success || !result.message) {

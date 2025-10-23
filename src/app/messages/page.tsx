@@ -37,6 +37,9 @@ function MessagesPageContent() {
   // Mobile view state: true = show conversation list, false = show message thread
   const [showConversationList, setShowConversationList] = useState(true);
   
+  // Upload progress state
+  const [uploadProgress, setUploadProgress] = useState<{ fileName: string; progress: number } | null>(null);
+  
   // Ref for the message panel container (to scroll to composer)
   const messagePanelRef = React.useRef<HTMLDivElement>(null);
 
@@ -199,6 +202,8 @@ function MessagesPageContent() {
           method: 'handleSendMessage',
           messageId: message.id,
         });
+        // Clear upload progress
+        setUploadProgress(null);
         // Don't call addMessage here - the subscription will handle it
         // This prevents duplicate messages in the UI
         // Note: Also don't update conversation list here - subscription handles it
@@ -210,10 +215,15 @@ function MessagesPageContent() {
           method: 'handleSendMessage',
           tempId,
         });
+        // Clear upload progress
+        setUploadProgress(null);
         // Remove the failed temp message from UI
         if (tempId) {
           removeMessage(tempId);
         }
+      },
+      onUploadProgress: (fileName: string, progress: number) => {
+        setUploadProgress({ fileName, progress });
       },
     });
   };
@@ -344,6 +354,7 @@ function MessagesPageContent() {
                     disabled={!signer && !currentUserPubkey}
                     isSending={isSending}
                     conversationKey={selectedPubkey}
+                    uploadProgress={uploadProgress}
                   />
                 )}
 
@@ -392,6 +403,7 @@ function MessagesPageContent() {
                   disabled={!signer && !currentUserPubkey}
                   isSending={isSending}
                   conversationKey={selectedPubkey}
+                  uploadProgress={uploadProgress}
                 />
               )}
 
