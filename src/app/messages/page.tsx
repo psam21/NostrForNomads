@@ -197,17 +197,20 @@ function MessagesPageContent() {
         updateConversationWithMessage(tempMessage);
       },
       onSuccess: (message: Message) => {
-        logger.info('Message sent successfully, will be updated via subscription', {
+        logger.info('Message sent successfully, replacing temp message', {
           service: 'MessagesPage',
           method: 'handleSendMessage',
           messageId: message.id,
+          tempId: message.tempId,
         });
         // Clear upload progress
         setUploadProgress(null);
-        // Don't call addMessage here - the subscription will handle it
-        // This prevents duplicate messages in the UI
-        // Note: Also don't update conversation list here - subscription handles it
-        // This prevents conversation order from flickering when timestamps differ
+        
+        // Replace temp message with real message (has uploaded URLs)
+        addMessage(message);
+        
+        // Update conversation list with real message
+        updateConversationWithMessage(message);
       },
       onError: (error: string, tempId?: string) => {
         logger.error('Failed to send message', new Error(error), {

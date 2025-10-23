@@ -227,13 +227,24 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 <div className="mt-2 space-y-2">
                   {message.attachments.map((attachment) => (
                     <div key={attachment.id}>
-                      {attachment.type === 'image' && attachment.url && (
-                        <img
-                          src={attachment.url}
-                          alt={attachment.name}
-                          className="max-w-full rounded-lg max-h-64 object-contain cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => setFullscreenImage({ url: attachment.url!, alt: attachment.name })}
-                        />
+                      {attachment.type === 'image' && (
+                        <>
+                          {attachment.url ? (
+                            <img
+                              src={attachment.url}
+                              alt={attachment.name}
+                              className="max-w-full rounded-lg max-h-64 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => setFullscreenImage({ url: attachment.url!, alt: attachment.name })}
+                            />
+                          ) : attachment.originalFile ? (
+                            <div className="max-w-full rounded-lg max-h-64 bg-primary-100 flex items-center justify-center p-8">
+                              <div className="text-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+                                <p className="text-sm text-primary-600">Uploading {attachment.name}...</p>
+                              </div>
+                            </div>
+                          ) : null}
+                        </>
                       )}
                       {attachment.type === 'video' && attachment.url && (
                         <video
