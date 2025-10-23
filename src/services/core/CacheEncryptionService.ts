@@ -73,7 +73,6 @@ export class CacheEncryptionService {
         ['encrypt', 'decrypt']
       );
 
-      console.log('✅ Cache encryption key initialized');
     } catch (error) {
       console.error('❌ Failed to initialize encryption key:', error);
       throw error;

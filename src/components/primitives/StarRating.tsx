@@ -56,7 +56,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
                 className="absolute inset-0 overflow-hidden"
                 style={{ width: `${fillRatio * 100}%` }}
               >
-                <Star className={clsx('text-accent-400 fill-current', sizeClasses)} />
+                <Star className={clsx('text-orange-400 fill-current', sizeClasses)} />
               </span>
             )}
           </span>

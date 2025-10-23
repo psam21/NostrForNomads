@@ -103,9 +103,9 @@ export default function FinalConfirmationStep({
       </div>
 
       {/* What's Next */}
-      <div className="bg-accent-50 border border-accent-200 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-accent-900 mb-2">What&apos;s Next?</h3>
-        <ul className="text-sm text-accent-700 space-y-1 list-disc list-inside">
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <h3 className="text-sm font-semibold text-orange-900 mb-2">What&apos;s Next?</h3>
+        <ul className="text-sm text-orange-700 space-y-1 list-disc list-inside">
           <li>Explore indigenous heritage content from around the world</li>
           <li>Connect with elders and community members</li>
           <li>Share your own stories and cultural knowledge</li>
@@ -129,7 +129,7 @@ export default function FinalConfirmationStep({
             type="checkbox"
             checked={hasAccepted}
             onChange={(e) => setHasAccepted(e.target.checked)}
-            className="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            className="mt-1 h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
           />
           <span className="ml-3 text-sm text-gray-700">
             I understand that Culture Bridge is a decentralized platform built on Nostr. I am responsible for managing my own keys and there is no password recovery. I have safely stored my backup file and understand that losing my keys means losing access to this account permanently.
@@ -150,7 +150,7 @@ export default function FinalConfirmationStep({
           type="button"
           onClick={handleComplete}
           disabled={!hasAccepted}
-          className="px-8 py-3 bg-primary-600 text-white font-semibold rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Complete Sign-Up & Start Exploring
         </button>

@@ -160,7 +160,6 @@ export const useAuthStore = create<AuthState>()(
             indexedDB.databases().then((databases) => {
               databases.forEach((db) => {
                 if (db.name) {
-                  console.log(`[Logout] Deleting IndexedDB database: ${db.name}`);
                   indexedDB.deleteDatabase(db.name);
                 }
               });

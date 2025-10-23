@@ -103,7 +103,7 @@ export default function KeyGenerationStep({
             type="button"
             onClick={onGenerateKeys}
             disabled={isLoading}
-            className="w-full px-6 py-3 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? loadingMessage : 'Generate My Keys'}
           </button>
@@ -208,7 +208,7 @@ export default function KeyGenerationStep({
             <button
               type="button"
               onClick={onNext}
-              className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+              className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
             >
               Continue to Backup
             </button>

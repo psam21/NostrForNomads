@@ -260,10 +260,10 @@ function MessagesPageContent() {
       method: 'render',
     });
     return (
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
+      <div className="min-h-screen flex items-center justify-center bg-purple-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-purple-600">Loading...</p>
         </div>
       </div>
     );
@@ -278,10 +278,10 @@ function MessagesPageContent() {
       hasLoggedOut: useAuthStore.getState()._hasLoggedOut,
     });
     return (
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
+      <div className="min-h-screen flex items-center justify-center bg-purple-50">
         <div className="text-center max-w-md px-6">
           <svg
-            className="w-16 h-16 text-primary-600 mx-auto mb-4"
+            className="w-16 h-16 text-purple-600 mx-auto mb-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -293,15 +293,15 @@ function MessagesPageContent() {
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <h2 className="text-2xl font-bold text-primary-900 mb-2">
+          <h2 className="text-2xl font-bold text-purple-900 mb-2">
             Sign in required
           </h2>
-          <p className="text-primary-600 mb-6">
+          <p className="text-purple-600 mb-6">
             Please sign in to access encrypted messages
           </p>
           <a
             href="/signin"
-            className="inline-block px-6 py-3 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors"
+            className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             Sign In
           </a>
@@ -313,10 +313,10 @@ function MessagesPageContent() {
   // Loading signer (needed for encryption/decryption)
   if (signerLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
+      <div className="min-h-screen flex items-center justify-center bg-purple-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-600">Initializing encryption...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-purple-600">Initializing encryption...</p>
         </div>
       </div>
     );
@@ -325,7 +325,7 @@ function MessagesPageContent() {
   // Error state
   if (conversationsError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
+      <div className="min-h-screen flex items-center justify-center bg-purple-50">
         <div className="text-center max-w-md px-6">
           <svg
             className="w-16 h-16 text-red-500 mx-auto mb-4"
@@ -340,13 +340,13 @@ function MessagesPageContent() {
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h2 className="text-2xl font-bold text-primary-900 mb-2">
+          <h2 className="text-2xl font-bold text-purple-900 mb-2">
             Error loading conversations
           </h2>
           <p className="text-red-600 mb-6">{conversationsError}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors"
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             Retry
           </button>
@@ -356,14 +356,14 @@ function MessagesPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-primary-50">
-      <div className="max-w-7xl mx-auto h-screen flex flex-col">
+    <div className="min-h-screen bg-purple-50">
+      <div className="max-w-5xl mx-auto h-screen flex flex-col">
         {/* Two-panel layout - responsive */}
         <div className="flex-1 flex overflow-hidden">
           {/* Mobile: Show either conversation list OR message thread */}
           <div className="md:hidden w-full flex">
             {showConversationList ? (
-              <div className="w-full border-r border-primary-200 bg-white flex flex-col">
+              <div className="w-full border-r border-gray-200 bg-white flex flex-col">
                 <ConversationList
                   conversations={conversations}
                   selectedPubkey={selectedPubkey}
@@ -410,7 +410,7 @@ function MessagesPageContent() {
           {/* Desktop: Show both panels side-by-side */}
           <div className="hidden md:flex flex-1">
             {/* Left panel: Conversation list */}
-            <div className="w-80 border-r border-primary-200 bg-white flex flex-col">
+            <div className="w-72 border-r border-gray-200 bg-white flex flex-col">
               <ConversationList
                 conversations={conversations}
                 selectedPubkey={selectedPubkey}
@@ -420,7 +420,7 @@ function MessagesPageContent() {
             </div>
 
             {/* Right panel: Message thread + composer */}
-            <div ref={messagePanelRef} className="flex-1 flex flex-col bg-white border-l border-primary-200 overflow-y-auto">
+            <div ref={messagePanelRef} className="flex-1 flex flex-col bg-white border-l border-gray-200 overflow-y-auto">
               <MessageThread
                 messages={messages}
                 currentUserPubkey={currentUserPubkey}
@@ -463,10 +463,10 @@ function MessagesPageContent() {
 export default function MessagesPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
+      <div className="min-h-screen flex items-center justify-center bg-purple-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-purple-600">Loading...</p>
         </div>
       </div>
     }>

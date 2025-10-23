@@ -21,7 +21,7 @@ const noto = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Nostr for India - Encrypted Messaging',
+  title: 'Nostr Messages - Encrypted Messaging',
   description:
     'A decentralized messaging platform built on Nostr for secure, private communication.',
   keywords: [
@@ -29,24 +29,23 @@ export const metadata: Metadata = {
     'messaging',
     'encrypted',
     'decentralized',
-    'india',
     'privacy',
   ],
-  authors: [{ name: 'Nostr for India Team' }],
+  authors: [{ name: 'Nostr Messages' }],
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: 'Nostr for India - Encrypted Messaging',
+    title: 'Nostr Messages - Encrypted Messaging',
     description: 'Secure, private messaging on Nostr',
     type: 'website',
     url: 'https://nostrcoin.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nostr for India - Encrypted Messaging',
+    title: 'Nostr Messages - Encrypted Messaging',
     description: 'Secure, private messaging on Nostr',
   },
 };
@@ -58,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* QW8: Skip to content link for keyboard users */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:text-primary-800 focus:px-4 focus:py-2 focus:rounded shadow"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:text-purple-800 focus:px-4 focus:py-2 focus:rounded shadow"
         >
           Skip to main content
         </a>

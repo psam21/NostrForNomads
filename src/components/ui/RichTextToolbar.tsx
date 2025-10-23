@@ -74,7 +74,7 @@ export function RichTextToolbar({ editor }: RichTextToolbarProps) {
       onClick={onClick}
       disabled={disabled}
       className={`p-2 rounded hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-        isActive ? 'bg-primary-100 text-primary-800' : 'text-gray-600'
+        isActive ? 'bg-purple-100 text-purple-800' : 'text-gray-600'
       }`}
       title={label}
       aria-label={label}
@@ -380,7 +380,7 @@ export function RichTextToolbar({ editor }: RichTextToolbarProps) {
             type="button"
             onClick={() => setShowTableMenu(!showTableMenu)}
             className={`p-2 rounded hover:bg-gray-100 transition-colors ${
-              editor.isActive('table') ? 'bg-primary-100 text-primary-800' : ''
+              editor.isActive('table') ? 'bg-purple-100 text-purple-800' : ''
             }`}
             title="Table"
           >
@@ -493,13 +493,13 @@ export function RichTextToolbar({ editor }: RichTextToolbarProps) {
                 }
               }}
               placeholder="https://example.com"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               autoFocus
             />
             <button
               type="button"
               onClick={setLink}
-              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors"
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
             >
               Set Link
             </button>
@@ -535,13 +535,13 @@ export function RichTextToolbar({ editor }: RichTextToolbarProps) {
                 }
               }}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               autoFocus
             />
             <button
               type="button"
               onClick={addYoutubeVideo}
-              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors"
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
             >
               Add Video
             </button>

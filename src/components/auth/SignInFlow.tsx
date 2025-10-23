@@ -80,12 +80,12 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
   return (
     <div className="card p-8">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <h1 className="text-3xl font-serif font-bold text-primary-800 mb-2">Sign In</h1>
+        <h1 className="text-3xl font-serif font-bold text-purple-800 mb-2">Sign In</h1>
         <p className="text-gray-600">
           Connect with your Nostr identity
         </p>
@@ -98,7 +98,7 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
           disabled={isSigningIn}
           className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
             mode === 'extension'
-              ? 'bg-white text-primary-600 shadow-sm'
+              ? 'bg-white text-purple-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-800'
           } ${isSigningIn ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
@@ -109,7 +109,7 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
           disabled={isSigningIn}
           className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
             mode === 'nsec'
-              ? 'bg-white text-primary-600 shadow-sm'
+              ? 'bg-white text-purple-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-800'
           } ${isSigningIn ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
@@ -153,7 +153,7 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
 
           {isLoading && (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Detecting Nostr extension...</p>
             </div>
           )}
@@ -237,7 +237,7 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
         <div className="text-center space-y-3">
           <p className="text-sm text-gray-600">
             Don&apos;t have a Nostr identity yet?{' '}
-            <Link href="/signup" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link href="/signup" className="text-purple-600 hover:text-purple-700 font-medium">
               Sign up here
             </Link>
           </p>

@@ -50,7 +50,6 @@ export default function RichTextEditor({
   // Log initial markdown value for debugging content flow
   useEffect(() => {
     if (value) {
-      console.log('[RichTextEditor] Initial markdown value:', value.substring(0, 200));
     }
   }, [value]);
 
@@ -66,7 +65,7 @@ export default function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-primary-600 underline hover:text-primary-700',
+          class: 'text-purple-600 underline hover:text-purple-700',
         },
       }),
       TextAlign.configure({
@@ -112,10 +111,8 @@ export default function RichTextEditor({
     content: value,
     onCreate: ({ editor }) => {
       // Debug: Check how content was parsed
-      console.log('[RichTextEditor] Editor created with content');
       const storage = editor.storage as unknown as MarkdownStorage;
       const parsedMarkdown = storage.markdown?.getMarkdown();
-      console.log('[RichTextEditor] Parsed markdown:', parsedMarkdown?.substring(0, 200));
     },
     onUpdate: ({ editor }) => {
       // Export as markdown for Nostr NIP-23 events
@@ -136,7 +133,6 @@ export default function RichTextEditor({
     if (editor) {
       const storage = editor.storage as unknown as MarkdownStorage;
       if (value !== storage.markdown?.getMarkdown()) {
-        console.log('[RichTextEditor] Updating content externally:', value?.substring(0, 100));
         editor.commands.setContent(value);
       }
     }
@@ -150,7 +146,7 @@ export default function RichTextEditor({
   const isOverLimit = maxLength && characterCount > maxLength;
 
   return (
-    <div className={`border rounded-lg ${error ? 'border-red-500' : 'border-gray-300'} focus-within:ring-2 focus-within:ring-primary-500`}>
+    <div className={`border rounded-lg ${error ? 'border-red-500' : 'border-gray-300'} focus-within:ring-2 focus-within:ring-purple-500`}>
       <RichTextToolbar editor={editor} />
       <EditorContent editor={editor} />
       

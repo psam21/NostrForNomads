@@ -181,7 +181,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div className="space-y-4">
       {label && (
-        <label className="block text-sm font-medium text-accent-700 mb-2">
+        <label className="block text-sm font-medium text-orange-700 mb-2">
           {label}
         </label>
       )}
@@ -201,7 +201,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-200 bg-white text-accent-800 px-6 py-2 rounded-lg font-medium shadow-lg hover:bg-accent-50"
+                  className="opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-200 bg-white text-orange-800 px-6 py-2 rounded-lg font-medium shadow-lg hover:bg-orange-50"
                 >
                   Change Image
                 </button>
@@ -213,16 +213,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           {isUploading && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
               <div className="bg-white rounded-lg p-4 max-w-xs w-full mx-4">
-                <div className="text-center mb-2 text-sm font-medium text-accent-800">
+                <div className="text-center mb-2 text-sm font-medium text-orange-800">
                   Uploading...
                 </div>
-                <div className="w-full bg-accent-200 rounded-full h-2">
+                <div className="w-full bg-orange-200 rounded-full h-2">
                   <div
-                    className="bg-accent-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-orange-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
-                <div className="text-center mt-2 text-xs text-accent-600">
+                <div className="text-center mt-2 text-xs text-orange-600">
                   {uploadProgress}%
                 </div>
               </div>
@@ -236,8 +236,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         <div
           className={`
             relative border-2 border-dashed rounded-lg transition-colors
-            ${isDragOver ? 'border-accent-500 bg-accent-50' : 'border-accent-300 bg-white'}
-            ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-accent-400'}
+            ${isDragOver ? 'border-orange-500 bg-orange-50' : 'border-orange-300 bg-white'}
+            ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-orange-400'}
             ${aspectRatio === 'banner' ? 'aspect-[3/1]' : 'aspect-square'}
           `}
           onDragEnter={handleDragEnter}
@@ -265,7 +265,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
               <svg
-                className="w-12 h-12 text-accent-400 mb-2"
+                className="w-12 h-12 text-orange-400 mb-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -277,10 +277,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p className="text-sm text-accent-600 text-center">
+              <p className="text-sm text-orange-600 text-center">
                 {isDragOver ? 'Drop image here' : 'Click or drag image to upload'}
               </p>
-              <p className="text-xs text-accent-500 mt-1">
+              <p className="text-xs text-orange-500 mt-1">
                 Max {maxSizeMB}MB
               </p>
             </div>
@@ -290,16 +290,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           {isUploading && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
               <div className="bg-white rounded-lg p-4 max-w-xs w-full mx-4">
-                <div className="text-center mb-2 text-sm font-medium text-accent-800">
+                <div className="text-center mb-2 text-sm font-medium text-orange-800">
                   Uploading...
                 </div>
-                <div className="w-full bg-accent-200 rounded-full h-2">
+                <div className="w-full bg-orange-200 rounded-full h-2">
                   <div
-                    className="bg-accent-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-orange-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
-                <div className="text-center mt-2 text-xs text-accent-600">
+                <div className="text-center mt-2 text-xs text-orange-600">
                   {uploadProgress}%
                 </div>
               </div>
@@ -327,7 +327,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {/* Helper Text - only show when not in overlay mode or when no image */}
       {(!showOverlayButton || !hasImage) && (
-        <p className="text-xs text-accent-600">
+        <p className="text-xs text-orange-600">
           {aspectRatio === 'banner' 
             ? 'Recommended: 1500x500px or 3:1 aspect ratio'
             : 'Recommended: Square image (1:1 aspect ratio)'}

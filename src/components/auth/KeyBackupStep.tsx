@@ -140,7 +140,7 @@ export default function KeyBackupStep({
           type="button"
           onClick={handleDownload}
           disabled={isCreatingBackup}
-          className="w-full px-6 py-3 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center mb-4"
+          className="w-full px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center mb-4"
         >
           {isCreatingBackup ? (
             'Creating backup...'
@@ -193,15 +193,15 @@ export default function KeyBackupStep({
 
       {/* Confirmation Checkbox */}
       {hasDownloaded && (
-        <div className="bg-accent-50 border border-accent-200 rounded-lg p-4">
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
           <label className="flex items-start cursor-pointer">
             <input
               type="checkbox"
               checked={hasConfirmed}
               onChange={(e) => setHasConfirmed(e.target.checked)}
-              className="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              className="mt-1 h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
             />
-            <span className="ml-3 text-sm text-accent-900">
+            <span className="ml-3 text-sm text-orange-900">
               I have downloaded and securely stored my backup. I understand these keys cannot be recovered if lost.
             </span>
           </label>
@@ -221,7 +221,7 @@ export default function KeyBackupStep({
           type="button"
           onClick={onNext}
           disabled={!canProceed}
-          className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Complete Sign Up
         </button>

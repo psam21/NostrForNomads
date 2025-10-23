@@ -82,8 +82,8 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3 group shrink-0">
             {/* Logo icon removed, only text remains */}
             <div className="hidden sm:block">
-              <h1 className="text-xl font-serif font-bold text-white">Nostr for India</h1>
-              <p className="text-xs text-white -mt-1 opacity-80">Heritage Preservation Network</p>
+              <h1 className="text-xl font-serif font-bold text-white">Nostr Messages</h1>
+              <p className="text-xs text-white -mt-1 opacity-80">Decentralized Communication</p>
             </div>
           </Link>
 
@@ -95,8 +95,8 @@ export default function Header() {
                 href={item.href}
                 className={`px-3 py-2 rounded-md text-base font-semibold transition-colors duration-200 whitespace-nowrap ${
                   pathname === item.href
-                    ? 'text-white bg-primary-600'
-                    : 'text-white hover:text-accent-200 hover:bg-primary-700'
+                    ? 'text-white bg-purple-600'
+                    : 'text-white hover:text-orange-200 hover:bg-purple-700'
                 }`}
               >
                 {item.name}
@@ -119,7 +119,7 @@ export default function Header() {
             aria-expanded={isOpen}
             aria-controls="mobile-nav"
             aria-label="Toggle navigation menu"
-            className="lg:hidden ml-auto p-2 rounded-md text-white hover:text-accent-200 hover:bg-primary-700 transition-colors duration-200"
+            className="lg:hidden ml-auto p-2 rounded-md text-white hover:text-orange-200 hover:bg-purple-700 transition-colors duration-200"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -147,8 +147,8 @@ export default function Header() {
                   ref={idx === 0 ? firstLinkRef : undefined}
                   className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                     pathname === item.href
-                      ? 'text-primary-800 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-800 hover:bg-primary-50'
+                      ? 'text-purple-800 bg-purple-50'
+                      : 'text-gray-700 hover:text-purple-800 hover:bg-purple-50'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >

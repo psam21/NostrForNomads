@@ -37,12 +37,6 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 
   // Debug logging
   useEffect(() => {
-    console.log('[MessageThread] Debug Info:', {
-      messagesCount: messages.length,
-      currentUserPubkey,
-      otherUserPubkey,
-      messages: messages.map(m => ({
-        id: m.id,
         senderPubkey: m.senderPubkey,
         recipientPubkey: m.recipientPubkey,
         isSent: m.isSent,
@@ -103,10 +97,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 
   if (!otherUserPubkey) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-primary-50">
+      <div className="flex-1 flex items-center justify-center bg-purple-50">
         <div className="text-center px-6">
           <svg
-            className="w-16 h-16 text-primary-400 mx-auto mb-4"
+            className="w-16 h-16 text-purple-400 mx-auto mb-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -118,10 +112,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
             />
           </svg>
-          <h3 className="text-lg font-semibold text-primary-900 mb-2">
+          <h3 className="text-lg font-semibold text-purple-900 mb-2">
             Select a conversation
           </h3>
-          <p className="text-primary-600">
+          <p className="text-purple-600">
             Choose a conversation from the list to view messages
           </p>
         </div>
@@ -136,8 +130,8 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     return (
       <div className="flex-1 flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-          <p className="text-sm text-primary-600">Loading messages...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
+          <p className="text-sm text-purple-600">Loading messages...</p>
         </div>
       </div>
     );
@@ -148,7 +142,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       <div className="flex-1 flex items-center justify-center bg-white">
         <div className="text-center px-6">
           <svg
-            className="w-12 h-12 text-primary-400 mx-auto mb-3"
+            className="w-12 h-12 text-purple-400 mx-auto mb-3"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -160,8 +154,8 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
             />
           </svg>
-          <p className="text-primary-600 font-medium mb-1">No messages yet</p>
-          <p className="text-sm text-primary-500">
+          <p className="text-purple-600 font-medium mb-1">No messages yet</p>
+          <p className="text-sm text-purple-500">
             Start the conversation by sending a message below
           </p>
         </div>
@@ -173,14 +167,14 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Mobile header with back button */}
       {showMobileHeader && onBack && (
-        <div className="bg-white border-b border-primary-200 px-4 py-3 flex items-center gap-3">
+        <div className="bg-white border-b border-purple-200 px-4 py-3 flex items-center gap-3">
           <button
             onClick={onBack}
-            className="p-2 -ml-2 hover:bg-primary-100 rounded-lg transition-colors"
+            className="p-2 -ml-2 hover:bg-purple-100 rounded-lg transition-colors"
             aria-label="Back to conversations"
           >
             <svg
-              className="w-6 h-6 text-primary-700"
+              className="w-6 h-6 text-purple-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -194,7 +188,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
             </svg>
           </button>
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-semibold text-primary-900 truncate">
+            <h2 className="text-lg font-semibold text-purple-900 truncate">
               {displayName}
             </h2>
           </div>

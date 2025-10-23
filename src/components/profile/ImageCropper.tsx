@@ -175,7 +175,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
           </button>
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isProcessing}
           >
             {isProcessing ? 'Processing...' : 'Apply Crop'}

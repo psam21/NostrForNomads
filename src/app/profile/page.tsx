@@ -16,7 +16,7 @@ const RichTextEditor = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="animate-pulse h-48 bg-gray-100 rounded-lg border border-accent-300" />
+      <div className="animate-pulse h-48 bg-gray-100 rounded-lg border border-orange-300" />
     )
   }
 );
@@ -65,7 +65,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-primary-800 mb-4">Redirecting to Sign In...</h1>
+          <h1 className="text-2xl font-bold text-purple-800 mb-4">Redirecting to Sign In...</h1>
           <p className="text-gray-600">Please sign in to view your profile.</p>
         </div>
       </div>
@@ -232,10 +232,10 @@ export default function ProfilePage() {
 
   if (isLoadingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-accent-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-orange-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-600">Loading profile...</p>
+          <p className="text-purple-600">Loading profile...</p>
         </div>
       </div>
     );
@@ -243,15 +243,15 @@ export default function ProfilePage() {
 
   if (profileError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-accent-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-orange-50">
         <div className="max-w-md mx-auto p-8 card text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-serif font-bold text-primary-800 mb-2">Profile Error</h1>
-          <p className="text-primary-600 mb-6">{profileError}</p>
+          <h1 className="text-2xl font-serif font-bold text-purple-800 mb-2">Profile Error</h1>
+          <p className="text-purple-600 mb-6">{profileError}</p>
           <button
             onClick={() => router.push('/')}
             className="btn-primary-sm"
@@ -264,14 +264,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
       <div className="container-width section-padding">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif font-bold text-primary-800">Nostr Profile</h1>
-              <p className="text-accent-600 mt-2 font-medium">
+              <h1 className="text-3xl font-serif font-bold text-purple-800">Nostr Profile</h1>
+              <p className="text-orange-600 mt-2 font-medium">
                 Manage your Nostr identity
               </p>
             </div>
@@ -369,7 +369,7 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   {/* Display Name */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Display Name
                     </label>
                     {isEditing ? (
@@ -378,8 +378,8 @@ export default function ProfilePage() {
                           type="text"
                           value={editForm.display_name || ''}
                           onChange={(e) => handleInputChange('display_name', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent ${
-                            fieldErrors.display_name ? 'border-red-500' : 'border-accent-300'
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                            fieldErrors.display_name ? 'border-red-500' : 'border-orange-300'
                           }`}
                           placeholder="Enter your display name"
                           maxLength={100}
@@ -389,7 +389,7 @@ export default function ProfilePage() {
                         )}
                       </>
                     ) : (
-                      <p className="text-primary-800 font-medium">
+                      <p className="text-purple-800 font-medium">
                         {profile?.display_name || 'Anonymous'}
                       </p>
                     )}
@@ -397,7 +397,7 @@ export default function ProfilePage() {
 
                   {/* About */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       About
                     </label>
                     {isEditing ? (
@@ -409,7 +409,7 @@ export default function ProfilePage() {
                         minHeight={150}
                       />
                     ) : (
-                      <div className="text-primary-600">
+                      <div className="text-purple-600">
                         {profile?.about ? (
                           <MarkdownRenderer content={profile.about} />
                         ) : (
@@ -421,7 +421,7 @@ export default function ProfilePage() {
 
                   {/* Website */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Website
                     </label>
                     {isEditing ? (
@@ -430,8 +430,8 @@ export default function ProfilePage() {
                           type="url"
                           value={editForm.website || ''}
                           onChange={(e) => handleInputChange('website', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent ${
-                            fieldErrors.website ? 'border-red-500' : 'border-accent-300'
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                            fieldErrors.website ? 'border-red-500' : 'border-orange-300'
                           }`}
                           placeholder="https://your-website.com"
                         />
@@ -440,13 +440,13 @@ export default function ProfilePage() {
                         )}
                       </>
                     ) : (
-                      <p className="text-primary-600">
+                      <p className="text-purple-600">
                         {profile?.website ? (
                           <a 
                             href={profile.website} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-accent-600 hover:text-accent-700 underline"
+                            className="text-orange-600 hover:text-orange-700 underline"
                           >
                             {profile.website}
                           </a>
@@ -459,7 +459,7 @@ export default function ProfilePage() {
 
                   {/* Birthday */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Birthday
                     </label>
                     {isEditing ? (
@@ -467,10 +467,10 @@ export default function ProfilePage() {
                         type="date"
                         value={editForm.birthday || ''}
                         onChange={(e) => handleInputChange('birthday', e.target.value)}
-                        className="w-full px-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     ) : (
-                      <p className="text-primary-600">
+                      <p className="text-purple-600">
                         {profile?.birthday || 'No birthday provided'}
                       </p>
                     )}
@@ -478,7 +478,7 @@ export default function ProfilePage() {
 
                   {/* Bot Status */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Account Type
                     </label>
                     {isEditing ? (
@@ -487,14 +487,14 @@ export default function ProfilePage() {
                           type="checkbox"
                           checked={editForm.bot || false}
                           onChange={(e) => handleInputChange('bot', e.target.checked)}
-                          className="h-4 w-4 text-accent-600 focus:ring-accent-500 border-accent-300 rounded"
+                          className="h-4 w-4 text-orange-600 focus:ring-purple-500 border-orange-300 rounded"
                         />
-                        <span className="ml-2 text-sm text-accent-700">
+                        <span className="ml-2 text-sm text-orange-700">
                           This is a bot account
                         </span>
                       </label>
                     ) : (
-                      <p className="text-primary-600">
+                      <p className="text-purple-600">
                         {profile?.bot ? 'Bot Account' : 'Human Account'}
                       </p>
                     )}
@@ -502,7 +502,7 @@ export default function ProfilePage() {
 
                   {/* Lightning Address (lud16) */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Lightning Address (lud16)
                     </label>
                     {isEditing ? (
@@ -511,21 +511,21 @@ export default function ProfilePage() {
                           type="text"
                           value={editForm.lud16 || ''}
                           onChange={(e) => handleInputChange('lud16', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent ${
-                            fieldErrors.lud16 ? 'border-red-500' : 'border-accent-300'
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                            fieldErrors.lud16 ? 'border-red-500' : 'border-orange-300'
                           }`}
                           placeholder="user@domain.com"
                         />
                         {fieldErrors.lud16 ? (
                           <p className="mt-1 text-sm text-red-600">{fieldErrors.lud16}</p>
                         ) : (
-                          <p className="mt-1 text-xs text-accent-600">
+                          <p className="mt-1 text-xs text-orange-600">
                             Modern Lightning Address format. Example: satoshi@getalby.com
                           </p>
                         )}
                       </>
                     ) : (
-                      <p className="text-primary-600">
+                      <p className="text-purple-600">
                         {profile?.lud16 || 'No lightning address provided'}
                       </p>
                     )}
@@ -533,7 +533,7 @@ export default function ProfilePage() {
 
                   {/* LNURL (lud06) */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       LNURL (lud06)
                     </label>
                     {isEditing ? (
@@ -542,21 +542,21 @@ export default function ProfilePage() {
                           type="text"
                           value={editForm.lud06 || ''}
                           onChange={(e) => handleInputChange('lud06', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent ${
-                            fieldErrors.lud06 ? 'border-red-500' : 'border-accent-300'
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                            fieldErrors.lud06 ? 'border-red-500' : 'border-orange-300'
                           }`}
                           placeholder="lnurl1..."
                         />
                         {fieldErrors.lud06 ? (
                           <p className="mt-1 text-sm text-red-600">{fieldErrors.lud06}</p>
                         ) : (
-                          <p className="mt-1 text-xs text-accent-600">
+                          <p className="mt-1 text-xs text-orange-600">
                             Legacy LNURL format. Starts with &ldquo;lnurl1&rdquo;. Most users should use Lightning Address instead.
                           </p>
                         )}
                       </>
                     ) : (
-                      <p className="text-primary-600 break-all">
+                      <p className="text-purple-600 break-all">
                         {profile?.lud06 || 'No LNURL provided'}
                       </p>
                     )}
@@ -564,7 +564,7 @@ export default function ProfilePage() {
 
                   {/* NIP-05 Verification */}
                   <div>
-                    <label className="block text-sm font-medium text-accent-700 mb-2">
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       NIP-05 Identifier
                     </label>
                     {isEditing ? (
@@ -574,8 +574,8 @@ export default function ProfilePage() {
                             type="text"
                             value={editForm.nip05 || ''}
                             onChange={(e) => handleInputChange('nip05', e.target.value)}
-                            className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent ${
-                              fieldErrors.nip05 ? 'border-red-500' : 'border-accent-300'
+                            className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                              fieldErrors.nip05 ? 'border-red-500' : 'border-orange-300'
                             }`}
                             placeholder="user@domain.com"
                           />
@@ -584,7 +584,7 @@ export default function ProfilePage() {
                               type="button"
                               onClick={handleReVerifyNip05}
                               disabled={isVerifyingNip05}
-                              className="px-4 py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                             >
                               {isVerifyingNip05 ? 'Verifying...' : 'Verify'}
                             </button>
@@ -593,13 +593,13 @@ export default function ProfilePage() {
                         {fieldErrors.nip05 ? (
                           <p className="mt-1 text-sm text-red-600">{fieldErrors.nip05}</p>
                         ) : (
-                          <p className="mt-1 text-xs text-accent-600">
+                          <p className="mt-1 text-xs text-orange-600">
                             DNS-based identity verification. Example: alice@example.com.{' '}
                             <a 
                               href="https://github.com/nostr-protocol/nips/blob/master/05.md" 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-accent-700 hover:text-accent-800 underline"
+                              className="text-orange-700 hover:text-orange-800 underline"
                             >
                               Learn more about NIP-05
                             </a>
@@ -608,13 +608,13 @@ export default function ProfilePage() {
                       </>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <p className="text-primary-600">
+                        <p className="text-purple-600">
                           {profile?.nip05 || 'Not set'}
                         </p>
                         {profile?.nip05 && (
                           <>
                             {isVerifyingNip05 ? (
-                              <div className="flex items-center gap-1 text-accent-600">
+                              <div className="flex items-center gap-1 text-orange-600">
                                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -642,43 +642,22 @@ export default function ProfilePage() {
                     )}
                   </div>
 
-                  {/* Culture Bridge Profile Stats */}
-                  <div className="mt-8 pt-6 border-t border-accent-200">
-                    <h3 className="text-lg font-serif font-bold text-accent-800 mb-4">Culture Bridge Profile</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {/* Contributions */}
-                      <Link 
-                        href="/my-contributions"
-                        className="block p-4 bg-gradient-to-br from-accent-50 to-primary-50 rounded-lg border border-accent-200 hover:border-accent-300 hover:shadow-md transition-all group"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-accent-700">Contributions</span>
-                          <svg className="w-5 h-5 text-accent-600 group-hover:text-accent-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        {isLoadingContributions ? (
-                          <div className="flex items-center justify-center py-2">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent-600"></div>
-                          </div>
-                        ) : (
-                          <p className="text-3xl font-bold text-accent-800">{contributionsCount}</p>
-                        )}
-                        <p className="text-xs text-accent-600 mt-1">Heritage items shared</p>
-                      </Link>
-
+                  {/* Quick Actions */}
+                  <div className="mt-8 pt-6 border-t border-purple-200">
+                    <h3 className="text-lg font-serif font-bold text-purple-800 mb-4">Quick Actions</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Messages */}
                       <Link 
                         href="/messages"
-                        className="block p-4 bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg border border-primary-200 hover:border-primary-300 hover:shadow-md transition-all group"
+                        className="block p-4 bg-gradient-to-br from-purple-50 to-orange-50 rounded-lg border border-purple-200 hover:border-purple-300 hover:shadow-md transition-all group"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-primary-700">Messages</span>
-                          <svg className="w-5 h-5 text-primary-600 group-hover:text-primary-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="text-sm font-medium text-purple-700">Messages</span>
+                          <svg className="w-5 h-5 text-purple-600 group-hover:text-purple-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                           </svg>
                         </div>
-                        <p className="text-xs text-primary-600 mt-1">View your conversations</p>
+                        <p className="text-xs text-purple-600 mt-1">View your conversations</p>
                       </Link>
                     </div>
                   </div>

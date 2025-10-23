@@ -60,13 +60,13 @@ export const SignUpFlow: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-accent-400 to-accent-600 text-white">
+      <section className="section-padding bg-gradient-to-br from-orange-400 to-orange-600 text-white">
         <div className="container-width">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">
               Create Your <span className="text-white">Nostr Identity</span>
             </h1>
-            <p className="text-xl md:text-2xl text-accent-100 leading-relaxed mb-6">
+            <p className="text-xl md:text-2xl text-orange-100 leading-relaxed mb-6">
               Join the Culture Bridge community and start preserving indigenous heritage on the decentralized web.
             </p>
           </div>
@@ -91,8 +91,8 @@ export const SignUpFlow: React.FC = () => {
                     <div
                       className={`
                         flex items-center justify-center w-12 h-12 rounded-full font-semibold text-lg transition-all duration-300
-                        ${isActive ? 'bg-gradient-to-br from-accent-400 to-accent-600 text-white shadow-lg scale-110' : ''}
-                        ${isCompleted ? 'bg-primary-600 text-white' : ''}
+                        ${isActive ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-lg scale-110' : ''}
+                        ${isCompleted ? 'bg-purple-600 text-white' : ''}
                         ${!isActive && !isCompleted ? 'bg-gray-200 text-gray-400' : ''}
                       `}
                     >
@@ -107,8 +107,8 @@ export const SignUpFlow: React.FC = () => {
                     <p
                       className={`
                         mt-3 text-xs sm:text-sm font-medium
-                        ${isActive ? 'text-primary-800 font-semibold' : ''}
-                        ${isCompleted ? 'text-primary-600' : ''}
+                        ${isActive ? 'text-purple-800 font-semibold' : ''}
+                        ${isCompleted ? 'text-purple-600' : ''}
                         ${!isActive && !isCompleted ? 'text-gray-400' : ''}
                       `}
                     >
@@ -121,7 +121,7 @@ export const SignUpFlow: React.FC = () => {
                     <div
                       className={`
                         flex-1 h-1 mx-2 rounded transition-all duration-300
-                        ${stepNumber < currentStep ? 'bg-primary-600' : 'bg-gray-200'}
+                        ${stepNumber < currentStep ? 'bg-purple-600' : 'bg-gray-200'}
                       `}
                     />
                   )}
@@ -165,16 +165,6 @@ export const SignUpFlow: React.FC = () => {
             />
           )}
         </div>
-
-        {/* Help Text */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Need help?{' '}
-            <a href="/support" className="text-primary-600 hover:text-primary-700 font-medium">
-              Contact Support
-            </a>
-          </p>
-        </div>
         </div>
       </section>
 
@@ -183,12 +173,12 @@ export const SignUpFlow: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
             <div className="mb-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-accent-400 to-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-serif font-bold text-primary-800 mb-3">
+              <h2 className="text-3xl font-serif font-bold text-purple-800 mb-3">
                 Welcome to Culture Bridge!
               </h2>
               <p className="text-lg text-gray-600 mb-4">
@@ -225,7 +215,7 @@ export const SignUpFlow: React.FC = () => {
             
             <button
               onClick={handleModalClose}
-              className="w-full px-8 py-4 bg-gradient-to-br from-accent-400 to-accent-600 text-white font-semibold rounded-lg hover:from-accent-500 hover:to-accent-700 transition-all duration-200 shadow-lg"
+              className="w-full px-8 py-4 bg-gradient-to-br from-orange-400 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-500 hover:to-orange-700 transition-all duration-200 shadow-lg"
             >
               Awesome!
             </button>

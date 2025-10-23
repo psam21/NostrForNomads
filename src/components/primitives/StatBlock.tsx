@@ -27,10 +27,10 @@ export const StatBlock: React.FC<StatBlockProps> = ({
       transition={{ duration: 0.6, delay }}
       className={clsx('text-center', className)}
     >
-      <div className="w-16 h-16 bg-gradient-to-br from-primary-800 to-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="w-16 h-16 bg-gradient-to-br from-purple-800 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
         <Icon className="w-8 h-8 text-white" />
       </div>
-      <div className="text-3xl font-serif font-bold text-primary-800 mb-2">{value}</div>
+      <div className="text-3xl font-serif font-bold text-purple-800 mb-2">{value}</div>
       <div className="text-gray-600">{label}</div>
     </motion.div>
   );

@@ -143,7 +143,7 @@ export default function ProfileSetupStep({
             value={displayName}
             onChange={handleDisplayNameChange}
             maxLength={100}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
               displayNameError
                 ? 'border-red-500'
                 : 'border-gray-300'
@@ -172,7 +172,7 @@ export default function ProfileSetupStep({
             onChange={handleBioChange}
             maxLength={1000}
             rows={4}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
               bioError
                 ? 'border-red-500'
                 : 'border-gray-300'
@@ -257,7 +257,7 @@ export default function ProfileSetupStep({
         <button
           onClick={handleNext}
           disabled={!displayName.trim() || !!displayNameError || !!bioError || isGeneratingKeys}
-          className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isGeneratingKeys && (
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

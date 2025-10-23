@@ -39,7 +39,6 @@ export function createBackupFile(
   // Trigger download
   downloadTextFile(backupContent, filename);
   
-  console.log(`Backup file created: ${filename}`);
 }
 
 /**

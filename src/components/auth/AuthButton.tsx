@@ -52,13 +52,13 @@ export default function AuthButton() {
       <div className="flex items-center space-x-2">
         <Link
           href="/signin"
-          className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full font-medium hover:bg-primary-200 transition-colors duration-200 whitespace-nowrap border border-primary-300"
+          className="px-4 py-2 bg-purple-100 text-purple-800 rounded-full font-medium hover:bg-purple-200 transition-colors duration-200 whitespace-nowrap border border-purple-300"
         >
           Sign In
         </Link>
         <Link
           href="/signup"
-          className="px-4 py-2 bg-accent-600 text-white rounded-full font-medium hover:bg-accent-700 transition-colors duration-200 whitespace-nowrap"
+          className="px-4 py-2 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transition-colors duration-200 whitespace-nowrap"
         >
           Sign Up
         </Link>
@@ -71,7 +71,7 @@ export default function AuthButton() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center justify-center px-4 py-2 rounded-full bg-accent-600 hover:bg-accent-700 text-white transition-colors duration-200 font-medium space-x-2"
+        className="flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 font-medium space-x-2"
         aria-expanded={showDropdown}
         aria-haspopup="menu"
         onKeyDown={handleKeyDown}
@@ -92,14 +92,14 @@ export default function AuthButton() {
       {/* Dropdown Menu */}
       {showDropdown && (
         <div
-          className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white rounded-lg shadow-lg border border-primary-200 py-2 z-50"
+          className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white rounded-lg shadow-lg border border-purple-200 py-2 z-50"
           role="menu"
           aria-orientation="vertical"
         >
           {/* User Info Header */}
-          <div className="px-4 py-3 border-b border-primary-100">
+          <div className="px-4 py-3 border-b border-purple-100">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                 {user.profile.picture ? (
                   <Image
                     src={user.profile.picture}
@@ -109,16 +109,16 @@ export default function AuthButton() {
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 ) : (
-                  <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-primary-800 truncate">
+                <p className="text-sm font-medium text-purple-800 truncate">
                   {user.profile.display_name || 'Anonymous'}
                 </p>
-                <p className="text-xs text-primary-500 truncate">
+                <p className="text-xs text-purple-500 truncate">
                   {user.npub || user.pubkey.substring(0, 16) + '...'}
                 </p>
               </div>
@@ -127,59 +127,35 @@ export default function AuthButton() {
 
           {/* Menu Items */}
           <div className="py-1">
-            <div className="px-4 py-2 text-xs text-primary-500 font-medium">
+            <div className="px-4 py-2 text-xs text-purple-500 font-medium">
               Signed in via Nostr
             </div>
             
             <Link
-              href="/my-contributions"
-              className="flex items-center px-4 py-2 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
-              role="menuitem"
-              onClick={() => setShowDropdown(false)}
-            >
-              <svg className="w-4 h-4 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              My Contributions
-            </Link>
-            
-            <Link
               href="/messages"
-              className="flex items-center px-4 py-2 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
+              className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
               role="menuitem"
               onClick={() => setShowDropdown(false)}
             >
-              <svg className="w-4 h-4 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              My Messages
+              Messages
             </Link>
             
             <Link
               href="/profile"
-              className="flex items-center px-4 py-2 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
+              className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
               role="menuitem"
               onClick={() => setShowDropdown(false)}
             >
-              <svg className="w-4 h-4 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              My Profile
+              Profile
             </Link>
             
-            <Link
-              href="/my-shop"
-              className="flex items-center px-4 py-2 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
-              role="menuitem"
-              onClick={() => setShowDropdown(false)}
-            >
-              <svg className="w-4 h-4 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              My Shop
-            </Link>
-            
-            <div className="border-t border-primary-100 my-1"></div>
+            <div className="border-t border-purple-100 my-1"></div>
             
             <button
               onClick={handleLogout}

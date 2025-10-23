@@ -23,7 +23,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
           ol: ({ children }) => <ol className="list-decimal list-inside mb-4">{children}</ol>,
           li: ({ children }) => <li className="mb-1">{children}</li>,
           a: ({ children, href }) => (
-            <a href={href} className="text-primary-600 underline hover:text-primary-700" target="_blank" rel="noopener noreferrer">
+            <a href={href} className="text-purple-600 underline hover:text-purple-700" target="_blank" rel="noopener noreferrer">
               {children}
             </a>
           ),
