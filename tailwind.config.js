@@ -44,6 +44,7 @@ module.exports = {
           800: '#6e564a',
           900: '#5b473f',
         },
+        // NostrTheme purple colors
         purple: {
           50: '#faf5ff',
           100: '#f3e8ff',
@@ -51,10 +52,23 @@ module.exports = {
           300: '#d8b4fe',
           400: '#c084fc',
           500: '#a855f7',
-          600: '#8B5CF6', // NostrTheme primary purple
+          600: '#8B5CF6', // NostrTheme primary
           700: '#7c3aed',
           800: '#6b21a8',
           900: '#581c87',
+        },
+        // NostrTheme orange colors
+        orange: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // NostrTheme accent
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
         },
         gray: {
           50: '#f9fafb',  // NostrTheme background
@@ -81,6 +95,8 @@ module.exports = {
       },
       borderRadius: {
         default: '12px', // Default border radius from design tokens
+        '2xl': '1rem',   // NostrTheme
+        '3xl': '1.5rem', // NostrTheme
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
