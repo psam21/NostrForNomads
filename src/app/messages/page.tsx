@@ -356,13 +356,12 @@ function MessagesPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-purple-50">
-      <div className="max-w-5xl mx-auto h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-6xl mx-auto h-screen flex flex-col">
         {/* Two-panel layout - responsive */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden shadow-2xl">
           {/* Mobile: Show either conversation list OR message thread */}
-          <div className="md:hidden w-full flex">
-            {showConversationList ? (
+          <div className="md:hidden w-full flex bg-white">{showConversationList ? (
               <div className="w-full border-r border-gray-200 bg-white flex flex-col">
                 <ConversationList
                   conversations={conversations}
@@ -410,7 +409,7 @@ function MessagesPageContent() {
           {/* Desktop: Show both panels side-by-side */}
           <div className="hidden md:flex flex-1">
             {/* Left panel: Conversation list */}
-            <div className="w-72 border-r border-gray-200 bg-white flex flex-col">
+            <div className="w-80 lg:w-96 border-r border-gray-200 bg-white flex flex-col shadow-sm">
               <ConversationList
                 conversations={conversations}
                 selectedPubkey={selectedPubkey}
@@ -420,7 +419,7 @@ function MessagesPageContent() {
             </div>
 
             {/* Right panel: Message thread + composer */}
-            <div ref={messagePanelRef} className="flex-1 flex flex-col bg-white border-l border-gray-200 overflow-y-auto">
+            <div ref={messagePanelRef} className="flex-1 flex flex-col bg-white overflow-y-auto">{/* Message Thread */}
               <MessageThread
                 messages={messages}
                 currentUserPubkey={currentUserPubkey}

@@ -196,20 +196,20 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white">
+    <div className="border-t border-gray-200 bg-white shadow-lg">
       {/* Attachment previews */}
       {attachments.length > 0 && (
-        <div className="px-4 pt-3 pb-2 flex flex-wrap gap-2">
+        <div className="px-4 pt-4 pb-2 flex flex-wrap gap-2 bg-gray-50">
           {attachments.map(attachment => (
             <div
               key={attachment.id}
-              className="flex items-center gap-2 px-3 py-2 bg-purple-100 rounded-lg text-sm"
+              className="flex items-center gap-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-xl text-sm shadow-sm"
             >
               {getAttachmentIcon(attachment.type)}
-              <span className="max-w-[150px] truncate">{attachment.name}</span>
+              <span className="max-w-[150px] truncate font-medium text-gray-700">{attachment.name}</span>
               <button
                 onClick={() => removeAttachment(attachment.id)}
-                className="text-purple-500 hover:text-red-600 transition-colors"
+                className="text-purple-500 hover:text-red-600 hover:bg-red-50 rounded-full p-1 transition-all"
                 disabled={isSending}
               >
                 <X className="w-4 h-4" />
@@ -221,24 +221,24 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
       {/* Error message */}
       {uploadError && (
-        <div className="px-4 pt-3 pb-2">
-          <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-            {uploadError}
+        <div className="px-4 pt-3 pb-2 bg-red-50">
+          <div className="px-4 py-3 bg-white border-l-4 border-red-500 rounded-lg shadow-sm">
+            <p className="text-sm text-red-700 font-medium">{uploadError}</p>
           </div>
         </div>
       )}
 
       {/* Upload progress */}
       {displayProgress && (
-        <div className="px-4 pt-3 pb-2">
-          <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm text-blue-700">Uploading {displayProgress.fileName}...</span>
-              <span className="text-sm font-medium text-blue-700">{displayProgress.progress}%</span>
+        <div className="px-4 pt-3 pb-2 bg-blue-50">
+          <div className="px-4 py-3 bg-white border-l-4 border-blue-500 rounded-lg shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-blue-700 font-medium">Uploading {displayProgress.fileName}...</span>
+              <span className="text-sm font-bold text-blue-700">{displayProgress.progress}%</span>
             </div>
-            <div className="w-full bg-blue-200 rounded-full h-2">
+            <div className="w-full bg-blue-100 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${displayProgress.progress}%` }}
               />
             </div>
@@ -247,7 +247,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       )}
 
       {/* Input bar */}
-      <div className="flex items-end gap-2 p-4">
+      <div className="flex items-end gap-3 p-4">
         {/* File upload button */}
       <input
         ref={fileInputRef}
@@ -262,15 +262,15 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={disabled || isSending || attachments.length >= maxAttachments}
-        className="text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2"
+        className="text-gray-400 hover:text-purple-600 hover:bg-purple-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all p-2.5 rounded-full active:scale-95"
         title="Attach media (images, video, audio)"
         aria-label="Attach media"
       >
-        <Paperclip className="h-5 w-5" />
+        <Paperclip className="h-6 w-6" strokeWidth={2} />
       </button>
 
       {/* Message input */}
-      <div className="flex-1 bg-gray-100 rounded-3xl px-4 py-2">
+      <div className="flex-1 bg-gray-100 hover:bg-gray-150 focus-within:bg-white focus-within:ring-2 focus-within:ring-purple-400 rounded-3xl px-5 py-3 transition-all shadow-sm">
         <textarea
           ref={textareaRef}
           value={message}
@@ -279,7 +279,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
           placeholder={placeholder}
           disabled={disabled || isSending}
           rows={1}
-          className="w-full bg-transparent resize-none outline-none max-h-24"
+          className="w-full bg-transparent resize-none outline-none text-[15px] placeholder-gray-400 leading-relaxed max-h-32"
           style={{ minHeight: '24px' }}
         />
       </div>
@@ -288,13 +288,13 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       <button
         onClick={handleSend}
         disabled={(!message.trim() && attachments.length === 0) || disabled || isSending}
-        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full h-10 w-10 flex items-center justify-center transition-colors"
+        className="bg-purple-600 hover:bg-purple-700 active:scale-95 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:active:scale-100 rounded-full h-12 w-12 flex items-center justify-center transition-all shadow-md hover:shadow-lg"
         aria-label="Send message"
       >
         {isSending ? (
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
         ) : (
-          <Send className="h-5 w-5 text-white" />
+          <Send className="h-5 w-5 text-white ml-0.5" strokeWidth={2.5} />
         )}
       </button>
       </div>

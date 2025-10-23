@@ -117,14 +117,14 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold">Messages</h2>
+      <div className="flex flex-col h-full bg-white">
+        <div className="px-4 py-3 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">Messages</h2>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600">Loading conversations...</p>
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-purple-600 border-t-transparent mx-auto mb-3"></div>
+            <p className="text-sm text-gray-500 font-medium">Loading conversations...</p>
           </div>
         </div>
       </div>
@@ -135,12 +135,12 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     // If we have a selected pubkey (from URL), show it as a new conversation
     if (selectedPubkey) {
       return (
-        <div className="flex flex-col h-full">
-          <div className="p-4 border-b border-purple-200">
-            <h2 className="text-lg font-semibold text-purple-900 mb-3">Messages</h2>
+        <div className="flex flex-col h-full bg-white">
+          <div className="px-4 py-3 border-b border-gray-200 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
             
             {/* Start New Conversation Input */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -151,46 +151,46 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Enter npub to start chat..."
-                  className={`flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                  className={`flex-1 px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     npubError
-                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                      : 'border-purple-300 focus:ring-purple-500 focus:border-purple-500'
+                      ? 'border-red-300 focus:ring-red-400 focus:border-red-400 bg-red-50'
+                      : 'border-gray-300 focus:ring-purple-400 focus:border-purple-400 bg-gray-50 hover:bg-white'
                   }`}
                 />
                 <button
                   onClick={handleStartConversation}
                   disabled={!npubInput.trim()}
-                  className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  className="px-5 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 transition-all flex items-center gap-2 whitespace-nowrap font-semibold text-sm shadow-md hover:shadow-lg"
                   title="Start conversation"
                 >
-                  <MessageSquarePlus size={18} />
-                  <span className="hidden sm:inline text-sm">Start</span>
+                  <MessageSquarePlus size={20} strokeWidth={2.5} />
+                  <span className="hidden sm:inline">Start</span>
                 </button>
               </div>
               {npubError && (
-                <p className="text-xs text-red-600">{npubError}</p>
+                <p className="text-xs text-red-600 font-medium pl-1">{npubError}</p>
               )}
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto bg-gray-50">
             <button
               onClick={() => onSelectConversation(selectedPubkey)}
-              className="w-full p-4 border-b border-gray-200 bg-purple-100 text-left hover:bg-purple-50 transition-colors"
+              className="w-full px-4 py-3.5 border-b border-gray-100 bg-white hover:bg-purple-50 active:bg-purple-100 transition-colors text-left"
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-center gap-3">
                 {/* Avatar placeholder */}
-                <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-semibold text-sm">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <span className="text-white font-bold text-lg">
                     {selectedPubkey[0]?.toUpperCase()}
                   </span>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium truncate">
+                  <h3 className="font-semibold text-gray-900 truncate text-base">
                     {formatPubkey(selectedPubkey)}
                   </h3>
-                  <p className="text-sm text-gray-500 italic">
+                  <p className="text-sm text-gray-500 italic mt-0.5">
                     Start a new conversation
                   </p>
                 </div>
@@ -203,12 +203,12 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
     // No conversations and no selected recipient
     return (
-      <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold mb-3">Messages</h2>
+      <div className="flex flex-col h-full bg-white">
+        <div className="px-4 py-3 border-b border-gray-200 shadow-sm bg-white">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
           
           {/* Start New Conversation Input */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -219,45 +219,47 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter npub to start chat..."
-                className={`flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                className={`flex-1 px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                   npubError
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                    ? 'border-red-300 focus:ring-red-400 focus:border-red-400 bg-red-50'
+                    : 'border-gray-300 focus:ring-purple-400 focus:border-purple-400 bg-gray-50 hover:bg-white'
                 }`}
               />
               <button
                 onClick={handleStartConversation}
                 disabled={!npubInput.trim()}
-                className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                className="px-5 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 transition-all flex items-center gap-2 whitespace-nowrap font-semibold text-sm shadow-md hover:shadow-lg"
                 title="Start conversation"
               >
-                <MessageSquarePlus size={18} />
-                <span className="hidden sm:inline text-sm">Start</span>
+                <MessageSquarePlus size={20} strokeWidth={2.5} />
+                <span className="hidden sm:inline">Start</span>
               </button>
             </div>
             {npubError && (
-              <p className="text-xs text-red-600">{npubError}</p>
+              <p className="text-xs text-red-600 font-medium pl-1">{npubError}</p>
             )}
           </div>
         </div>
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="text-center">
-            <svg
-              className="w-12 h-12 text-gray-400 mx-auto mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-            <p className="text-gray-600 font-medium mb-1">No conversations yet</p>
-            <p className="text-sm text-gray-500">
-              Enter an npub above to start a conversation
+        <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+          <div className="text-center max-w-xs">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <svg
+                className="w-10 h-10 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No messages yet</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Start a conversation by entering an npub address above
             </p>
           </div>
         </div>
@@ -266,13 +268,13 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
-        <h2 className="text-lg font-semibold mb-3">Messages</h2>
+      <div className="px-4 py-3 border-b border-gray-200 shadow-sm bg-white sticky top-0 z-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
         
         {/* Start New Conversation Input */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex gap-2">
             <input
               type="text"
@@ -283,52 +285,52 @@ export const ConversationList: React.FC<ConversationListProps> = ({
               }}
               onKeyDown={handleKeyDown}
               placeholder="Enter npub to start chat..."
-              className={`flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+              className={`flex-1 px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                 npubError
-                  ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                  ? 'border-red-300 focus:ring-red-400 focus:border-red-400 bg-red-50'
+                  : 'border-gray-300 focus:ring-purple-400 focus:border-purple-400 bg-gray-50 hover:bg-white'
               }`}
             />
             <button
               onClick={handleStartConversation}
               disabled={!npubInput.trim()}
-              className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+              className="px-5 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 transition-all flex items-center gap-2 whitespace-nowrap font-semibold text-sm shadow-md hover:shadow-lg"
               title="Start conversation"
             >
-              <MessageSquarePlus size={18} />
-              <span className="hidden sm:inline text-sm">Start</span>
+              <MessageSquarePlus size={20} strokeWidth={2.5} />
+              <span className="hidden sm:inline">Start</span>
             </button>
           </div>
           {npubError && (
-            <p className="text-xs text-red-600">{npubError}</p>
+            <p className="text-xs text-red-600 font-medium pl-1">{npubError}</p>
           )}
         </div>
         
-        <p className="text-xs text-gray-500 mt-3">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
+        <p className="text-xs text-gray-500 font-medium mt-4">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
       </div>
 
       {/* Conversation List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-gray-50">
         {/* If selectedPubkey doesn't exist in conversations, show it first */}
         {selectedPubkey && !conversations.find(c => c.pubkey === selectedPubkey) && (
           <button
             onClick={() => handleSelect(selectedPubkey)}
-            className="w-full p-4 border-b border-gray-200 bg-purple-100 text-left hover:bg-purple-50 transition-colors"
+            className="w-full px-4 py-3.5 border-b border-gray-100 bg-purple-100 hover:bg-purple-50 active:bg-purple-200 transition-colors text-left"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                <span className="text-white font-semibold text-sm">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0 shadow-md">
+                <span className="text-white font-bold text-lg">
                   {selectedPubkey[0]?.toUpperCase()}
                 </span>
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium truncate">
+                <h3 className="font-semibold text-gray-900 truncate text-base">
                   {formatPubkey(selectedPubkey)}
                 </h3>
-                <p className="text-sm text-gray-500 italic">
+                <p className="text-sm text-gray-500 italic mt-0.5">
                   Start a new conversation
                 </p>
               </div>
@@ -341,14 +343,16 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           <button
             key={conversation.pubkey}
             onClick={() => handleSelect(conversation.pubkey)}
-            className={`w-full p-4 border-b border-gray-200 hover:bg-purple-50 transition-colors text-left ${
-              selectedPubkey === conversation.pubkey ? 'bg-purple-100' : ''
+            className={`w-full px-4 py-3.5 border-b border-gray-100 hover:bg-purple-50 active:bg-purple-100 transition-all text-left group ${
+              selectedPubkey === conversation.pubkey ? 'bg-purple-100 shadow-inner' : 'bg-white'
             }`}
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="relative flex-shrink-0">
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center overflow-hidden shadow-md transition-transform group-hover:scale-105 ${
+                  conversation.avatar ? 'bg-gray-200' : 'bg-gradient-to-br from-purple-500 to-purple-700'
+                }`}>
                   {conversation.avatar ? (
                     <img 
                       src={conversation.avatar} 
@@ -356,53 +360,63 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-white font-semibold text-sm">
+                    <span className="text-white font-bold text-lg">
                       {(conversation.displayName?.[0] || conversation.pubkey[0])?.toUpperCase()}
                     </span>
                   )}
                 </div>
+                {/* Unread indicator dot */}
+                {conversation.unreadCount && conversation.unreadCount > 0 && (
+                  <div className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-purple-600 rounded-full border-2 border-white shadow-md flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}</span>
+                  </div>
+                )}
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
                 {/* Name and timestamp */}
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <h3 className="truncate font-medium">
+                <div className="flex items-baseline justify-between gap-2 mb-1">
+                  <h3 className="truncate font-semibold text-gray-900 text-base">
                     {conversation.displayName || formatPubkey(conversation.pubkey)}
                   </h3>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                  <span className={`text-xs whitespace-nowrap font-medium ${
+                    conversation.unreadCount && conversation.unreadCount > 0 ? 'text-purple-600' : 'text-gray-500'
+                  }`}>
                     {formatTimestamp(conversation.lastMessageAt)}
                   </span>
                 </div>
 
                 {/* Context tag if present */}
                 {conversation.context && (
-                  <div className="mt-1 flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-1.5">
                     {conversation.context.imageUrl && (
                       <img 
                         src={conversation.context.imageUrl} 
                         alt={conversation.context.title || 'Context'}
-                        className="w-8 h-8 rounded object-cover flex-shrink-0"
+                        className="w-8 h-8 rounded object-cover flex-shrink-0 shadow-sm"
                       />
                     )}
-                    <span className="inline-block text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">
-                      {conversation.context.type === 'product' ? '🛍️' : '🏛️'} {conversation.context.title || conversation.context.id}
+                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-purple-50 text-purple-700 rounded-md font-medium border border-purple-100">
+                      <span>{conversation.context.type === 'product' ? '🛍️' : '🏛️'}</span>
+                      <span className="truncate max-w-[120px]">{conversation.context.title || conversation.context.id}</span>
                     </span>
                   </div>
                 )}
                 
-                {/* Pubkey */}
-                <p className="text-xs text-gray-400 truncate font-mono mt-1">
-                  {conversation.pubkey.slice(0, 16)}...
-                </p>
+                {/* Last message preview or pubkey */}
+                {conversation.lastMessage ? (
+                  <p className={`text-sm truncate ${
+                    conversation.unreadCount && conversation.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'
+                  }`}>
+                    {typeof conversation.lastMessage === 'string' ? conversation.lastMessage : conversation.lastMessage.content}
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-400 truncate font-mono">
+                    {conversation.pubkey.slice(0, 24)}...
+                  </p>
+                )}
               </div>
-              
-              {/* Unread badge */}
-              {conversation.unreadCount && conversation.unreadCount > 0 && (
-                <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full ml-2 mt-1">
-                  {conversation.unreadCount}
-                </span>
-              )}
             </div>
           </button>
         ))}
