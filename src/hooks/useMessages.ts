@@ -192,13 +192,28 @@ export const useMessages = ({ otherPubkey, limit = 100 }: UseMessagesProps) => {
       
       // Check if this message already exists by ID
       const messageKey = getKey(message);
+      
+      // DETAILED LOGGING TO DEBUG DUPLICATES
+      logger.info('🔍 addMessage called', {
+        service: 'useMessages',
+        method: 'addMessage',
+        messageId: message.id?.substring(0, 8),
+        tempId: message.tempId,
+        messageKey,
+        prevCount: prev.length,
+        mapSize: messageMap.size,
+        hasInMap: messageMap.has(messageKey),
+        existingKeys: Array.from(messageMap.keys()).map(k => k.substring(0, 20)),
+      });
+      
       if (message.id && messageMap.has(messageKey)) {
         // Message with this ID already exists - don't add duplicate
-        logger.debug('Message with this ID already exists, skipping duplicate', {
+        logger.warn('❌ DUPLICATE DETECTED - Message with this ID already exists, skipping', {
           service: 'useMessages',
           method: 'addMessage',
           messageId: message.id,
           tempId: message.tempId,
+          messageKey,
         });
         return prev;
       }
