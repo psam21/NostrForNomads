@@ -77,7 +77,7 @@ function MessagesPageContent() {
     }
   }, [searchParams, selectedPubkey]);
 
-  // Load user pubkey for message encryption/decryption (if authenticated)
+  // Load user pubkey and ensure cache is properly initialized for this user
   React.useEffect(() => {
     if (signer && !currentUserPubkey && isAuthenticated) {
       signer.getPublicKey().then(async (pubkey) => {
@@ -86,6 +86,26 @@ function MessagesPageContent() {
           method: 'useEffect[signer]',
           pubkey: pubkey.substring(0, 8) + '...',
         });
+        
+        // CRITICAL: Initialize cache for this user to prevent cross-contamination
+        // This ensures fresh signups don't see previous users' cached messages
+        try {
+          const { messagingBusinessService } = await import('@/services/business/MessagingBusinessService');
+          await messagingBusinessService.initializeCache(pubkey);
+          
+          logger.info('Message cache initialized for current user', {
+            service: 'MessagesPage', 
+            method: 'useEffect[signer]',
+            pubkey: pubkey.substring(0, 8) + '...',
+          });
+        } catch (error) {
+          logger.error('Failed to initialize message cache', error instanceof Error ? error : new Error('Unknown error'), {
+            service: 'MessagesPage',
+            method: 'useEffect[signer]',
+            pubkey: pubkey.substring(0, 8) + '...',
+          });
+        }
+        
         setCurrentUserPubkey(pubkey);
       }).catch(err => {
         logger.error('Failed to get public key', err instanceof Error ? err : new Error('Unknown error'), {

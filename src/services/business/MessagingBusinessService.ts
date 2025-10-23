@@ -337,15 +337,17 @@ export class MessagingBusinessService {
         method: 'getConversations',
       });
 
-      // Ensure cache is initialized (in case user navigated directly to /messages)
+      // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
       const userPubkey = await signer.getPublicKey();
-      if (!this.cache.isInitialized()) {
-        logger.warn('Cache not initialized, initializing now', {
-          service: 'MessagingBusinessService',
-          method: 'getConversations',
-        });
-        await this.cache.initialize(userPubkey);
-      }
+      
+      // CRITICAL: Always re-initialize cache to ensure it's for the correct user
+      // This prevents fresh signups from seeing previous users' cached messages
+      logger.info('Initializing cache for current user (preventing cross-contamination)', {
+        service: 'MessagingBusinessService',
+        method: 'getConversations',
+        user: userPubkey.substring(0, 8) + '...',
+      });
+      await this.cache.initialize(userPubkey);
 
       // Try cache first
       console.log('[Business] 📥 Attempting to load from cache...');
@@ -843,15 +845,17 @@ export class MessagingBusinessService {
         limit,
       });
 
-      // Ensure cache is initialized
+      // Ensure cache is initialized for the CURRENT USER (prevent cross-contamination)
       const userPubkey = await signer.getPublicKey();
-      if (!this.cache.isInitialized()) {
-        logger.warn('Cache not initialized, initializing now', {
-          service: 'MessagingBusinessService',
-          method: 'getMessages',
-        });
-        await this.cache.initialize(userPubkey);
-      }
+      
+      // CRITICAL: Always re-initialize cache to ensure it's for the correct user
+      // This prevents fresh signups from seeing previous users' cached messages
+      logger.info('Initializing cache for current user (preventing cross-contamination)', {
+        service: 'MessagingBusinessService',
+        method: 'getMessages',
+        user: userPubkey.substring(0, 8) + '...',
+      });
+      await this.cache.initialize(userPubkey);
 
       // Try cache first
       const cachedMessages = await this.cache.getMessages(otherPubkey);
