@@ -196,10 +196,10 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   return (
-    <div className="flex items-end gap-2 p-4 border-t border-gray-200 bg-white">
+    <div className="border-t border-gray-200 bg-white">
       {/* Attachment previews */}
       {attachments.length > 0 && (
-        <div className="absolute bottom-20 left-4 right-4 flex flex-wrap gap-2 mb-2">
+        <div className="px-4 pt-3 pb-2 flex flex-wrap gap-2">
           {attachments.map(attachment => (
             <div
               key={attachment.id}
@@ -221,28 +221,34 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
       {/* Error message */}
       {uploadError && (
-        <div className="absolute bottom-20 left-4 right-4 mb-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          {uploadError}
+        <div className="px-4 pt-3 pb-2">
+          <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            {uploadError}
+          </div>
         </div>
       )}
 
       {/* Upload progress */}
       {displayProgress && (
-        <div className="absolute bottom-20 left-4 right-4 mb-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-blue-700">Uploading {displayProgress.fileName}...</span>
-            <span className="text-sm font-medium text-blue-700">{displayProgress.progress}%</span>
-          </div>
-          <div className="w-full bg-blue-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${displayProgress.progress}%` }}
-            />
+        <div className="px-4 pt-3 pb-2">
+          <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm text-blue-700">Uploading {displayProgress.fileName}...</span>
+              <span className="text-sm font-medium text-blue-700">{displayProgress.progress}%</span>
+            </div>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${displayProgress.progress}%` }}
+              />
+            </div>
           </div>
         </div>
       )}
 
-      {/* File upload button */}
+      {/* Input bar */}
+      <div className="flex items-end gap-2 p-4">
+        {/* File upload button */}
       <input
         ref={fileInputRef}
         type="file"
@@ -291,6 +297,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
           <Send className="h-5 w-5 text-white" />
         )}
       </button>
+      </div>
     </div>
   );
 };
