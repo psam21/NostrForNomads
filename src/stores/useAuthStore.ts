@@ -53,9 +53,9 @@ export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
       (set, get) => ({
-      // Initial state
+      // Initial state - start with loading true so we don't flash "sign in required"
       isAvailable: false,
-      isLoading: false,
+      isLoading: true, // Start as true, will be set to false after signer initialization
       error: null,
       signer: null,
       
