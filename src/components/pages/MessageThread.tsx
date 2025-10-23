@@ -9,8 +9,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { logger } from '@/services/core/LoggingService';
 import { Message } from '@/types/messaging';
-import { ArrowLeft, X } from 'lucide-react';
+import { UserCircle2, X, Check, CheckCheck } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface MessageThreadProps {
   messages: Message[];
@@ -200,7 +202,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       )}
 
       {/* Messages container */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto bg-primary-50 p-4 space-y-4">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4">
       {messages.map((message) => {
         // Use the isSent flag from the message (already set by business service)
         const isSent = message.isSent ?? (message.senderPubkey === currentUserPubkey);
@@ -208,13 +210,13 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
         return (
           <div
             key={message.id || message.tempId}
-            className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-4`}
           >
             <div
-              className={`max-w-[85%] md:max-w-[70%] rounded-lg px-4 py-2 ${
+              className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                 isSent
-                  ? 'bg-accent-600 text-white'
-                  : 'bg-white text-primary-900 border border-primary-200'
+                  ? 'bg-purple-600 text-white rounded-br-sm'
+                  : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'
               }`}
             >
               {/* Message content */}
@@ -237,10 +239,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                               onClick={() => setFullscreenImage({ url: attachment.url!, alt: attachment.name })}
                             />
                           ) : attachment.originalFile ? (
-                            <div className="max-w-full rounded-lg max-h-64 bg-primary-100 flex items-center justify-center p-8">
+                            <div className="max-w-full rounded-lg max-h-64 bg-purple-100 flex items-center justify-center p-8">
                               <div className="text-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-                                <p className="text-sm text-primary-600">Uploading {attachment.name}...</p>
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-2"></div>
+                                <p className="text-sm text-purple-600">Uploading {attachment.name}...</p>
                               </div>
                             </div>
                           ) : null}
@@ -269,22 +271,31 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 </div>
               )}
 
-              {/* Timestamp */}
-              <p
-                className={`text-xs mt-1 ${
-                  isSent ? 'text-accent-100' : 'text-primary-500'
-                }`}
-              >
-                {formatTimestamp(message.createdAt)}
-                {message.tempId && !message.id && (
-                  <span className="ml-2">Sending...</span>
+              {/* Timestamp with read receipts */}
+              <div className={`flex items-center gap-1 mt-1 text-xs ${
+                isSent ? 'text-purple-100 justify-end' : 'text-gray-500'
+              }`}>
+                <span>{formatDistanceToNow(new Date(message.createdAt * 1000), { addSuffix: true })}</span>
+                {isSent && (
+                  <span className="ml-1">
+                    {message.id && !message.tempId ? (
+                      <CheckCheck className="h-3 w-3 text-purple-200" />
+                    ) : message.tempId && !message.id ? (
+                      <Check className="h-3 w-3" />
+                    ) : (
+                      <CheckCheck className="h-3 w-3" />
+                    )}
+                  </span>
                 )}
-              </p>
+                {message.tempId && !message.id && (
+                  <span className="ml-1">Sending...</span>
+                )}
+              </div>
 
               {/* Context tag if present */}
               {message.context && (
                 <div className="mt-2 pt-2 border-t border-opacity-20" style={{ borderColor: isSent ? 'white' : '#cbd5e0' }}>
-                  <p className={`text-xs ${isSent ? 'text-accent-100' : 'text-primary-600'}`}>
+                  <p className={`text-xs ${isSent ? 'text-purple-100' : 'text-gray-600'}`}>
                     {message.context.type === 'product' ? '🛍️ Product' : '🏛️ Heritage'}: {message.context.title || message.context.id}
                   </p>
                 </div>

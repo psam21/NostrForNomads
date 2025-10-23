@@ -11,7 +11,7 @@
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { logger } from '@/services/core/LoggingService';
 import { GenericAttachment } from '@/types/attachments';
-import { Paperclip, X, Image, Film, Music } from 'lucide-react';
+import { Paperclip, X, Image, Film, Music, Send } from 'lucide-react';
 
 interface MessageComposerProps {
   onSend: (content: string, attachments?: GenericAttachment[]) => void;
@@ -196,20 +196,20 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   return (
-    <div className="border-t border-primary-200 bg-white p-4 md:p-4">
+    <div className="flex items-end gap-2 p-4 border-t border-gray-200 bg-white">
       {/* Attachment previews */}
       {attachments.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-2">
+        <div className="absolute bottom-20 left-4 right-4 flex flex-wrap gap-2 mb-2">
           {attachments.map(attachment => (
             <div
               key={attachment.id}
-              className="flex items-center gap-2 px-3 py-2 bg-primary-100 rounded-lg text-sm"
+              className="flex items-center gap-2 px-3 py-2 bg-purple-100 rounded-lg text-sm"
             >
               {getAttachmentIcon(attachment.type)}
               <span className="max-w-[150px] truncate">{attachment.name}</span>
               <button
                 onClick={() => removeAttachment(attachment.id)}
-                className="text-primary-500 hover:text-red-600 transition-colors"
+                className="text-purple-500 hover:text-red-600 transition-colors"
                 disabled={isSending}
               >
                 <X className="w-4 h-4" />
@@ -221,14 +221,14 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
       {/* Error message */}
       {uploadError && (
-        <div className="mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="absolute bottom-20 left-4 right-4 mb-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
           {uploadError}
         </div>
       )}
 
       {/* Upload progress */}
       {displayProgress && (
-        <div className="mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="absolute bottom-20 left-4 right-4 mb-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-blue-700">Uploading {displayProgress.fileName}...</span>
             <span className="text-sm font-medium text-blue-700">{displayProgress.progress}%</span>
@@ -242,70 +242,55 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </div>
       )}
 
-      <div className="flex items-start gap-2">
-        {/* Message input */}
-        <div className="flex-1">
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={disabled || isSending}
-            rows={1}
-            className="w-full px-4 py-3 md:py-2 border border-primary-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:bg-primary-50 disabled:text-primary-400 disabled:cursor-not-allowed text-base"
-            style={{ minHeight: '48px', maxHeight: '120px' }}
-          />
-          <p className="text-xs text-primary-500 mt-1 hidden md:block">
-            Press Enter to send, Shift+Enter for new line
-          </p>
-        </div>
+      {/* File upload button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*,audio/*"
+        capture="environment"
+        multiple
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={disabled || isSending || attachments.length >= maxAttachments}
+      />
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        disabled={disabled || isSending || attachments.length >= maxAttachments}
+        className="text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2"
+        title="Attach media (images, video, audio)"
+        aria-label="Attach media"
+      >
+        <Paperclip className="h-5 w-5" />
+      </button>
 
-        {/* File upload button */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,video/*,audio/*"
-          capture="environment"
-          multiple
-          onChange={handleFileSelect}
-          className="hidden"
-          disabled={disabled || isSending || attachments.length >= maxAttachments}
+      {/* Message input */}
+      <div className="flex-1 bg-gray-100 rounded-3xl px-4 py-2">
+        <textarea
+          ref={textareaRef}
+          value={message}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          disabled={disabled || isSending}
+          rows={1}
+          className="w-full bg-transparent resize-none outline-none max-h-24"
+          style={{ minHeight: '24px' }}
         />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled || isSending || attachments.length >= maxAttachments}
-          className="px-4 md:px-5 py-3 md:py-2 bg-primary-50 border border-primary-300 rounded-lg hover:bg-primary-100 hover:border-primary-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[48px] md:min-h-[40px] flex items-center gap-2"
-          title="Attach media (images, video, audio)"
-          aria-label="Attach media"
-        >
-          <Paperclip className="w-5 h-5 text-primary-700" />
-          <span className="hidden md:inline text-primary-700">Attach</span>
-        </button>
-
-        {/* Send button */}
-        <button
-          onClick={handleSend}
-          disabled={(!message.trim() && attachments.length === 0) || disabled || isSending}
-          className="px-5 md:px-6 py-3 md:py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 disabled:bg-primary-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-h-[48px] md:min-h-[40px]"
-        >
-          {isSending ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              <span>Sending...</span>
-            </>
-          ) : (
-            <span>Send</span>
-          )}
-        </button>
       </div>
 
-      {/* Disabled state message */}
-      {disabled && !isSending && (
-        <p className="text-xs text-red-600 mt-2">
-          Please sign in to send messages
-        </p>
-      )}
+      {/* Send button */}
+      <button
+        onClick={handleSend}
+        disabled={(!message.trim() && attachments.length === 0) || disabled || isSending}
+        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full h-10 w-10 flex items-center justify-center transition-colors"
+        aria-label="Send message"
+      >
+        {isSending ? (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+        ) : (
+          <Send className="h-5 w-5 text-white" />
+        )}
+      </button>
     </div>
   );
 };
