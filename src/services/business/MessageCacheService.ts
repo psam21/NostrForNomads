@@ -393,9 +393,9 @@ export class MessageCacheService {
 
       await tx.done;
 
-      // Invalidate in-memory cache for this conversation
-      this.decryptedConversationsCache.delete(conversation.pubkey);
-      console.log(`[Cache] 🗑️ Invalidated decrypted conversation cache for ${conversation.pubkey.substring(0, 8)}...`);
+      // Update in-memory cache with latest data (don't delete - would make cache incomplete!)
+      this.decryptedConversationsCache.set(conversation.pubkey, conversation);
+      console.log(`[Cache] ✅ Updated decrypted conversation cache for ${conversation.pubkey.substring(0, 8)}...`);
     } catch (error) {
       console.error(`❌ Failed to update conversation ${conversation.pubkey}:`, error);
     }
