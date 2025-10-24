@@ -70,9 +70,16 @@ export class EventLoggingService {
 
       // Send to logging API with timeout to prevent hanging
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout (increased from 5s)
       
       try {
+        logger.info('Sending event to logging API', {
+          service: 'EventLoggingService',
+          method: 'logEventPublishing',
+          eventId: event.id,
+          url: '/api/log-event',
+        });
+
         const response = await fetch('/api/log-event', {
           method: 'POST',
           headers: {
@@ -84,6 +91,14 @@ export class EventLoggingService {
 
         clearTimeout(timeout);
 
+        logger.info('Received response from logging API', {
+          service: 'EventLoggingService',
+          method: 'logEventPublishing',
+          eventId: event.id,
+          status: response.status,
+          statusText: response.statusText,
+        });
+
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -93,12 +108,14 @@ export class EventLoggingService {
             method: 'logEventPublishing',
             eventId: event.id,
             status: response.status,
+            statusText: response.statusText,
             error: result.error || 'Unknown error',
+            responseBody: JSON.stringify(result),
           });
           return;
         }
 
-        logger.info('Event analytics logged successfully', {
+        logger.info('✅ Event analytics logged successfully', {
           service: 'EventLoggingService',
           method: 'logEventPublishing',
           eventId: event.id,
@@ -109,13 +126,15 @@ export class EventLoggingService {
         clearTimeout(timeout);
         // Network or timeout error - log at info level, don't throw
         const reason = fetchError instanceof Error && fetchError.name === 'AbortError' 
-          ? 'Timeout' 
+          ? 'Timeout (10s exceeded)' 
           : (fetchError instanceof Error ? fetchError.message : 'Network error');
-        logger.info('Event logging request failed (non-blocking)', {
+        logger.warn('❌ Event logging request failed (non-blocking)', {
           service: 'EventLoggingService',
           method: 'logEventPublishing',
           eventId: event.id,
           reason,
+          errorName: fetchError instanceof Error ? fetchError.name : 'Unknown',
+          errorMessage: fetchError instanceof Error ? fetchError.message : 'Unknown error',
         });
       }
 

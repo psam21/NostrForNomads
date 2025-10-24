@@ -65,11 +65,21 @@ export class KVService {
       // Vercel KV provides: KV_REST_API_URL, KV_REST_API_TOKEN, KV_REST_API_READ_ONLY_TOKEN, KV_URL
       const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
       
+      logger.info('🔌 Attempting Redis connection', {
+        service: 'KVService',
+        method: 'connectToRedis',
+        hasKV_URL: !!process.env.KV_URL,
+        hasREDIS_URL: !!process.env.REDIS_URL,
+        usingUrl: redisUrl ? 'configured' : 'none',
+      });
+      
       if (!redisUrl) {
-        logger.warn('Redis URL not configured - KV service will not be available', {
+        logger.error('❌ Redis URL not configured - KV service will not be available', new Error('Redis URL not configured'), {
           service: 'KVService',
           method: 'connectToRedis',
           checkedVars: ['KV_URL', 'REDIS_URL'],
+          KV_URL: process.env.KV_URL || 'not set',
+          REDIS_URL: process.env.REDIS_URL || 'not set',
         });
         throw new Error('Redis URL not configured');
       }
@@ -78,6 +88,7 @@ export class KVService {
         service: 'KVService',
         method: 'connectToRedis',
         redisHost: redisUrl.split('@')[1]?.split(':')[0] || 'unknown',
+        redisPort: redisUrl.split(':').pop()?.split('/')[0] || 'unknown',
       });
 
       // Create new client if doesn't exist or is closed
@@ -90,22 +101,23 @@ export class KVService {
         });
         
         this.redis.on('error', (err) => {
-          logger.error('Redis client error', err, {
+          logger.error('❌ Redis client error', err, {
             service: 'KVService',
             method: 'connectToRedis',
+            errorMessage: err.message,
           });
           this.isConnected = false;
         });
 
         this.redis.on('connect', () => {
-          logger.info('Redis connected', {
+          logger.info('🔗 Redis connected', {
             service: 'KVService',
             method: 'connectToRedis',
           });
         });
 
         this.redis.on('ready', () => {
-          logger.info('Redis ready', {
+          logger.info('✅ Redis ready', {
             service: 'KVService',
             method: 'connectToRedis',
           });
@@ -113,7 +125,7 @@ export class KVService {
         });
 
         this.redis.on('end', () => {
-          logger.info('Redis connection ended', {
+          logger.info('🔌 Redis connection ended', {
             service: 'KVService',
             method: 'connectToRedis',
           });
@@ -123,12 +135,16 @@ export class KVService {
 
       // Connect if not already connected
       if (!this.redis.isOpen) {
+        logger.info('Opening Redis connection...', {
+          service: 'KVService',
+          method: 'connectToRedis',
+        });
         await this.redis.connect();
       }
       
       this.isConnected = true;
       
-      logger.info('Redis client connected successfully', {
+      logger.info('✅ Redis client connected successfully', {
         service: 'KVService',
         method: 'connectToRedis',
         isReady: this.redis.isReady,
