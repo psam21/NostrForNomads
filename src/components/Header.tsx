@@ -2,33 +2,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import AuthButton from './auth/AuthButton';
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  comingSoon?: boolean;
-}
-
-const navigationLine1: NavigationItem[] = [
-  { name: 'Messages', href: '/messages' },
-  { name: 'Profile', href: '/profile' },
-];
-
-const navigationLine2: NavigationItem[] = [];
-
-
-// Combined navigation for mobile
-const allNavigation = [...navigationLine1, ...navigationLine2];
-
-// Removed unused languages array (was producing an unused variable lint warning)
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
 
   // Close on ESC
@@ -60,51 +39,25 @@ export default function Header() {
     return () => document.removeEventListener('keydown', onKey);
   }, [isOpen]);
 
-  // Focus first link when opening
-  useEffect(() => {
-    if (isOpen) {
-      const t = setTimeout(() => firstLinkRef.current?.focus(), 0);
-      return () => clearTimeout(t);
-    }
-  }, [isOpen]);
-  const pathname = usePathname();
-
-  // removed scroll listener (unused state)
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg`}
     >
       <nav className="container-width px-4 sm:px-6 lg:px-8">
         {/* Main header content - Logo + Navigation + Auth/Cart */}
-        <div className="flex items-center justify-between h-20 lg:h-24 gap-8">
+        <div className="flex items-center justify-between h-16 gap-8">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group shrink-0">
-            {/* Logo icon removed, only text remains */}
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-serif font-bold text-white">Nostr Messages</h1>
-              <p className="text-xs text-white -mt-1 opacity-80">Decentralized Communication</p>
+          <Link href="/" className="flex items-center group shrink-0" aria-label="Home">
+            <div className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center hover:bg-opacity-30 transition-all">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
             </div>
           </Link>
 
-          {/* Desktop Navigation - Takes available space and spreads links */}
+          {/* Desktop Navigation - Empty now, items are in AuthButton dropdown */}
           <div className="hidden lg:flex items-center justify-between flex-1">
-            {[...navigationLine1, ...navigationLine2].map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`px-3 py-2 rounded-md text-base font-semibold transition-colors duration-200 whitespace-nowrap ${
-                  pathname === item.href
-                    ? 'text-white bg-purple-600'
-                    : 'text-white hover:text-orange-200 hover:bg-purple-700'
-                }`}
-              >
-                {item.name}
-                {item.comingSoon && (
-                  <sup className="text-[9px] ml-1 opacity-60 font-normal">soon</sup>
-                )}
-              </Link>
-            ))}
+            {/* Navigation items removed - now in profile dropdown */}
           </div>
 
           {/* Auth Section - Separate area on the right */}
@@ -137,27 +90,6 @@ export default function Header() {
               <div className="px-3 py-2">
                 <AuthButton />
               </div>
-              
-              <div className="border-t border-gray-100 my-2"></div>
-              
-              {allNavigation.map((item, idx) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  ref={idx === 0 ? firstLinkRef : undefined}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                    pathname === item.href
-                      ? 'text-purple-800 bg-purple-50'
-                      : 'text-gray-700 hover:text-purple-800 hover:bg-purple-50'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                  {item.comingSoon && (
-                    <sup className="text-[9px] ml-1 opacity-60 font-normal">soon</sup>
-                  )}
-                </Link>
-              ))}
             </div>
           </div>
         )}
