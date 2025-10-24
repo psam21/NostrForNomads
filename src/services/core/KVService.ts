@@ -403,22 +403,6 @@ export class KVService {
         rev: true,
       });
 
-      logger.info('Raw zrange result', {
-        service: 'KVService',
-        method: 'getAllEvents',
-        resultType: typeof eventKeysRaw,
-        isArray: Array.isArray(eventKeysRaw),
-        rawResult: eventKeysRaw,
-      });
-
-      // DEBUG: Throw error with debug info to see in API response
-      if (Array.isArray(eventKeysRaw) && eventKeysRaw.length > 0) {
-        const firstItem = eventKeysRaw[0];
-        throw new Error(`DEBUG: zrange returned array with ${eventKeysRaw.length} items. First item type: ${typeof firstItem}, value: ${JSON.stringify(firstItem)}, full array: ${JSON.stringify(eventKeysRaw.slice(0, 3))}`);
-      } else {
-        throw new Error(`DEBUG: zrange returned non-array or empty. Type: ${typeof eventKeysRaw}, isArray: ${Array.isArray(eventKeysRaw)}, value: ${JSON.stringify(eventKeysRaw)}`);
-      }
-
       // Ensure eventKeys is a string array
       const eventKeys: string[] = Array.isArray(eventKeysRaw) 
         ? eventKeysRaw.filter((key): key is string => typeof key === 'string')
@@ -518,11 +502,6 @@ export class KVService {
         method: 'getAllEvents',
         error: errorMessage,
       });
-
-      // TEMPORARY: Pass through debug messages
-      if (errorMessage.startsWith('DEBUG:')) {
-        throw error;
-      }
 
       throw new AppError(
         'Failed to retrieve all events',

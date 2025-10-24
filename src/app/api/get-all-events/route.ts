@@ -92,12 +92,21 @@ export async function GET(request: NextRequest) {
       error: errorMessage,
     });
 
-    // TEMPORARY: Return actual error message for debugging
+    // Check if it's a KV service error (already logged)
+    if (error instanceof Error && error.message.includes('Failed to retrieve')) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Database query failed' 
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { 
         success: false, 
-        error: errorMessage,
-        debug: true
+        error: 'Internal server error' 
       },
       { status: 500 }
     );
