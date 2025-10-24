@@ -1,4 +1,4 @@
-import { createClient, RedisClientType } from 'redis';
+import { Redis } from '@upstash/redis';
 import { logger } from './LoggingService';
 import { AppError } from '../../errors/AppError';
 import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '../../errors/ErrorTypes';
@@ -36,134 +36,79 @@ export interface PaginatedEventResponse {
 
 export class KVService {
   private static instance: KVService;
-  private redis: RedisClientType | null = null;
-  private connectionPromise: Promise<void> | null = null;
+  private redis: Redis | null = null;
   private isConnected = false;
 
   private constructor() {
     // Don't initialize connection in constructor for serverless
   }
 
-  private async initializeRedis(): Promise<void> {
-    // Return existing connection promise if already connecting
-    if (this.connectionPromise) {
-      return this.connectionPromise;
+  private initializeRedis(): void {
+    // Return if already initialized
+    if (this.redis && this.isConnected) {
+      return;
     }
 
-    // Return immediately if already connected
-    if (this.isConnected && this.redis?.isReady) {
-      return Promise.resolve();
-    }
-
-    this.connectionPromise = this.connectToRedis();
-    return this.connectionPromise;
-  }
-
-  private async connectToRedis(): Promise<void> {
     try {
-      // Check for Vercel KV environment variables
-      // Vercel KV provides: KV_REST_API_URL, KV_REST_API_TOKEN, KV_REST_API_READ_ONLY_TOKEN, KV_URL
-      const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
+      // Check for Upstash REST API credentials (Vercel KV or direct Upstash)
+      const upstashUrl = process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
+      const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
       
-      logger.info('🔌 Attempting Redis connection', {
+      logger.info('🔌 Attempting Upstash Redis connection', {
         service: 'KVService',
-        method: 'connectToRedis',
+        method: 'initializeRedis',
         hasKV_URL: !!process.env.KV_URL,
-        hasREDIS_URL: !!process.env.REDIS_URL,
-        usingUrl: redisUrl ? 'configured' : 'none',
+        hasUPSTASH_REDIS_REST_URL: !!process.env.UPSTASH_REDIS_REST_URL,
+        hasUPSTASH_REDIS_REST_TOKEN: !!upstashToken,
+        usingUrl: upstashUrl ? 'configured' : 'none',
       });
       
-      if (!redisUrl) {
-        logger.error('❌ Redis URL not configured - KV service will not be available', new Error('Redis URL not configured'), {
+      if (!upstashUrl || !upstashToken) {
+        logger.error('❌ Upstash Redis credentials not configured - KV service will not be available', new Error('Redis credentials not configured'), {
           service: 'KVService',
-          method: 'connectToRedis',
-          checkedVars: ['KV_URL', 'REDIS_URL'],
+          method: 'initializeRedis',
+          checkedVars: ['KV_URL', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'],
           KV_URL: process.env.KV_URL || 'not set',
-          REDIS_URL: process.env.REDIS_URL || 'not set',
+          UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL || 'not set',
+          UPSTASH_REDIS_REST_TOKEN: upstashToken ? 'set' : 'not set',
         });
-        throw new Error('Redis URL not configured');
+        throw new Error('Redis credentials not configured');
       }
 
-      logger.info('Connecting to Redis', {
+      logger.info('Creating Upstash Redis client', {
         service: 'KVService',
-        method: 'connectToRedis',
-        redisHost: redisUrl.split('@')[1]?.split(':')[0] || 'unknown',
-        redisPort: redisUrl.split(':').pop()?.split('/')[0] || 'unknown',
+        method: 'initializeRedis',
+        url: upstashUrl.substring(0, 30) + '...',
       });
 
-      // Create new client if doesn't exist or is closed
-      if (!this.redis || !this.redis.isOpen) {
-        this.redis = createClient({ 
-          url: redisUrl,
-          socket: {
-            connectTimeout: 10000, // 10 seconds
-          }
-        });
-        
-        this.redis.on('error', (err) => {
-          logger.error('❌ Redis client error', err, {
-            service: 'KVService',
-            method: 'connectToRedis',
-            errorMessage: err.message,
-          });
-          this.isConnected = false;
-        });
-
-        this.redis.on('connect', () => {
-          logger.info('🔗 Redis connected', {
-            service: 'KVService',
-            method: 'connectToRedis',
-          });
-        });
-
-        this.redis.on('ready', () => {
-          logger.info('✅ Redis ready', {
-            service: 'KVService',
-            method: 'connectToRedis',
-          });
-          this.isConnected = true;
-        });
-
-        this.redis.on('end', () => {
-          logger.info('🔌 Redis connection ended', {
-            service: 'KVService',
-            method: 'connectToRedis',
-          });
-          this.isConnected = false;
-        });
-      }
-
-      // Connect if not already connected
-      if (!this.redis.isOpen) {
-        logger.info('Opening Redis connection...', {
-          service: 'KVService',
-          method: 'connectToRedis',
-        });
-        await this.redis.connect();
-      }
+      // Create Upstash Redis client (REST API - no connection needed)
+      this.redis = new Redis({
+        url: upstashUrl,
+        token: upstashToken,
+      });
       
       this.isConnected = true;
       
-      logger.info('✅ Redis client connected successfully', {
+      logger.info('✅ Upstash Redis client initialized successfully', {
         service: 'KVService',
-        method: 'connectToRedis',
-        isReady: this.redis.isReady,
+        method: 'initializeRedis',
       });
     } catch (error) {
       this.isConnected = false;
-      this.connectionPromise = null;
-      logger.error('Failed to connect to Redis', error instanceof Error ? error : new Error('Unknown error'), {
+      logger.error('Failed to initialize Upstash Redis', error instanceof Error ? error : new Error('Unknown error'), {
         service: 'KVService',
-        method: 'connectToRedis',
+        method: 'initializeRedis',
       });
       throw error;
     }
   }
 
-  private async ensureConnected(): Promise<boolean> {
+  private ensureConnected(): boolean {
     try {
-      await this.initializeRedis();
-      return this.isConnected && this.redis?.isReady === true;
+      if (!this.redis || !this.isConnected) {
+        this.initializeRedis();
+      }
+      return this.isConnected && this.redis !== null;
     } catch (error) {
       logger.error('Failed to ensure Redis connection', error instanceof Error ? error : new Error('Unknown error'), {
         service: 'KVService',
@@ -181,67 +126,38 @@ export class KVService {
   }
 
   /**
-   * Get raw Redis INFO output
-   */
-  public async getRedisInfo(): Promise<string> {
-    if (!(await this.ensureConnected())) {
-      throw new Error('Redis connection not available');
-    }
-    return await this.redis!.info();
-  }
-
-  /**
    * Get database size
    */
   public async getDatabaseSize(): Promise<number> {
-    if (!(await this.ensureConnected())) {
+    if (!this.ensureConnected()) {
       throw new Error('Redis connection not available');
     }
-    return await this.redis!.dbSize();
+    return await this.redis!.dbsize();
   }
 
   /**
    * Scan keys by pattern
    */
   public async scanKeys(pattern: string, count: number = 1000): Promise<string[]> {
-    if (!(await this.ensureConnected())) {
+    if (!this.ensureConnected()) {
       throw new Error('Redis connection not available');
     }
 
     const keys: string[] = [];
-    let cursor = 0;
+    let cursor: string | number = 0;
 
     do {
-      const scanResult = await this.redis!.scan(cursor.toString(), {
-        MATCH: pattern,
-        COUNT: count,
+      const scanResult: [string | number, string[]] = await this.redis!.scan(cursor, {
+        match: pattern,
+        count,
       });
 
-      cursor = typeof scanResult.cursor === 'string' ? parseInt(scanResult.cursor) : scanResult.cursor;
-      keys.push(...scanResult.keys);
-    } while (cursor !== 0);
+      const [nextCursor, matchedKeys] = scanResult;
+      cursor = typeof nextCursor === 'string' ? (nextCursor === '0' ? 0 : nextCursor) : nextCursor;
+      keys.push(...matchedKeys);
+    } while (cursor !== 0 && cursor !== '0');
 
     return keys;
-  }
-
-  /**
-   * Get memory usage for a key
-   */
-  public async getKeyMemoryUsage(key: string): Promise<number | null> {
-    if (!(await this.ensureConnected())) {
-      throw new Error('Redis connection not available');
-    }
-
-    try {
-      return await this.redis!.memoryUsage(key);
-    } catch (error) {
-      logger.warn('Failed to get memory usage for key', {
-        service: 'KVService',
-        method: 'getKeyMemoryUsage',
-        key,
-      });
-      return null;
-    }
   }
 
   /**
@@ -269,7 +185,7 @@ export class KVService {
 
       // Update user's event index for pagination
       const indexKey = `user_events_index:${eventData.npub}`;
-      await this.redis!.zAdd(indexKey, { score: eventData.processedTimestamp, value: eventKey });
+      await this.redis!.zadd(indexKey, { score: eventData.processedTimestamp, member: eventKey });
 
       logger.info('Event analytics data stored successfully', {
         service: 'KVService',
@@ -326,7 +242,7 @@ export class KVService {
       const indexKey = `user_events_index:${npub}`;
       
       // Get total count first
-      const totalCount = await this.redis!.zCard(indexKey);
+      const totalCount = await this.redis!.zcard(indexKey);
       
       if (totalCount === 0) {
         return {
@@ -345,9 +261,9 @@ export class KVService {
       const totalPages = Math.ceil(totalCount / limit);
 
       // Get event keys in reverse chronological order (newest first)
-      const eventKeys = await this.redis!.zRange(indexKey, offset, offset + limit - 1, {
-        REV: true, // Reverse order for newest first
-      });
+      const eventKeys = await this.redis!.zrange(indexKey, offset, offset + limit - 1, {
+        rev: true, // Reverse order for newest first
+      }) as string[];
 
       // Fetch event data
       const events: UserEventData[] = [];
@@ -355,7 +271,7 @@ export class KVService {
       for (const eventKey of eventKeys) {
         try {
           const eventDataStr = await this.redis!.get(eventKey);
-          if (eventDataStr) {
+          if (eventDataStr && typeof eventDataStr === 'string') {
             const eventData: UserEventData = JSON.parse(eventDataStr);
             
             // Apply filters if provided
@@ -451,19 +367,20 @@ export class KVService {
       const allEventKeys: string[] = [];
       
       // Scan for all user_events keys
-      let cursor = 0;
+      let cursor: string | number = 0;
       do {
-        const scanResult = await this.redis!.scan(cursor.toString(), {
-          MATCH: 'user_events:*',
-          COUNT: 1000
+        const scanResult: [string | number, string[]] = await this.redis!.scan(cursor, {
+          match: 'user_events:*',
+          count: 1000
         });
         
-        cursor = typeof scanResult.cursor === 'string' ? parseInt(scanResult.cursor) : scanResult.cursor;
-        allEventKeys.push(...scanResult.keys.filter(key => 
+        const [nextCursor, keys] = scanResult;
+        cursor = typeof nextCursor === 'string' ? (nextCursor === '0' ? 0 : nextCursor) : nextCursor;
+        allEventKeys.push(...keys.filter((key: string) => 
           // Only include actual event keys, not index keys
           !key.includes('user_events_index:')
         ));
-      } while (cursor !== 0);
+      } while (cursor !== 0 && cursor !== '0');
 
       if (allEventKeys.length === 0) {
         return {
@@ -496,7 +413,7 @@ export class KVService {
       for (const eventKey of paginatedKeys) {
         try {
           const eventDataStr = await this.redis!.get(eventKey);
-          if (eventDataStr) {
+          if (eventDataStr && typeof eventDataStr === 'string') {
             const eventData: UserEventData = JSON.parse(eventDataStr);
             
             // Apply filters if provided
@@ -578,7 +495,7 @@ export class KVService {
       }
 
       const indexKey = `user_events_index:${npub}`;
-      const eventKeys = await this.redis!.zRange(indexKey, 0, -1);
+      const eventKeys = await this.redis!.zrange(indexKey, 0, -1) as string[];
       
       if (eventKeys.length === 0) {
         return {
@@ -603,7 +520,7 @@ export class KVService {
       for (const eventKey of eventKeys) {
         try {
           const eventDataStr = await this.redis!.get(eventKey);
-          if (eventDataStr) {
+          if (eventDataStr && typeof eventDataStr === 'string') {
             const eventData: UserEventData = JSON.parse(eventDataStr);
             
             // Count event kinds
