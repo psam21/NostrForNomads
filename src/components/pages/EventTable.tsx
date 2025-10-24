@@ -182,8 +182,8 @@ export function EventTable({ events, sortField, sortDirection, onSort }: EventTa
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900 font-mono">
+                <td className="px-6 py-4">
+                  <span className="text-sm text-gray-900 font-mono break-all max-w-xs block">
                     {event.npub}
                   </span>
                 </td>
