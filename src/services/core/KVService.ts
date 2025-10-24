@@ -443,7 +443,7 @@ export class KVService {
             eventKeyType: typeof eventKey,
           });
           
-          const eventDataStr = await this.redis!.get(eventKey);
+          const eventDataStr: unknown = await this.redis!.get(eventKey);
           
           logger.info('Event data retrieved', {
             service: 'KVService',
@@ -451,22 +451,24 @@ export class KVService {
             eventKey,
             hasData: !!eventDataStr,
             dataType: typeof eventDataStr,
-            dataLength: eventDataStr ? (typeof eventDataStr === 'string' ? eventDataStr.length : 'not a string') : 0,
           });
           
-          if (eventDataStr && typeof eventDataStr === 'string') {
-            const eventData: UserEventData = JSON.parse(eventDataStr);
+          if (typeof eventDataStr === 'string') {
+            const eventData: UserEventData = JSON.parse(eventDataStr as string);
             
             // Apply filters if provided
             if (eventKind !== undefined && eventData.eventKind !== eventKind) {
               continue;
             }
             
-            if (startDate !== undefined && eventData.processedTimestamp < startDate) {
+            const start = startDate;
+            const end = endDate;
+            
+            if (start !== undefined && eventData.processedTimestamp < start!) {
               continue;
             }
             
-            if (endDate !== undefined && eventData.processedTimestamp > endDate) {
+            if (end !== undefined && eventData.processedTimestamp > end!) {
               continue;
             }
             
@@ -477,15 +479,15 @@ export class KVService {
               method: 'getAllEvents',
               eventKey,
               dataType: typeof eventDataStr,
-              data: eventDataStr,
             });
           }
         } catch (error) {
+          const err = error as Error;
           logger.warn('Failed to fetch individual event data', {
             service: 'KVService',
             method: 'getAllEvents',
             eventKey,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: err.message,
           });
         }
       }
