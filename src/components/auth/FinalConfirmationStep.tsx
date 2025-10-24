@@ -82,7 +82,7 @@ export default function FinalConfirmationStep({
           {/* Public Key */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Public Key (npub)</label>
-            <p className="mt-1 text-sm text-gray-600 font-mono break-all">{npub}</p>
+            <p className="mt-1 text-sm text-gray-600 font-mono break-words select-all">{npub}</p>
           </div>
         </div>
       </div>

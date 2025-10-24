@@ -309,17 +309,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Banner Section */}
-        <div className="mb-8">
-          <ImageUpload
-            currentImageUrl={isEditing ? editForm.banner : profile?.banner}
-            onImageUploaded={handleBannerUploaded}
-            label=""
-            aspectRatio="banner"
-            maxSizeMB={10}
-            showOverlayButton={true}
-          />
-        </div>
+        {/* Banner Section - Moved to end and reduced height */}
 
         {/* Profile Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -685,6 +675,20 @@ export default function ProfilePage() {
               </div>
             </div>
 
+          </div>
+        </div>
+
+        {/* Banner Section - At bottom with reduced height */}
+        <div className="mt-8">
+          <div className="h-32">
+            <ImageUpload
+              currentImageUrl={isEditing ? editForm.banner : profile?.banner}
+              onImageUploaded={handleBannerUploaded}
+              label="Banner Image"
+              aspectRatio="banner"
+              maxSizeMB={10}
+              showOverlayButton={true}
+            />
           </div>
         </div>
       </div>
