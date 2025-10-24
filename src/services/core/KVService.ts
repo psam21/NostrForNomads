@@ -439,8 +439,9 @@ export class KVService {
             dataPreview: typeof eventDataStr === 'string' ? eventDataStr.substring(0, 100) : String(eventDataStr),
           });
           
-          if (typeof eventDataStr === 'string') {
-            const eventData: UserEventData = JSON.parse(eventDataStr as string);
+          // Upstash REST API returns parsed JSON objects, not strings
+          if (eventDataStr && typeof eventDataStr === 'object') {
+            const eventData = eventDataStr as UserEventData;
             
             // Apply filters if provided
             if (eventKind !== undefined && eventData.eventKind !== eventKind) {
@@ -460,7 +461,7 @@ export class KVService {
             
             events.push(eventData);
           } else {
-            logger.warn('Event data not string or empty', {
+            logger.warn('Event data not object or empty', {
               service: 'KVService',
               method: 'getAllEvents',
               eventKey,
