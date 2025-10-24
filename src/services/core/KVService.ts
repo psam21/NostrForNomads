@@ -187,6 +187,10 @@ export class KVService {
       const indexKey = `user_events_index:${eventData.npub}`;
       await this.redis!.zadd(indexKey, { score: eventData.processedTimestamp, member: eventKey });
 
+      // Update global event index for all-events queries
+      const globalIndexKey = 'global_events_index';
+      await this.redis!.zadd(globalIndexKey, { score: eventData.processedTimestamp, member: eventKey });
+
       logger.info('Event analytics data stored successfully', {
         service: 'KVService',
         method: 'logEvent',
@@ -363,26 +367,12 @@ export class KVService {
         endDate,
       });
 
-      // Get all event keys from all users using a pattern scan
-      const allEventKeys: string[] = [];
-      
-      // Scan for all user_events keys
-      let cursor: string | number = 0;
-      do {
-        const scanResult: [string | number, string[]] = await this.redis!.scan(cursor, {
-          match: 'user_events:*',
-          count: 1000
-        });
-        
-        const [nextCursor, keys] = scanResult;
-        cursor = typeof nextCursor === 'string' ? (nextCursor === '0' ? 0 : nextCursor) : nextCursor;
-        allEventKeys.push(...keys.filter((key: string) => 
-          // Only include actual event keys, not index keys
-          !key.includes('user_events_index:')
-        ));
-      } while (cursor !== 0 && cursor !== '0');
+      const globalIndexKey = 'global_events_index';
 
-      if (allEventKeys.length === 0) {
+      // Get total count from the global index
+      const totalCount = await this.redis!.zcard(globalIndexKey);
+
+      if (totalCount === 0) {
         return {
           events: [],
           pagination: {
@@ -394,23 +384,19 @@ export class KVService {
         };
       }
 
-      // Sort keys by timestamp (newest first) - extract timestamp from key
-      const sortedKeys = allEventKeys.sort((a, b) => {
-        const timestampA = parseInt(a.split(':')[2] || '0');
-        const timestampB = parseInt(b.split(':')[2] || '0');
-        return timestampB - timestampA; // Newest first
-      });
-
       // Calculate pagination
-      const totalCount = sortedKeys.length;
-      const offset = (page - 1) * limit;
       const totalPages = Math.ceil(totalCount / limit);
-      const paginatedKeys = sortedKeys.slice(offset, offset + limit);
+      const offset = (page - 1) * limit;
+
+      // Get event keys from global index (newest first, so zrevrange)
+      const eventKeys = await this.redis!.zrange(globalIndexKey, offset, offset + limit - 1, {
+        rev: true,
+      }) as string[];
 
       // Fetch event data
       const events: UserEventData[] = [];
       
-      for (const eventKey of paginatedKeys) {
+      for (const eventKey of eventKeys) {
         try {
           const eventDataStr = await this.redis!.get(eventKey);
           if (eventDataStr && typeof eventDataStr === 'string') {
