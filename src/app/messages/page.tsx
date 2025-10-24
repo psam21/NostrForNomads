@@ -1,11 +1,3 @@
-/**
- * Messages Page
- * Page Layer - Private Messaging Interface
- * 
- * Two-panel layout: Conversation list + Message thread
- * Follows battle-tested Shop page patterns
- */
-
 'use client';
 
 import React, { useState, Suspense } from 'react';
@@ -35,19 +27,13 @@ function MessagesPageContent() {
     id: string;
   } | undefined>(undefined);
   
-  // Mobile view state: true = show conversation list, false = show message thread
   const [showConversationList, setShowConversationList] = useState(true);
-  
-  // Upload progress state
   const [uploadProgress, setUploadProgress] = useState<{ fileName: string; progress: number } | null>(null);
-  
-  // Ref for the message panel container (to scroll to composer)
   const messagePanelRef = React.useRef<HTMLDivElement>(null);
 
-  // Handle URL parameters for direct navigation (e.g., from "Contact Seller")
   React.useEffect(() => {
     const recipientParam = searchParams?.get('recipient');
-    const contextParam = searchParams?.get('context'); // Format: "product:123" or "heritage:456"
+    const contextParam = searchParams?.get('context');
     const contextTitleParam = searchParams?.get('contextTitle');
     const contextImageParam = searchParams?.get('contextImage');
     
@@ -60,11 +46,13 @@ function MessagesPageContent() {
         contextTitle: contextTitleParam,
         contextImage: contextImageParam,
       });
-      setSelectedPubkey(recipientParam);
       
-      // Parse context parameter
+      setSelectedPubkey(recipientParam);
+
       if (contextParam) {
-        const [type, id] = contextParam.split(':');
+        const [contextType, contextId] = contextParam.split(':');
+        const type = contextType as 'product' | 'heritage';
+        const id = contextId;
         if ((type === 'product' || type === 'heritage') && id) {
           setConversationContext({
             type,
