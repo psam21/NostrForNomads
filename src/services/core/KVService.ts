@@ -388,10 +388,26 @@ export class KVService {
       const totalPages = Math.ceil(totalCount / limit);
       const offset = (page - 1) * limit;
 
+      logger.info('Fetching events from global index', {
+        service: 'KVService',
+        method: 'getAllEvents',
+        totalCount,
+        offset,
+        limit,
+        endIndex: offset + limit - 1,
+      });
+
       // Get event keys from global index (newest first, so zrevrange)
       const eventKeys = await this.redis!.zrange(globalIndexKey, offset, offset + limit - 1, {
         rev: true,
       }) as string[];
+
+      logger.info('Retrieved event keys from index', {
+        service: 'KVService',
+        method: 'getAllEvents',
+        keysCount: eventKeys.length,
+        keys: eventKeys,
+      });
 
       // Fetch event data
       const events: UserEventData[] = [];
