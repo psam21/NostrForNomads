@@ -21,7 +21,7 @@ const noto = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Nostr Messages - Encrypted Messaging',
+  title: 'Nostr Messenger - Encrypted Messaging',
   description:
     'A decentralized messaging platform built on Nostr for secure, private communication.',
   keywords: [
@@ -31,21 +31,21 @@ export const metadata: Metadata = {
     'decentralized',
     'privacy',
   ],
-  authors: [{ name: 'Nostr Messages' }],
+  authors: [{ name: 'Nostr Messenger' }],
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: 'Nostr Messages - Encrypted Messaging',
+    title: 'Nostr Messenger - Encrypted Messaging',
     description: 'Secure, private messaging on Nostr',
     type: 'website',
     url: 'https://nostrcoin.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nostr Messages - Encrypted Messaging',
+    title: 'Nostr Messenger - Encrypted Messaging',
     description: 'Secure, private messaging on Nostr',
   },
 };

@@ -3,11 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { SignInFlow } from '@/components/auth/SignInFlow';
 
-/**
- * Sign-in page
- * SOA-compliant: Page handles navigation, delegates auth to components/hooks
- * All authentication logic in SignInFlow component and useNostrSignIn hook
- */
 export default function SigninPage() {
   const router = useRouter();
 
