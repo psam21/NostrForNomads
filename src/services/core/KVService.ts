@@ -414,7 +414,24 @@ export class KVService {
       
       for (const eventKey of eventKeys) {
         try {
+          logger.info('Fetching event data', {
+            service: 'KVService',
+            method: 'getAllEvents',
+            eventKey,
+            eventKeyType: typeof eventKey,
+          });
+          
           const eventDataStr = await this.redis!.get(eventKey);
+          
+          logger.info('Event data retrieved', {
+            service: 'KVService',
+            method: 'getAllEvents',
+            eventKey,
+            hasData: !!eventDataStr,
+            dataType: typeof eventDataStr,
+            dataLength: eventDataStr ? (typeof eventDataStr === 'string' ? eventDataStr.length : 'not a string') : 0,
+          });
+          
           if (eventDataStr && typeof eventDataStr === 'string') {
             const eventData: UserEventData = JSON.parse(eventDataStr);
             
@@ -432,6 +449,14 @@ export class KVService {
             }
             
             events.push(eventData);
+          } else {
+            logger.warn('Event data not string or empty', {
+              service: 'KVService',
+              method: 'getAllEvents',
+              eventKey,
+              dataType: typeof eventDataStr,
+              data: eventDataStr,
+            });
           }
         } catch (error) {
           logger.warn('Failed to fetch individual event data', {
