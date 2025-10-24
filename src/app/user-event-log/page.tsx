@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Activity, CheckCircle, XCircle, Clock, Zap } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { EventTable } from '@/components/pages/EventTable';
 
 interface UserEventData {
   npub: string;
@@ -45,6 +45,8 @@ export default function UserEventLogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [sortField, setSortField] = useState<keyof UserEventData>('processedTimestamp');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const fetchEvents = async (page: number = 1) => {
     try {
@@ -84,24 +86,43 @@ export default function UserEventLogPage() {
     return () => clearInterval(interval);
   }, [autoRefresh, pagination.page]);
 
-  const getEventKindLabel = (kind: number): string => {
-    const kinds: Record<number, string> = {
-      0: 'Metadata',
-      1: 'Note',
-      3: 'Contacts',
-      4: 'DM',
-      5: 'Event Deletion',
-      7: 'Reaction',
-      30023: 'Long-form',
-      30078: 'App Data',
-    };
-    return kinds[kind] || `Kind ${kind}`;
-  };
-
   const getSuccessRate = (event: UserEventData): number => {
     if (event.totalRelaysAttempted === 0) return 0;
     return Math.round((event.successfulRelays.length / event.totalRelaysAttempted) * 100);
   };
+
+  const handleSort = (field: keyof UserEventData) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const sortedEvents = [...events].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    // Handle array comparisons (like failedRelays)
+    if (Array.isArray(aValue) && Array.isArray(bValue)) {
+      const comparison = aValue.length - bValue.length;
+      return sortDirection === 'asc' ? comparison : -comparison;
+    }
+    
+    // Handle number and string comparisons
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+    }
+    
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortDirection === 'asc' 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+    
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -223,114 +244,17 @@ export default function UserEventLogPage() {
 
         {/* Events Table */}
         {events.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Relays
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Performance
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {events.map((event) => (
-                    <tr key={event.eventId} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900">
-                            {getEventKindLabel(event.eventKind)}
-                          </span>
-                          <span className="text-xs text-gray-500 font-mono">
-                            {event.eventId.substring(0, 8)}...{event.eventId.substring(event.eventId.length - 4)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900 font-mono">
-                          {event.npub.substring(0, 12)}...
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">
-                          {formatDistanceToNow(new Date(event.processedTimestamp), { addSuffix: true })}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-green-600 font-medium">
-                            {event.successfulRelays.length}
-                          </span>
-                          <span className="text-gray-400">/</span>
-                          <span className="text-sm text-gray-600">
-                            {event.totalRelaysAttempted}
-                          </span>
-                          {event.verifiedRelays && event.verifiedRelays.length > 0 && (
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
-                              {event.verifiedRelays.length} verified
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1 text-xs text-gray-600">
-                            <Clock className="h-3 w-3" />
-                            <span>{event.processingDuration}ms</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-600">
-                            <Zap className="h-3 w-3" />
-                            <span>{event.averageResponseTime}ms avg</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                            getSuccessRate(event) === 100
-                              ? 'bg-green-100 text-green-800'
-                              : getSuccessRate(event) > 50
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {getSuccessRate(event) === 100 ? (
-                              <CheckCircle className="h-3 w-3" />
-                            ) : (
-                              <XCircle className="h-3 w-3" />
-                            )}
-                            <span>{getSuccessRate(event)}%</span>
-                          </div>
-                          {event.retryAttempts > 0 && (
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                              {event.retryAttempts} retries
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <>
+            <EventTable 
+              events={sortedEvents}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+              <div className="mt-4 px-6 py-4 bg-white border border-gray-200 rounded-lg flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} events
                 </div>
@@ -352,7 +276,7 @@ export default function UserEventLogPage() {
                 </div>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
