@@ -777,8 +777,9 @@ export class MessagingBusinessService {
         msg.isSent = msg.senderPubkey === userPubkey;
       });
 
-      // Group by sender to create conversations
+      // Group by sender to create conversations WITH unread count
       const conversationMap = new Map<string, Conversation>();
+      const messagesByConversation = new Map<string, Message[]>();
 
       for (const message of messages) {
         // Determine the "other person" in the conversation
@@ -794,6 +795,12 @@ export class MessagingBusinessService {
         
         const otherPubkey = message.senderPubkey === userPubkey ? message.recipientPubkey : message.senderPubkey;
 
+        // Track all messages for this conversation
+        if (!messagesByConversation.has(otherPubkey)) {
+          messagesByConversation.set(otherPubkey, []);
+        }
+        messagesByConversation.get(otherPubkey)!.push(message);
+
         const existing = conversationMap.get(otherPubkey);
         if (!existing || message.createdAt > existing.lastMessageAt) {
           conversationMap.set(otherPubkey, {
@@ -801,8 +808,18 @@ export class MessagingBusinessService {
             lastMessage: message,
             lastMessageAt: message.createdAt,
             context: message.context,
+            unreadCount: 0, // Will calculate below
+            lastReadTimestamp: 0, // Initialize to 0 (all unread by default)
           });
         }
+      }
+
+      // Calculate unread count for each conversation
+      // Count all received messages (not sent by user)
+      for (const [otherPubkey, conversation] of conversationMap.entries()) {
+        const conversationMessages = messagesByConversation.get(otherPubkey) || [];
+        const unreadCount = conversationMessages.filter(msg => !msg.isSent).length;
+        conversation.unreadCount = unreadCount;
       }
 
       const conversations = Array.from(conversationMap.values())
