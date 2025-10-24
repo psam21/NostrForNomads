@@ -193,7 +193,7 @@ export default function ProfileSetupStep({
           Profile Picture (Optional)
         </label>
         <p className="text-sm text-gray-500 mb-2">
-          Upload a square image for best results. You can crop it after generating your keys.
+          Upload a square image for best results. You can crop it during the upload.
         </p>
         
         {avatarPreview ? (

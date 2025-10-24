@@ -58,17 +58,14 @@ export const SignUpFlow: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="py-8 bg-gradient-to-br from-orange-400 to-orange-600 text-white">
+      <section className="py-6 bg-gradient-to-br from-orange-400 to-orange-600 text-white">
         <div className="container-width">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-serif font-bold mb-3">
+            <h1 className="text-2xl md:text-3xl font-serif font-bold">
               Create Your <span className="text-white">Nostr Identity</span>
             </h1>
-            <p className="text-base md:text-lg text-orange-100 leading-relaxed">
-              Join the Culture Bridge community and start preserving indigenous heritage on the decentralized web.
-            </p>
           </div>
         </div>
       </section>

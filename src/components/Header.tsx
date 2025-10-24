@@ -4,11 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, MessageCircle } from 'lucide-react';
 import AuthButton from './auth/AuthButton';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   // Close on ESC
   useEffect(() => {
@@ -84,10 +86,76 @@ export default function Header() {
               ref={menuRef}
               className="px-2 pt-2 pb-3 space-y-1 bg-white rounded-lg shadow-lg border border-gray-100 mt-2"
             >
-              {/* Auth Button - Mobile */}
-              <div className="px-3 py-2">
-                <AuthButton />
-              </div>
+              {!isAuthenticated || !user ? (
+                /* Not authenticated - show sign in/sign up buttons */
+                <div className="px-3 py-2">
+                  <AuthButton />
+                </div>
+              ) : (
+                /* Authenticated - show menu items directly */
+                <div className="py-1">
+                  {/* User Info Header */}
+                  <div className="px-4 py-3 border-b border-purple-100">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-purple-800 truncate">
+                          {user.profile.display_name || 'Anonymous'}
+                        </p>
+                        <p className="text-xs text-purple-500 truncate">
+                          {user.npub || user.pubkey.substring(0, 16) + '...'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-4 py-2 text-xs text-purple-500 font-medium">
+                    Signed in via Nostr
+                  </div>
+                  
+                  <Link
+                    href="/messages"
+                    className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg className="w-4 h-4 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Messages
+                  </Link>
+                  
+                  <Link
+                    href="/profile"
+                    className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg className="w-4 h-4 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Profile
+                  </Link>
+                  
+                  <div className="border-t border-purple-100 my-1"></div>
+                  
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      logout();
+                      window.location.href = '/signin';
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
