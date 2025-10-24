@@ -46,16 +46,6 @@ export const SignUpFlow: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="py-6 bg-gradient-to-br from-orange-400 to-orange-600 text-white">
-        <div className="container-width">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-serif font-bold">
-              Create Your <span className="text-white">Nostr Identity</span>
-            </h1>
-          </div>
-        </div>
-      </section>
-
       <section className="section-padding bg-white">
         <div className="container-width max-w-4xl mx-auto">
         <div className="mb-12">
