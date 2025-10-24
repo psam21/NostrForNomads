@@ -374,9 +374,11 @@ export class MessageCacheService {
 
     await tx.done;
 
-    // Invalidate entire conversations cache since we're bulk updating
-    this.decryptedConversationsCache.clear();
-    console.log(`[Cache] 🗑️ Cleared decrypted conversations cache (bulk update)`);
+    // Update in-memory cache instead of clearing it (prevents re-decryption)
+    conversations.forEach(conversation => {
+      this.decryptedConversationsCache.set(conversation.pubkey, conversation);
+    });
+    console.log(`[Cache] � Updated ${conversations.length} conversations in decrypted cache`);
     
     console.log(`[Cache] ✅ Cache save transaction completed: ${validConversations.length} saved, ${conversations.length - validConversations.length} failed`);
   }
