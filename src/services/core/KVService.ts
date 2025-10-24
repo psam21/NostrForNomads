@@ -418,23 +418,25 @@ export class KVService {
       // Fetch event data
       const events: UserEventData[] = [];
       
+      logger.info('Starting to fetch event data', {
+        service: 'KVService',
+        method: 'getAllEvents',
+        eventKeysCount: eventKeys.length,
+        firstKey: eventKeys[0],
+      });
+      
       for (const eventKey of eventKeys) {
         try {
-          logger.info('Fetching event data', {
-            service: 'KVService',
-            method: 'getAllEvents',
-            eventKey,
-            eventKeyType: typeof eventKey,
-          });
-          
           const eventDataStr: unknown = await this.redis!.get(eventKey);
           
-          logger.info('Event data retrieved', {
+          logger.info('GET result for key', {
             service: 'KVService',
             method: 'getAllEvents',
             eventKey,
             hasData: !!eventDataStr,
             dataType: typeof eventDataStr,
+            isNull: eventDataStr === null,
+            dataPreview: typeof eventDataStr === 'string' ? eventDataStr.substring(0, 100) : String(eventDataStr),
           });
           
           if (typeof eventDataStr === 'string') {
