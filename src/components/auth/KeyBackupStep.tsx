@@ -107,7 +107,7 @@ export default function KeyBackupStep({
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Backup Your Keys</h3>
           <p className="text-sm text-gray-600 mb-4">
-            Your keys are your identity. <strong>No one can recover them if lost</strong> - not even Culture Bridge.
+            Your keys are your identity. <strong>No one can recover them if lost</strong>.
           </p>
         </div>
 

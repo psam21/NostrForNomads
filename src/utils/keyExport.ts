@@ -12,7 +12,7 @@ export function createBackupFile(
     .replace(/[^a-zA-Z0-9-_]/g, '_')
     .substring(0, 50); // Limit filename length
   
-  const filename = `${safeDisplayName}_culturebridge.txt`;
+  const filename = `${safeDisplayName}_nostrcoin.txt`;
   
   // Trigger download
   downloadTextFile(backupContent, filename);
@@ -38,7 +38,6 @@ ${nsec}
 DO THIS NOW:
 1. Store in password manager or encrypted drive
 2. Make 2+ backups in different secure places
-3. Import to browser extension: Alby (getalby.com) or nos2x
 
 DON'T DO THIS:
 ❌ Share your nsec with anyone
@@ -49,7 +48,9 @@ If lost, your account is gone forever. No recovery possible.
 
 ───────────────────────────────────────────────────────────────────────────
 Generated: ${new Date().toISOString()}
-Nostr Messenger: https://nostrcoin.vercel.app
+Nostr Coin: https://nostrcoin.vercel.app
+
+Secure Messaging & Payments on Nostr 💬💰
 ═══════════════════════════════════════════════════════════════════════════
 `;
 }

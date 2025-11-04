@@ -80,11 +80,11 @@ export default function FinalConfirmationStep({
       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
         <h3 className="text-sm font-semibold text-orange-900 mb-2">What&apos;s Next?</h3>
         <ul className="text-sm text-orange-700 space-y-1 list-disc list-inside">
-          <li>Explore indigenous heritage content from around the world</li>
-          <li>Connect with elders and community members</li>
-          <li>Share your own stories and cultural knowledge</li>
-          <li>Participate in discussions and events</li>
-          <li>Support indigenous artisans in the marketplace</li>
+          <li>Send secure encrypted messages to anyone on Nostr</li>
+          <li>Create burner chats for temporary conversations</li>
+          <li>Host video meetings with instant URL sharing</li>
+          <li>Send and receive payments via Bitcoin, Lightning & more</li>
+          <li>Connect with the global Nostr community</li>
         </ul>
       </div>
 
@@ -104,7 +104,7 @@ export default function FinalConfirmationStep({
             className="mt-1 h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
           />
           <span className="ml-3 text-sm text-gray-700">
-            I understand that Culture Bridge is a decentralized platform built on Nostr. I am responsible for managing my own keys and there is no password recovery. I have safely stored my backup file and understand that losing my keys means losing access to this account permanently.
+            I understand that Nostr Coin is a decentralized platform built on Nostr. I am responsible for managing my own keys and there is no password recovery. I have safely stored my backup file and understand that losing my keys means losing access to this account permanently.
           </span>
         </label>
       </div>

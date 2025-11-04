@@ -189,7 +189,7 @@ export default function KeyGenerationStep({
             <h3 className="text-sm font-semibold text-red-900 mb-2">🔒 Important Security Information</h3>
             <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
               <li>Your private key (nsec) is like a password - anyone with it can impersonate you</li>
-              <li>Never share your nsec with anyone, not even Culture Bridge support</li>
+              <li>Never share your nsec with anyone</li>
               <li>Store it safely - you&apos;ll need it to sign in on other devices</li>
               <li>If you lose it, you lose access to this identity forever</li>
               <li>In the next step, you&apos;ll download a backup file - keep it safe!</li>
