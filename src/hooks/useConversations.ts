@@ -151,11 +151,15 @@ export const useConversations = () => {
         // Keep the newest timestamp (in case old messages arrive after new ones)
         const newestTimestamp = Math.max(updated[existingIndex].lastMessageAt, message.createdAt);
         
+        // Only update lastMessage if this message is newer than the current one
+        const shouldUpdateLastMessage = message.createdAt >= updated[existingIndex].lastMessageAt;
+        
         console.log('[useConversations] ✏️ Updating conversation', {
           pubkey: otherPubkey?.substring(0, 8),
           oldLastMessageAt: updated[existingIndex].lastMessageAt,
           messageTimestamp: message.createdAt,
           usingTimestamp: newestTimestamp,
+          updateLastMessage: shouldUpdateLastMessage,
           cachedLastRead: latestLastRead,
         });
         
@@ -166,7 +170,7 @@ export const useConversations = () => {
         
         updatedConversation = {
           ...updated[existingIndex],
-          lastMessage: message,
+          lastMessage: shouldUpdateLastMessage ? message : updated[existingIndex].lastMessage,
           lastMessageAt: newestTimestamp,
           unreadCount: newUnreadCount,
           lastReadTimestamp: latestLastRead, // Preserve from cache
