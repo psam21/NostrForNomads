@@ -465,29 +465,6 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-orange-700 mb-2">
-                      Account Type
-                    </label>
-                    {isEditing ? (
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={editForm.bot || false}
-                          onChange={(e) => handleInputChange('bot', e.target.checked)}
-                          className="h-4 w-4 text-orange-600 focus:ring-purple-500 border-orange-300 rounded"
-                        />
-                        <span className="ml-2 text-sm text-orange-700">
-                          This is a bot account
-                        </span>
-                      </label>
-                    ) : (
-                      <p className="text-purple-600">
-                        {profile?.bot ? 'Bot Account' : 'Human Account'}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Lightning Address (lud16)
                     </label>
                     {isEditing ? (
