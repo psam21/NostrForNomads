@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNostrSigner } from '@/hooks/useNostrSigner';
@@ -624,24 +623,6 @@ export default function ProfilePage() {
                         )}
                       </div>
                     )}
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-purple-200">
-                    <h3 className="text-lg font-serif font-bold text-purple-800 mb-4">Quick Actions</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Link 
-                        href="/messages"
-                        className="block p-4 bg-gradient-to-br from-purple-50 to-orange-50 rounded-lg border border-purple-200 hover:border-purple-300 hover:shadow-md transition-all group"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-purple-700">Messages</span>
-                          <svg className="w-5 h-5 text-purple-600 group-hover:text-purple-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                          </svg>
-                        </div>
-                        <p className="text-xs text-purple-600 mt-1">View your conversations</p>
-                      </Link>
-                    </div>
                   </div>
                 </div>
               </div>
