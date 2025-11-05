@@ -21,7 +21,7 @@ interface Job {
   poster: string;
 }
 
-export default function TempJobsPage() {
+export default function GigsPage() {
   const isHydrated = useAuthHydration();
   const { isAuthenticated } = useAuthStore();
   
@@ -100,10 +100,10 @@ export default function TempJobsPage() {
         <div className="text-center max-w-md px-6">
           <Briefcase className="w-16 h-16 text-purple-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-purple-900 mb-2">
-            Sign in to access Temp Jobs
+            Sign in to access Gigs
           </h2>
           <p className="text-purple-600 mb-6">
-            Find and post temporary job opportunities on Nostr
+            Find and post gig opportunities on Nostr
           </p>
           <a
             href="/signin"
@@ -139,10 +139,10 @@ export default function TempJobsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-serif font-bold text-purple-800 flex items-center gap-3">
             <Briefcase className="w-8 h-8" />
-            Temp Jobs
+            Gigs
           </h1>
           <p className="text-orange-600 mt-2 font-medium">
-            Discover temporary job opportunities and freelance gigs
+            Discover gig opportunities and freelance work
           </p>
         </div>
 
@@ -281,13 +281,13 @@ export default function TempJobsPage() {
         <div className="mt-8 bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg p-6 text-white">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl font-bold mb-2">Have a temp job to post?</h3>
+              <h3 className="text-xl font-bold mb-2">Have a gig to post?</h3>
               <p className="text-purple-100">
                 Reach qualified candidates on the Nostr network
               </p>
             </div>
             <button className="px-6 py-3 bg-white text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium whitespace-nowrap">
-              Post a Job
+              Post a Gig
             </button>
           </div>
         </div>
@@ -295,12 +295,12 @@ export default function TempJobsPage() {
         {/* Info Section */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-purple-900 mb-3">
-            💼 About Temp Jobs
+            💼 About Gigs
           </h3>
           <ul className="space-y-2 text-sm text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-purple-600 mt-0.5">•</span>
-              <span>Decentralized job board powered by Nostr</span>
+              <span>Decentralized gig board powered by Nostr</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-600 mt-0.5">•</span>
