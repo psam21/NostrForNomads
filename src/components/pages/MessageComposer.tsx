@@ -11,7 +11,7 @@
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { logger } from '@/services/core/LoggingService';
 import { GenericAttachment } from '@/types/attachments';
-import { Paperclip, X, Image, Film, Music, Send } from 'lucide-react';
+import { Paperclip, X, Image as ImageIcon, Film, Music, Send } from 'lucide-react';
 
 interface MessageComposerProps {
   onSend: (content: string, attachments?: GenericAttachment[]) => void;
@@ -188,7 +188,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
   const getAttachmentIcon = (type: string) => {
     switch (type) {
-      case 'image': return <Image className="w-4 h-4" />;
+      case 'image': return <ImageIcon className="w-4 h-4" />;
       case 'video': return <Film className="w-4 h-4" />;
       case 'audio': return <Music className="w-4 h-4" />;
       default: return <Paperclip className="w-4 h-4" />;

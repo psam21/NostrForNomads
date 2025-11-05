@@ -19,8 +19,6 @@ interface KeyBackupStepProps {
 }
 
 export default function KeyBackupStep({
-  displayName,
-  npub,
   isCreatingBackup,
   error,
   isPublishingInBackground,

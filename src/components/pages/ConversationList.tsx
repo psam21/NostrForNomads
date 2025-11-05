@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Conversation } from '@/types/messaging';
 import { logger } from '@/services/core/LoggingService';
 import { decodeNpub } from '@/utils/keyManagement';
@@ -354,9 +355,11 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                   conversation.avatar ? 'bg-gray-200' : 'bg-gradient-to-br from-purple-500 to-purple-700'
                 }`}>
                   {conversation.avatar ? (
-                    <img 
+                    <Image 
                       src={conversation.avatar} 
                       alt={conversation.displayName || 'User'} 
+                      width={56}
+                      height={56}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -391,9 +394,11 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                 {conversation.context && (
                   <div className="flex items-center gap-2 mb-1.5">
                     {conversation.context.imageUrl && (
-                      <img 
+                      <Image 
                         src={conversation.context.imageUrl} 
                         alt={conversation.context.title || 'Context'}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded object-cover flex-shrink-0 shadow-sm"
                       />
                     )}

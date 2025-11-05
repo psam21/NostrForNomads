@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface ProfileSetupStepProps {
   displayName: string;
@@ -17,7 +18,6 @@ interface ProfileSetupStepProps {
 export default function ProfileSetupStep({
   displayName,
   bio,
-  avatarFile,
   onDisplayNameChange,
   onBioChange,
   onAvatarChange,
@@ -170,9 +170,11 @@ export default function ProfileSetupStep({
         
         {avatarPreview ? (
           <div className="flex items-center space-x-4">
-            <img
+            <Image
               src={avatarPreview}
               alt="Avatar preview"
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
             />
             <button

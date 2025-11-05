@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface FinalConfirmationStepProps {
   displayName: string;
@@ -36,9 +37,11 @@ export default function FinalConfirmationStep({
         <div className="space-y-4">
           {avatarUrl && (
             <div className="flex justify-center">
-              <img
+              <Image
                 src={avatarUrl}
                 alt={displayName}
+                width={96}
+                height={96}
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
               />
             </div>

@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { Message } from '@/types/messaging';
 import { X, Check, CheckCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -191,9 +192,11 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                       {attachment.type === 'image' && (
                         <>
                           {attachment.url ? (
-                            <img
+                            <Image
                               src={attachment.url}
                               alt={attachment.name}
+                              width={320}
+                              height={320}
                               className="max-w-full rounded-xl max-h-80 object-contain cursor-pointer hover:opacity-95 transition-all shadow-md"
                               onClick={() => setFullscreenImage({ url: attachment.url!, alt: attachment.name })}
                             />
@@ -284,9 +287,11 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
           </button>
 
           {/* Fullscreen image */}
-          <img
+          <Image
             src={fullscreenImage.url}
             alt={fullscreenImage.alt}
+            width={1920}
+            height={1080}
             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
