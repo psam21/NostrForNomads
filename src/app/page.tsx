@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Home | Nostr Messenger',
-  description: 'A decentralized messaging platform built on Nostr for secure, private communication.',
+export const metadata = {
+  title: 'Home | Nostr for Nomads',
+  description: 'Welcome to Nostr for Nomads - Your decentralized platform for nomadic lifestyle',
 };
 
 export default function HomePage() {
