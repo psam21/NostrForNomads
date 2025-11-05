@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useAuthHydration } from '@/hooks/useAuthHydration';
-import { Plane, Search, Filter, MapPin, DollarSign, Star, Users, Home } from 'lucide-react';
+import { Plane, Search, Filter, MapPin, DollarSign, Star, Users, Home, Grid, List } from 'lucide-react';
 
 interface TravelListing {
   id: string;
@@ -25,6 +25,7 @@ export default function TravelPage() {
   const isHydrated = useAuthHydration();
   const { isAuthenticated } = useAuthStore();
   
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -196,10 +197,34 @@ export default function TravelPage() {
                 ))}
               </select>
             </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-3 rounded-lg transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Grid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-3 rounded-lg transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Listings Grid */}
+        {/* Listings Grid/List */}
         {filteredListings.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg p-12 text-center">
             <Plane className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -207,14 +232,22 @@ export default function TravelPage() {
             <p className="text-gray-600">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={
+            viewMode === 'grid'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'
+              : 'space-y-4'
+          }>
             {filteredListings.map(listing => (
               <div
                 key={listing.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow ${
+                  viewMode === 'list' ? 'flex' : ''
+                }`}
               >
                 {/* Listing Image Placeholder */}
-                <div className="h-48 bg-gradient-to-br from-purple-100 to-orange-100 flex items-center justify-center">
+                <div className={`bg-gradient-to-br from-purple-100 to-orange-100 ${
+                  viewMode === 'grid' ? 'h-48' : 'w-48'
+                } flex items-center justify-center`}>
                   {listing.type === 'Accommodation' ? (
                     <Home className="w-16 h-16 text-purple-300" />
                   ) : listing.type === 'Transport' ? (

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useAuthHydration } from '@/hooks/useAuthHydration';
-import { Briefcase, Search, Filter, MapPin, Clock, DollarSign, Star, Calendar } from 'lucide-react';
+import { Briefcase, Search, Filter, MapPin, Clock, DollarSign, Star, Grid, List } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -25,6 +25,7 @@ export default function GigsPage() {
   const isHydrated = useAuthHydration();
   const { isAuthenticated } = useAuthStore();
   
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -125,13 +126,6 @@ export default function GigsPage() {
     return matchesSearch && matchesCategory && matchesType;
   });
 
-  const formatDate = (date: Date) => {
-    const days = Math.floor((Date.now() - date.getTime()) / (24 * 60 * 60 * 1000));
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    return `${days} days ago`;
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
       <div className="container-width section-padding">
@@ -192,10 +186,34 @@ export default function GigsPage() {
                 ))}
               </select>
             </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-3 rounded-lg transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Grid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-3 rounded-lg transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Jobs List */}
+        {/* Jobs Grid/List */}
         {filteredJobs.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg p-12 text-center">
             <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -203,72 +221,78 @@ export default function GigsPage() {
             <p className="text-gray-600">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className={
+            viewMode === 'grid'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'
+              : 'space-y-4'
+          }>
             {filteredJobs.map(job => (
               <div
                 key={job.id}
-                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+                className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow ${
+                  viewMode === 'list' ? 'flex' : ''
+                }`}
               >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  {/* Job Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="text-xl font-semibold text-purple-900 mb-1">
-                          {job.title}
-                        </h3>
-                        <p className="text-gray-700 font-medium">{job.company}</p>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4">
-                      {job.description}
-                    </p>
+                {/* Job Icon Placeholder */}
+                <div className={`bg-gradient-to-br from-purple-100 to-orange-100 ${
+                  viewMode === 'grid' ? 'h-48' : 'w-48'
+                } flex items-center justify-center`}>
+                  <Briefcase className="w-16 h-16 text-purple-300" />
+                </div>
 
-                    {/* Job Meta */}
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{job.location}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{job.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDate(job.postedDate)}</span>
-                      </div>
-                      {job.rating && (
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <span className="font-medium">{job.rating}</span>
-                        </div>
-                      )}
+                {/* Job Details */}
+                <div className="p-6 flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-purple-900 line-clamp-1">
+                      {job.title}
+                    </h3>
+                  </div>
+                  
+                  <p className="text-gray-700 font-medium text-sm mb-2">{job.company}</p>
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {job.description}
+                  </p>
+
+                  {/* Job Meta */}
+                  <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span className="line-clamp-1">{job.location}</span>
                     </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{job.duration}</span>
+                    </div>
+                    {job.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <span className="font-medium">{job.rating}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Job Details & CTA */}
-                  <div className="flex flex-col items-end gap-3">
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">
-                        {job.category}
-                      </span>
-                      <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
-                        {job.type}
-                      </span>
-                    </div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                      {job.category}
+                    </span>
+                    <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                      {job.type}
+                    </span>
+                  </div>
 
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-purple-800">
-                        <DollarSign className="w-5 h-5" />
-                        <span className="text-2xl font-bold">{job.payRate}</span>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="w-5 h-5 text-purple-600" />
+                        <span className="text-2xl font-bold text-purple-800">
+                          {job.payRate}
+                        </span>
                       </div>
                       <span className="text-sm text-gray-600">{job.currency}</span>
                     </div>
-
-                    <button className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium">
-                      Apply Now
+                    <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium">
+                      Apply
                     </button>
                   </div>
                 </div>
