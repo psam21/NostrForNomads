@@ -6,12 +6,12 @@ import { Copy, Check, Link2, Settings, Calendar, Clock } from 'lucide-react';
 interface MeetingURLCreatorProps {
   onCreateMeeting: (config: MeetingConfig) => { url: string; id: string };
   onClose: () => void;
-  meetingType: 'video' | 'chat';
+  meetingType: 'video';
 }
 
 interface MeetingConfig {
   title: string;
-  type: 'video' | 'chat';
+  type: 'video';
   expiresIn?: number; // hours
   requireAuth?: boolean;
   maxParticipants?: number;
@@ -28,7 +28,7 @@ export function MeetingURLCreator({ onCreateMeeting, onClose, meetingType }: Mee
 
   const handleCreate = () => {
     const config: MeetingConfig = {
-      title: title || `${meetingType === 'video' ? 'Video Meeting' : 'Burner Chat'}`,
+      title: title || 'Video Meeting',
       type: meetingType,
       expiresIn,
       requireAuth,
@@ -57,7 +57,7 @@ export function MeetingURLCreator({ onCreateMeeting, onClose, meetingType }: Mee
         <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-t-2xl">
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Link2 className="w-6 h-6" />
-            Create {meetingType === 'video' ? 'Video Meeting' : 'Burner Chat'}
+            Create Video Meeting
           </h2>
         </div>
 
@@ -73,7 +73,7 @@ export function MeetingURLCreator({ onCreateMeeting, onClose, meetingType }: Mee
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder={`My ${meetingType === 'video' ? 'Video Meeting' : 'Chat Room'}`}
+                  placeholder="My Video Meeting"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>

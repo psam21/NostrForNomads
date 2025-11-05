@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MeetingDashboard } from '@/components/meetings/MeetingDashboard';
 import { MeetingURLCreator } from '@/components/meetings/MeetingURLCreator';
-import { BurnerChat } from '@/components/meetings/BurnerChat';
-import { BurnerCall } from '@/components/meetings/BurnerCall';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useAuthHydration } from '@/hooks/useAuthHydration';
 import { Suspense } from 'react';
@@ -14,14 +12,14 @@ interface Meeting {
   id: string;
   title: string;
   url: string;
-  type: 'video' | 'chat';
+  type: 'video';
   createdAt: Date;
   expiresAt?: Date;
 }
 
 interface MeetingConfig {
   title: string;
-  type: 'video' | 'chat';
+  type: 'video';
   expiresIn?: number;
   requireAuth?: boolean;
   maxParticipants?: number;
@@ -34,9 +32,7 @@ function MeetingsPageContent() {
   
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [showCreator, setShowCreator] = useState(false);
-  const [creatorType, setCreatorType] = useState<'video' | 'chat'>('video');
-  const [activeMeeting, setActiveMeeting] = useState<Meeting | null>(null);
-  const [activeView, setActiveView] = useState<'dashboard' | 'chat' | 'call'>('dashboard');
+  const [creatorType, setCreatorType] = useState<'video'>('video');
 
   // Check if user is joining via URL parameter
   React.useEffect(() => {
@@ -51,7 +47,7 @@ function MeetingsPageContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, meetings]);
 
-  const handleCreateMeeting = (type: 'video' | 'chat') => {
+  const handleCreateMeeting = (type: 'video') => {
     setCreatorType(type);
     setShowCreator(true);
   };
@@ -87,14 +83,9 @@ function MeetingsPageContent() {
   const handleJoinMeeting = (meetingId: string) => {
     const meeting = meetings.find(m => m.id === meetingId);
     if (!meeting) return;
-
-    setActiveMeeting(meeting);
-    setActiveView(meeting.type === 'video' ? 'call' : 'chat');
-  };
-
-  const handleCloseMeeting = () => {
-    setActiveMeeting(null);
-    setActiveView('dashboard');
+    
+    // For now, just show an alert with the meeting URL
+    alert(`Join meeting: ${meeting.title}\nURL: ${meeting.url}`);
   };
 
   // Wait for auth store to hydrate
@@ -141,29 +132,6 @@ function MeetingsPageContent() {
           </a>
         </div>
       </div>
-    );
-  }
-
-  // Show active meeting view
-  if (activeView === 'chat' && activeMeeting) {
-    return (
-      <BurnerChat
-        meetingId={activeMeeting.id}
-        meetingTitle={activeMeeting.title}
-        onClose={handleCloseMeeting}
-        expiresAt={activeMeeting.expiresAt}
-      />
-    );
-  }
-
-  if (activeView === 'call' && activeMeeting) {
-    return (
-      <BurnerCall
-        meetingId={activeMeeting.id}
-        meetingTitle={activeMeeting.title}
-        onClose={handleCloseMeeting}
-        expiresAt={activeMeeting.expiresAt}
-      />
     );
   }
 

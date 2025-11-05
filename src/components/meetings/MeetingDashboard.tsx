@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Video, MessageSquare, Plus, Copy, Check, Calendar, Clock } from 'lucide-react';
+import { Video, Plus, Copy, Check, Calendar, Clock } from 'lucide-react';
 
 interface Meeting {
   id: string;
   title: string;
   url: string;
-  type: 'video' | 'chat';
+  type: 'video';
   createdAt: Date;
   expiresAt?: Date;
 }
 
 interface MeetingDashboardProps {
-  onCreateMeeting: (type: 'video' | 'chat') => void;
+  onCreateMeeting: (type: 'video') => void;
   meetings: Meeting[];
   onJoinMeeting: (meetingId: string) => void;
 }
@@ -87,18 +87,8 @@ export function MeetingDashboard({ onCreateMeeting, meetings, onJoinMeeting }: M
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        meeting.type === 'video'
-                          ? 'bg-purple-100 text-purple-600'
-                          : 'bg-orange-100 text-orange-600'
-                      }`}
-                    >
-                      {meeting.type === 'video' ? (
-                        <Video className="w-5 h-5" />
-                      ) : (
-                        <MessageSquare className="w-5 h-5" />
-                      )}
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-100 text-purple-600">
+                      <Video className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 truncate">
