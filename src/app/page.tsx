@@ -12,7 +12,7 @@ export default function HomePage() {
         <div className="container-width section-padding relative">
           <div className="max-w-4xl mx-auto text-center py-20">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-orange-600 mb-6 leading-tight">
-              Your Decentralized Hub for the Nomadic Lifestyle
+              Your Hub for the Nomadic Lifestyle
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
               Connect, work, travel, and trade on the Nostr network. Own your identity, control your data, embrace freedom.
