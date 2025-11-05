@@ -341,6 +341,26 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-orange-700 mb-2">
+                      Public Key (npub)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={user?.npub || user?.pubkey || ''}
+                        readOnly
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-purple-800 font-mono text-sm select-all cursor-text"
+                      />
+                      <div className="absolute right-3 top-3 text-xs text-gray-500">
+                        Read-only
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Your unique Nostr identifier. Click to select and copy.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
                       Display Name
                     </label>
                     {isEditing ? (
@@ -642,19 +662,18 @@ export default function ProfilePage() {
               </div>
             </div>
 
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <div className="h-32">
-            <ImageUpload
-              currentImageUrl={isEditing ? editForm.banner : profile?.banner}
-              onImageUploaded={handleBannerUploaded}
-              label="Banner Image"
-              aspectRatio="banner"
-              maxSizeMB={10}
-              showOverlayButton={true}
-            />
+            <div className="card">
+              <div className="p-6">
+                <ImageUpload
+                  currentImageUrl={isEditing ? editForm.banner : profile?.banner}
+                  onImageUploaded={handleBannerUploaded}
+                  label="Banner Image"
+                  aspectRatio="square"
+                  maxSizeMB={10}
+                  showOverlayButton={true}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
