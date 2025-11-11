@@ -20,22 +20,22 @@ import {
   Globe,
 } from 'lucide-react';
 
-import { useExploreHeritage } from '@/hooks/useExploreHeritage';
+import { useExploreContributions } from '@/hooks/useExploreContributions';
 
 export default function ExploreContent() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const {
-    heritageItems,
+    contributionItems,
     isLoading,
     error,
     refetch,
     loadMore,
     isLoadingMore,
     hasMore,
-  } = useExploreHeritage();
+  } = useExploreContributions();
 
-  const filteredItems = heritageItems.filter((item) => {
+  const filteredItems = contributionItems.filter((item) => {
     if (!searchTerm) return true;
     
     const term = searchTerm.toLowerCase();

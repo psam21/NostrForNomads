@@ -6,7 +6,7 @@ import { fetchPublicHeritage, type HeritageEvent } from '@/services/generic/Gene
 import { AppError } from '@/errors/AppError';
 import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '@/errors/ErrorTypes';
 
-export interface HeritageExploreItem {
+export interface ContributionExploreItem {
   id: string;
   dTag: string;
   name: string;
@@ -42,7 +42,7 @@ function getRelativeTime(timestamp: number): string {
   return `${Math.floor(diff / year)} years ago`;
 }
 
-function mapToExploreItem(event: HeritageEvent): HeritageExploreItem {
+function mapToExploreItem(event: HeritageEvent): ContributionExploreItem {
   const totalMedia = 
     event.media.images.length +
     event.media.audio.length +
@@ -69,8 +69,8 @@ function mapToExploreItem(event: HeritageEvent): HeritageExploreItem {
   };
 }
 
-export function useExploreHeritage() {
-  const [heritageItems, setHeritageItems] = useState<HeritageExploreItem[]>([]);
+export function useExploreContributions() {
+  const [contributionItems, setContributionItems] = useState<ContributionExploreItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +78,8 @@ export function useExploreHeritage() {
 
   const loadInitial = useCallback(async () => {
     try {
-      logger.info('Loading initial heritage items', {
-        service: 'useExploreHeritage',
+      logger.info('Loading initial contribution items', {
+        service: 'useExploreContributions',
         method: 'loadInitial',
         limit: 8,
       });
@@ -90,11 +90,11 @@ export function useExploreHeritage() {
       const events = await fetchPublicHeritage(8);
       const items = events.map(mapToExploreItem);
       
-      setHeritageItems(items);
+      setContributionItems(items);
       setHasMore(events.length === 8);
 
-      logger.info('Initial heritage items loaded', {
-        service: 'useExploreHeritage',
+      logger.info('Initial contribution items loaded', {
+        service: 'useExploreContributions',
         method: 'loadInitial',
         itemCount: items.length,
         hasMore: events.length === 8,
@@ -122,24 +122,24 @@ export function useExploreHeritage() {
   }, []);
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || heritageItems.length === 0) {
+    if (isLoadingMore || !hasMore || contributionItems.length === 0) {
       return;
     }
 
     try {
-      logger.info('Loading more heritage items', {
-        service: 'useExploreHeritage',
+      logger.info('Loading more contribution items', {
+        service: 'useExploreContributions',
         method: 'loadMore',
-        currentCount: heritageItems.length,
+        currentCount: contributionItems.length,
       });
 
       setIsLoadingMore(true);
 
-      const lastTimestamp = heritageItems[heritageItems.length - 1].publishedAt;
+      const lastTimestamp = contributionItems[contributionItems.length - 1].publishedAt;
       const events = await fetchPublicHeritage(6, lastTimestamp);
       const newItems = events.map(mapToExploreItem);
       
-      setHeritageItems(prev => {
+      setContributionItems(prev => {
         const existingDTags = new Set(prev.map(item => item.dTag));
         const uniqueNewItems = newItems.filter(item => !existingDTags.has(item.dTag));
         return [...prev, ...uniqueNewItems];
@@ -147,38 +147,38 @@ export function useExploreHeritage() {
       
       setHasMore(events.length === 6);
 
-      logger.info('More heritage items loaded', {
-        service: 'useExploreHeritage',
+      logger.info('More contribution items loaded', {
+        service: 'useExploreContributions',
         method: 'loadMore',
         newItemCount: newItems.length,
-        totalCount: heritageItems.length + newItems.length,
+        totalCount: contributionItems.length + newItems.length,
         hasMore: events.length === 6,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load more heritage';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load more contributions';
       
-      logger.error('Error loading more heritage items', err instanceof Error ? err : new Error(errorMessage), {
-        service: 'useExploreHeritage',
+      logger.error('Error loading more contribution items', err instanceof Error ? err : new Error(errorMessage), {
+        service: 'useExploreContributions',
         method: 'loadMore',
       });
       
       logger.warn('Load more failed, but keeping existing items', {
-        service: 'useExploreHeritage',
+        service: 'useExploreContributions',
         method: 'loadMore',
         error: errorMessage,
       });
     } finally {
       setIsLoadingMore(false);
     }
-  }, [heritageItems, isLoadingMore, hasMore]);
+  }, [contributionItems, isLoadingMore, hasMore]);
 
   const refetch = useCallback(() => {
-    logger.info('Refetching heritage items', {
-      service: 'useExploreHeritage',
+    logger.info('Refetching contribution items', {
+      service: 'useExploreContributions',
       method: 'refetch',
     });
     
-    setHeritageItems([]);
+    setContributionItems([]);
     setHasMore(true);
     loadInitial();
   }, [loadInitial]);
@@ -188,7 +188,7 @@ export function useExploreHeritage() {
   }, [loadInitial]);
 
   return {
-    heritageItems,
+    contributionItems,
     isLoading,
     error,
     refetch,
