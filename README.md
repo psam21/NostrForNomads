@@ -9,44 +9,63 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 ## 🌟 Features
 
 - **Gigs** - Decentralized job marketplace for freelancers and employers
-- **Messages** - Encrypted, peer-to-peer messaging on Nostr
+- **Work** - Browse and post job opportunities with Bitcoin payments
+- **Messages** - Encrypted, peer-to-peer messaging on Nostr (NIP-04)
 - **Meetings** - Video conferencing and virtual collaboration
 - **Payments** - Bitcoin and Lightning Network transactions
 - **Shop** - Decentralized marketplace for products and services
 - **Travel** - Book accommodations, experiences, and transport
+- **Explore** - Discover events, locations, communities, and stories
+- **Meetups** - Find and organize local meetups with the Nostr community
+- **Contribute** - Support open source development and community initiatives
 
 ---
 
 ## 🏗️ Tech Stack
 
 ### Frontend
+
 - **Next.js 15.4.6** - React framework with App Router
-- **React 19** - UI library with Server Components
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **Lucide React** - Icon library
+- **React 18** - UI library with hooks and client components
+- **TypeScript 5.5.4** - Type-safe development
+- **Tailwind CSS 3.x** - Utility-first styling with @tailwindcss/typography
+- **Lucide React** - Modern icon library
+- **Framer Motion** - Animation library
 
 ### Nostr Integration
-- **nostr-tools** - Nostr protocol implementation
-- **NDK (Nostr Development Kit)** - Advanced Nostr functionality
+
+- **nostr-tools 2.17.0** - Nostr protocol implementation (NIPs 01, 04, 05, 07, 19, 96)
 - **WebSocket** - Real-time relay connections
+- **Blossom Client SDK 4.1.0** - Decentralized media protocol
 
 ### State Management
-- **Zustand** - Lightweight state management
-- **React Hooks** - Local component state
 
-### Media & File Handling
-- **Blossom Protocol** - Decentralized media storage
-- **React Cropper** - Image editing and optimization
+- **Zustand 5.0.8** - Lightweight state management
+- **React Hooks** - Local component state
+- **IndexedDB (idb 8.0.3)** - Client-side data persistence
 
 ### Rich Text & Communication
-- **Tiptap** - Extensible rich text editor
-- **Markdown** - Content formatting
+
+- **Tiptap 3.6.2** - Extensible rich text editor with extensions:
+  - Character count, color, highlight, links
+  - Tables, task lists, text alignment
+  - Subscript, superscript, YouTube embeds
+- **Tiptap Markdown** - Markdown conversion support
+- **React Markdown** - Markdown rendering with remark-gfm
+
+### Media & File Handling
+
+- **Blossom Protocol** - Decentralized media storage (NIP-96)
+- **React Easy Crop 5.5.3** - Image cropping and editing
+- **Multi-file progress tracking** - Batch upload management
 
 ### Development Tools
-- **ESLint** - Code linting
-- **PostCSS** - CSS processing
-- **Vercel Analytics** - Performance monitoring
+
+- **ESLint 8.57** - Code linting with TypeScript support
+- **Prettier 3.3** - Code formatting
+- **PostCSS** - CSS processing with Autoprefixer
+- **Vercel Analytics 1.5.0** - Performance monitoring
+- **Upstash Redis 1.35.6** - Edge-compatible caching
 
 ---
 
@@ -56,7 +75,7 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 
 The application follows a **layered Service-Oriented Architecture** with clear separation of concerns:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     PRESENTATION LAYER                   │
 │  (Pages, Components, Hooks - User Interface)            │
@@ -81,6 +100,7 @@ The application follows a **layered Service-Oriented Architecture** with clear s
 ### Layer Breakdown
 
 #### 1. **Presentation Layer** (`/src/app`, `/src/components`, `/src/hooks`)
+
 - **Responsibility**: User interface, routing, user interactions
 - **Components**:
   - Pages (Next.js App Router)
@@ -99,6 +119,7 @@ Encapsulates domain-specific business rules and workflows:
 - **MessageCacheService**: Message caching strategies and optimization
 
 **Key Characteristics**:
+
 - Contains domain logic (e.g., "how to create a user profile")
 - Orchestrates multiple core services
 - Validates business rules
@@ -115,6 +136,7 @@ Provides technical infrastructure capabilities:
 - **CacheEncryptionService**: Encrypted cache management
 
 **Key Characteristics**:
+
 - Framework-agnostic utilities
 - Reusable across different features
 - Technical concerns (logging, caching, storage)
@@ -124,15 +146,18 @@ Provides technical infrastructure capabilities:
 
 Handles external protocols and data sources:
 
-- **GenericNostrService**: Core Nostr protocol operations
-- **GenericEventService**: Nostr event creation and publishing
+- **NostrEventService**: Nostr event creation and formatting
+- **GenericEventService**: Generic NIP-23/NIP-33 event building
 - **GenericRelayService**: WebSocket relay management
-- **GenericBlossomService**: Blossom media protocol
+- **GenericBlossomService**: Blossom media protocol (NIP-96)
 - **GenericAuthService**: Cryptographic authentication
 - **GenericHeritageService**: NIP-05 verification, metadata handling
+- **GenericMediaService**: Media upload and management
 - **EncryptionService**: NIP-04 encrypted messaging
+- **MultiFileProgressTracker**: Batch file upload tracking
 
 **Key Characteristics**:
+
 - Direct protocol implementation
 - Network communication
 - Data persistence
@@ -178,14 +203,15 @@ class MessagingBusinessService {
 }
 ```
 
-### 3. **Layered Dependencies**
+### Layered Dependencies
 
 **Strict dependency rules**:
+
 - Presentation → Business Logic → Core Services → Protocol Layer
 - **Never** reverse direction (e.g., Core cannot depend on Business)
 - Horizontal communication within same layer is allowed
 
-```
+```text
 Page Component
     ↓ uses
 MessagingBusinessService
@@ -230,34 +256,47 @@ const [isOpen, setIsOpen] = useState(false) // Local
 
 ## 📁 Directory Structure
 
-```
+```text
 /src
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes (event logging)
+│   ├── contribute/        # Community contribution page
+│   ├── explore/           # Discover content and communities
 │   ├── gigs/              # Gigs marketplace page
+│   ├── meetups/           # Local meetup organizer
 │   ├── messages/          # Messaging page
 │   ├── meetings/          # Video meetings page
 │   ├── payments/          # Payment management page
 │   ├── profile/           # User profile page
 │   ├── shop/              # Shopping marketplace page
 │   ├── travel/            # Travel booking page
+│   ├── work/              # Job board page
 │   ├── signin/            # Authentication page
 │   ├── signup/            # Registration page
+│   ├── user-event-log/    # Event logging dashboard
 │   └── layout.tsx         # Root layout
 │
 ├── components/            # React components
-│   ├── auth/             # Authentication UI
-│   ├── generic/          # Reusable components
-│   ├── pages/            # Feature-specific components
-│   ├── primitives/       # Base UI primitives
-│   ├── profile/          # Profile-specific UI
-│   └── ui/               # Common UI elements
+│   ├── auth/             # Authentication UI (flows, steps, signer)
+│   ├── generic/          # Reusable components (layouts, dialogs)
+│   ├── meetings/         # Meeting components (dashboard, URL creator)
+│   ├── pages/            # Feature-specific components (messages, events)
+│   ├── primitives/       # Base UI primitives (skeleton, ratings, stats)
+│   ├── profile/          # Profile-specific UI (image upload, cropper)
+│   ├── ui/               # Common UI elements (rich text, markdown)
+│   ├── Header.tsx        # Global header navigation
+│   └── Footer.tsx        # Global footer
 │
 ├── hooks/                # Custom React hooks
 │   ├── useAuthHydration.ts
+│   ├── useConsentDialog.ts
 │   ├── useConversations.ts
+│   ├── useMediaUpload.ts
 │   ├── useMessages.ts
+│   ├── useMessageSending.ts
 │   ├── useNostrSigner.ts
+│   ├── useNostrSignIn.ts
+│   ├── useNostrSignUp.ts
 │   └── useUserProfile.ts
 │
 ├── services/             # Service layer (SOA)
@@ -265,24 +304,31 @@ const [isOpen, setIsOpen] = useState(false) // Local
 │   │   ├── AuthBusinessService.ts
 │   │   ├── MessagingBusinessService.ts
 │   │   ├── ProfileBusinessService.ts
-│   │   └── MediaBusinessService.ts
+│   │   ├── MediaBusinessService.ts
+│   │   └── MessageCacheService.ts
 │   │
 │   ├── core/             # Infrastructure services
 │   │   ├── EventLoggingService.ts
 │   │   ├── KVService.ts
 │   │   ├── LoggingService.ts
-│   │   └── ProfileCacheService.ts
+│   │   ├── ProfileCacheService.ts
+│   │   └── CacheEncryptionService.ts
 │   │
 │   ├── generic/          # Generic utilities
 │   │   ├── GenericAuthService.ts
 │   │   ├── GenericBlossomService.ts
 │   │   ├── GenericEventService.ts
-│   │   └── EncryptionService.ts
+│   │   ├── GenericHeritageService.ts
+│   │   ├── GenericMediaService.ts
+│   │   ├── GenericRelayService.ts
+│   │   ├── EncryptionService.ts
+│   │   └── MultiFileProgressTracker.ts
 │   │
 │   └── nostr/            # Nostr protocol services
+│       └── NostrEventService.ts
 │
 ├── stores/               # Zustand state management
-│   └── useAuthStore.ts
+│   └── useAuthStore.ts   # Global auth state
 │
 ├── types/                # TypeScript type definitions
 │   ├── attachments.ts
@@ -291,8 +337,11 @@ const [isOpen, setIsOpen] = useState(false) // Local
 │
 ├── utils/                # Utility functions
 │   ├── keyManagement.ts
+│   ├── keyExport.ts
 │   ├── signerFactory.ts
-│   └── profileValidation.ts
+│   ├── profileValidation.ts
+│   ├── nip05.ts
+│   └── tagFilter.ts
 │
 ├── config/               # Configuration files
 │   ├── relays.ts
@@ -362,7 +411,8 @@ async publishEvent(event: NostrEvent) {
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -390,6 +440,30 @@ npm run build
 npm start
 ```
 
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Start development server
+
+# Building
+npm run build            # Production build
+npm start                # Start production server
+
+# Code Quality
+npm run lint             # Run ESLint
+npm run lint:fix         # Auto-fix linting issues
+npm run lint:prod        # Lint with production rules
+npm run format:check     # Check code formatting
+npm run format           # Format code with Prettier
+npm run typecheck        # TypeScript type checking
+
+# Utilities
+npm run metrics:export   # Export application metrics
+npm run bench:signing    # Benchmark signing performance
+npm run enrich:nostr     # Enrich Nostr handles
+```
+
 ---
 
 ## 🔑 Key Nostr Concepts
@@ -397,41 +471,49 @@ npm start
 ### NIPs (Nostr Implementation Possibilities)
 
 - **NIP-01**: Basic protocol - events, signatures, relays
-- **NIP-04**: Encrypted Direct Messages
-- **NIP-05**: Mapping Nostr keys to DNS-based identifiers
-- **NIP-07**: Browser extension signing
-- **NIP-19**: bech32-encoded entities (npub, nsec, note)
-- **NIP-96**: Blossom - decentralized file storage
+- **NIP-04**: Encrypted Direct Messages (implemented in EncryptionService)
+- **NIP-05**: Mapping Nostr keys to DNS-based identifiers (NIP-05 verification)
+- **NIP-07**: Browser extension signing (window.nostr support)
+- **NIP-19**: bech32-encoded entities (npub, nsec, note, nprofile, nevent)
+- **NIP-23**: Long-form content (articles, blogs)
+- **NIP-33**: Parameterized replaceable events (d-tag based content)
+- **NIP-96**: HTTP File Storage Integration (Blossom protocol)
 
 ### Relays
 
 The application connects to multiple Nostr relays for redundancy:
+
 - Default relays configured in `/src/config/relays.ts`
 - WebSocket-based real-time communication
 - Automatic reconnection and failover
+- Multi-relay publishing for redundancy
 
 ### Key Management
 
-- **Private keys**: Stored securely in browser (encrypted localStorage)
+- **Private keys**: Stored securely in browser (encrypted localStorage via KVService)
 - **Public keys**: User identity (npub format)
-- **Signing**: All events cryptographically signed
-- **Backup**: Exportable key backup files
+- **Signing**: All events cryptographically signed (ed25519)
+- **Backup**: Exportable key backup files (keyExport utility)
+- **Browser extension**: NIP-07 compatible (Alby, nos2x, etc.)
 
 ---
 
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - Service layer methods (business logic in isolation)
 - Utility functions (key management, validation)
 - Core services (caching, encryption)
 
 ### Integration Tests
+
 - Service composition (business → core → protocol)
 - Nostr event flow
 - Authentication workflows
 
 ### E2E Tests
+
 - User journeys (signup, messaging, profile updates)
 - Cross-feature workflows
 
@@ -439,34 +521,62 @@ The application connects to multiple Nostr relays for redundancy:
 
 ## 🛡️ Security Considerations
 
-- **Client-side encryption**: Messages encrypted before transmission
-- **No password storage**: Nostr uses cryptographic keys
+- **Client-side encryption**: Messages encrypted before transmission (NIP-04)
+- **No password storage**: Nostr uses cryptographic key pairs (ed25519)
 - **Relay privacy**: Users can choose their own relays
-- **Censorship resistance**: Decentralized architecture
-- **Key backup**: User-controlled key management
+- **Censorship resistance**: Decentralized architecture with multi-relay publishing
+- **Key backup**: User-controlled key management with export functionality
+- **Encrypted caching**: Sensitive data encrypted in browser storage (CacheEncryptionService)
+- **Event validation**: All events validated before signing (GenericEventService)
+- **Content sanitization**: User input sanitized to prevent XSS attacks
 
 ---
 
 ## 📝 Environment Variables
 
 ```bash
-# Required
+# Nostr Relays (comma-separated WebSocket URLs)
 NEXT_PUBLIC_DEFAULT_RELAYS=wss://relay1.example.com,wss://relay2.example.com
 
-# Optional
+# Blossom Media Server
 NEXT_PUBLIC_BLOSSOM_SERVER=https://blossom.example.com
+
+# Analytics (optional)
 NEXT_PUBLIC_ENABLE_ANALYTICS=true
+
+# Redis/Upstash (for server-side caching, optional)
+UPSTASH_REDIS_REST_URL=https://your-redis-url
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+
+# Environment
+APP_ENV=production # or development
 ```
 
 ---
 
 ## 🤝 Contributing
 
+Please read [Reference/critical-guidelines.md](Reference/critical-guidelines.md) before contributing.
+
+### Development Workflow
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Follow SOA architecture principles (see critical-guidelines.md)
+4. Write and test your changes
+5. Run `npm run build` to ensure no errors
+6. Commit with concise messages (`git commit -m 'feat: Add amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+### Code Quality Standards
+
+- **SOA Compliance**: Follow service-oriented architecture (mandatory)
+- **TypeScript**: All code must be properly typed
+- **Testing**: Test features end-to-end before marking complete
+- **Documentation**: Add JSDoc comments for complex components
+- **Linting**: Code must pass ESLint checks
+- **No Dead Code**: Remove unused imports, functions, and files
 
 ---
 
@@ -481,8 +591,9 @@ This project is open source and available under the MIT License.
 - [Nostr Protocol](https://github.com/nostr-protocol/nostr)
 - [NIPs Repository](https://github.com/nostr-protocol/nips)
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Nostr Development Kit](https://ndk.fyi)
+- [nostr-tools Documentation](https://github.com/nbd-wtf/nostr-tools)
+- [Blossom Protocol Specification](https://github.com/hzrd149/blossom)
 
 ---
 
-**Built with ⚡ by nomads, for nomads**
+Built with ⚡ by nomads, for nomads
