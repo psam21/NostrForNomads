@@ -4,6 +4,7 @@ import { validateContributionData } from '@/types/contributions';
 import { nostrEventService } from '../nostr/NostrEventService';
 import type { NostrSigner } from '@/types/nostr';
 import { uploadSequentialWithConsent } from '@/services/generic/GenericBlossomService';
+import { fetchPublicHeritage, type HeritageEvent } from '@/services/generic/GenericHeritageService';
 
 export interface CreateContributionResult {
   success: boolean;
@@ -301,5 +302,126 @@ export async function createContribution(
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error creating contribution',
     };
+  }
+}
+
+/**
+ * Contribution explore item for listing view
+ */
+export interface ContributionExploreItem {
+  id: string;
+  dTag: string;
+  name: string;
+  location: string;
+  region: string;
+  image: string;
+  contributors: number;
+  mediaCount: number;
+  tags: string[];
+  description: string;
+  category: string;
+  publishedAt: number;
+  relativeTime: string;
+  pubkey: string; // Author's pubkey for contact functionality
+}
+
+/**
+ * Calculate relative time string from timestamp
+ */
+function getRelativeTime(timestamp: number): string {
+  const now = Date.now() / 1000;
+  const diff = now - timestamp;
+  
+  const minute = 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+  const week = day * 7;
+  const month = day * 30;
+  const year = day * 365;
+  
+  if (diff < minute) return 'just now';
+  if (diff < hour) return `${Math.floor(diff / minute)} minutes ago`;
+  if (diff < day) return `${Math.floor(diff / hour)} hours ago`;
+  if (diff < week) return `${Math.floor(diff / day)} days ago`;
+  if (diff < month) return `${Math.floor(diff / week)} weeks ago`;
+  if (diff < year) return `${Math.floor(diff / month)} months ago`;
+  return `${Math.floor(diff / year)} years ago`;
+}
+
+/**
+ * Transform heritage event to contribution explore item
+ */
+function mapToExploreItem(event: HeritageEvent): ContributionExploreItem {
+  const totalMedia = 
+    event.media.images.length +
+    event.media.audio.length +
+    event.media.videos.length;
+  
+  const image = event.media.images[0] || 
+                event.media.videos[0] || 
+                'https://images.unsplash.com/photo-1606114701010-e2b90b5ab7d8?w=400&h=300&fit=crop';
+  
+  return {
+    id: event.id,
+    dTag: event.dTag,
+    name: event.title,
+    location: event.region || event.location || 'Unknown Location',
+    region: event.region || 'Unknown Region',
+    image,
+    contributors: 1,
+    mediaCount: totalMedia,
+    tags: event.tags,
+    description: event.summary,
+    category: event.category,
+    publishedAt: event.publishedAt,
+    relativeTime: getRelativeTime(event.publishedAt),
+    pubkey: event.pubkey,
+  };
+}
+
+/**
+ * Fetch public contributions for explore/listing view
+ * Business layer method that orchestrates fetching and data transformation
+ * 
+ * @param limit - Maximum number of contributions to fetch
+ * @param until - Optional timestamp for pagination (fetch contributions before this time)
+ * @returns Array of contribution explore items ready for display
+ */
+export async function fetchPublicContributions(
+  limit: number = 8,
+  until?: number
+): Promise<ContributionExploreItem[]> {
+  try {
+    logger.info('Fetching public contributions', {
+      service: 'ContributionService',
+      method: 'fetchPublicContributions',
+      limit,
+      until,
+      hasPagination: !!until,
+    });
+
+    // Fetch from generic service
+    const events = await fetchPublicHeritage(limit, until);
+    
+    // Transform to explore items (business logic)
+    const items = events.map(mapToExploreItem);
+    
+    logger.info('Public contributions fetched and transformed', {
+      service: 'ContributionService',
+      method: 'fetchPublicContributions',
+      itemCount: items.length,
+    });
+
+    return items;
+  } catch (error) {
+    logger.error('Failed to fetch public contributions', error instanceof Error ? error : new Error('Unknown error'), {
+      service: 'ContributionService',
+      method: 'fetchPublicContributions',
+      limit,
+      until,
+    });
+    
+    // Return empty array on error (hook will handle error state)
+    return [];
   }
 }

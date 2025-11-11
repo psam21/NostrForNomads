@@ -1,75 +1,19 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { logger } from '@/services/core/LoggingService';
-import { fetchPublicHeritage, type HeritageEvent } from '@/services/generic/GenericHeritageService';
+import { fetchPublicContributions, type ContributionExploreItem } from '@/services/business/ContributionService';
 import { AppError } from '@/errors/AppError';
 import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '@/errors/ErrorTypes';
 
-export interface ContributionExploreItem {
-  id: string;
-  dTag: string;
-  name: string;
-  location: string;
-  region: string;
-  image: string;
-  contributors: number;
-  mediaCount: number;
-  tags: string[];
-  description: string;
+export interface ContributionFilters {
+  searchTerm: string;
   category: string;
-  publishedAt: number;
-  relativeTime: string;
+  region: string;
+  sortBy: 'newest' | 'oldest' | 'title-asc' | 'title-desc';
 }
 
-function getRelativeTime(timestamp: number): string {
-  const now = Date.now() / 1000;
-  const diff = now - timestamp;
-  
-  const minute = 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-  const week = day * 7;
-  const month = day * 30;
-  const year = day * 365;
-  
-  if (diff < minute) return 'just now';
-  if (diff < hour) return `${Math.floor(diff / minute)} minutes ago`;
-  if (diff < day) return `${Math.floor(diff / hour)} hours ago`;
-  if (diff < week) return `${Math.floor(diff / day)} days ago`;
-  if (diff < month) return `${Math.floor(diff / week)} weeks ago`;
-  if (diff < year) return `${Math.floor(diff / month)} months ago`;
-  return `${Math.floor(diff / year)} years ago`;
-}
-
-function mapToExploreItem(event: HeritageEvent): ContributionExploreItem {
-  const totalMedia = 
-    event.media.images.length +
-    event.media.audio.length +
-    event.media.videos.length;
-  
-  const image = event.media.images[0] || 
-                event.media.videos[0] || 
-                'https://images.unsplash.com/photo-1606114701010-e2b90b5ab7d8?w=400&h=300&fit=crop';
-  
-  return {
-    id: event.id,
-    dTag: event.dTag,
-    name: event.title,
-    location: event.region || event.location || 'Unknown Location',
-    region: event.region || 'Unknown Region',
-    image,
-    contributors: 1,
-    mediaCount: totalMedia,
-    tags: event.tags,
-    description: event.summary,
-    category: event.category,
-    publishedAt: event.publishedAt,
-    relativeTime: getRelativeTime(event.publishedAt),
-  };
-}
-
-export function useExploreContributions() {
+export function useExploreContributions(filters?: ContributionFilters) {
   const [contributionItems, setContributionItems] = useState<ContributionExploreItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -87,31 +31,31 @@ export function useExploreContributions() {
       setIsLoading(true);
       setError(null);
 
-      const events = await fetchPublicHeritage(8);
-      const items = events.map(mapToExploreItem);
+      // Call business service instead of generic service
+      const items = await fetchPublicContributions(8);
       
       setContributionItems(items);
-      setHasMore(events.length === 8);
+      setHasMore(items.length === 8);
 
       logger.info('Initial contribution items loaded', {
         service: 'useExploreContributions',
         method: 'loadInitial',
         itemCount: items.length,
-        hasMore: events.length === 8,
+        hasMore: items.length === 8,
       });
     } catch (err) {
       const appError = err instanceof AppError 
         ? err 
         : new AppError(
-            err instanceof Error ? err.message : 'Failed to load heritage',
+            err instanceof Error ? err.message : 'Failed to load contributions',
             ErrorCode.NOSTR_ERROR,
             HttpStatus.INTERNAL_SERVER_ERROR,
             ErrorCategory.EXTERNAL_SERVICE,
             ErrorSeverity.MEDIUM
           );
       
-      logger.error('Error loading initial heritage items', appError, {
-        service: 'useExploreHeritage',
+      logger.error('Error loading initial contribution items', appError, {
+        service: 'useExploreContributions',
         method: 'loadInitial',
       });
       
@@ -136,8 +80,9 @@ export function useExploreContributions() {
       setIsLoadingMore(true);
 
       const lastTimestamp = contributionItems[contributionItems.length - 1].publishedAt;
-      const events = await fetchPublicHeritage(6, lastTimestamp);
-      const newItems = events.map(mapToExploreItem);
+      
+      // Call business service instead of generic service
+      const newItems = await fetchPublicContributions(6, lastTimestamp);
       
       setContributionItems(prev => {
         const existingDTags = new Set(prev.map(item => item.dTag));
@@ -145,14 +90,14 @@ export function useExploreContributions() {
         return [...prev, ...uniqueNewItems];
       });
       
-      setHasMore(events.length === 6);
+      setHasMore(newItems.length === 6);
 
       logger.info('More contribution items loaded', {
         service: 'useExploreContributions',
         method: 'loadMore',
         newItemCount: newItems.length,
         totalCount: contributionItems.length + newItems.length,
-        hasMore: events.length === 6,
+        hasMore: newItems.length === 6,
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load more contributions';
@@ -187,13 +132,92 @@ export function useExploreContributions() {
     loadInitial();
   }, [loadInitial]);
 
+  // Extract unique categories and regions from loaded data
+  const availableCategories = useMemo(() => {
+    const set = new Set<string>();
+    contributionItems.forEach(item => {
+      if (item.category) set.add(item.category);
+    });
+    return Array.from(set).sort();
+  }, [contributionItems]);
+
+  const availableRegions = useMemo(() => {
+    const set = new Set<string>();
+    contributionItems.forEach(item => {
+      if (item.region) set.add(item.region);
+    });
+    return Array.from(set).sort();
+  }, [contributionItems]);
+
+  // Apply client-side filtering and sorting
+  const filteredAndSortedItems = useMemo(() => {
+    if (!filters) return contributionItems;
+
+    let filtered = [...contributionItems];
+
+    // Apply search filter
+    if (filters.searchTerm.trim()) {
+      const term = filters.searchTerm.toLowerCase();
+      filtered = filtered.filter((item) =>
+        item.name.toLowerCase().includes(term) ||
+        item.location.toLowerCase().includes(term) ||
+        item.region.toLowerCase().includes(term) ||
+        item.description.toLowerCase().includes(term) ||
+        item.tags.some((tag) => tag.toLowerCase().includes(term))
+      );
+    }
+
+    // Apply category filter
+    if (filters.category !== 'all') {
+      filtered = filtered.filter((item) => item.category === filters.category);
+    }
+
+    // Apply region filter
+    if (filters.region !== 'all') {
+      filtered = filtered.filter((item) => item.region === filters.region);
+    }
+
+    // Apply sorting
+    switch (filters.sortBy) {
+      case 'oldest':
+        filtered.sort((a, b) => a.publishedAt - b.publishedAt);
+        break;
+      case 'title-asc':
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'title-desc':
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'newest':
+      default:
+        filtered.sort((a, b) => b.publishedAt - a.publishedAt);
+        break;
+    }
+
+    return filtered;
+  }, [contributionItems, filters]);
+
+  // Calculate active filter count
+  const activeFilterCount = useMemo(() => {
+    if (!filters) return 0;
+    let count = 0;
+    if (filters.searchTerm.trim()) count++;
+    if (filters.category !== 'all') count++;
+    if (filters.region !== 'all') count++;
+    return count;
+  }, [filters]);
+
   return {
-    contributionItems,
+    contributionItems: filteredAndSortedItems,
+    allItems: contributionItems,
     isLoading,
     error,
     refetch,
     loadMore,
     isLoadingMore,
     hasMore,
+    availableCategories,
+    availableRegions,
+    activeFilterCount,
   };
 }

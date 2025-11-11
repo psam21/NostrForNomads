@@ -1,4 +1,10 @@
-import Link from 'next/link';
+import { Metadata } from 'next';
+import { contentDetailService, ContentDetailProvider } from '@/services/business/ContentDetailService';
+import { contributionContentService } from '@/services/business/ContributionContentService';
+import { ContributionCustomFields } from '@/types/contributions';
+import { ContributionDetail } from '@/components/pages/ContributionDetail';
+import { ContentNotFound } from '@/components/generic/ContentNotFound';
+import { ContributionJsonLd } from '@/components/seo/ContributionJsonLd';
 
 export const dynamic = 'force-dynamic';
 
@@ -6,34 +12,97 @@ type ContributionPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function ContributionPage({ params }: ContributionPageProps) {
-  const { id } = await params;
+// Register contribution provider (cast needed due to generic type constraints)
+contentDetailService.registerProvider(
+  'contribute',
+  contributionContentService as ContentDetailProvider
+);
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-10">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <h1 className="text-3xl font-serif font-bold text-purple-800 mb-4">
-            Contribution Details
-          </h1>
-          <p className="text-gray-600 mb-6">
-            ID: {decodeURIComponent(id)}
-          </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              <strong>Success!</strong> Your contribution has been published to Nostr relays.
-            </p>
-            <p className="text-sm text-blue-700 mt-2">
-              The detail page is being developed. For now, you can view your contribution in the{' '}
-              <Link href="/explore" className="text-purple-600 hover:text-purple-700 underline">
-                Explore feed
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  try {
+    const { id } = await params;
+    const decodedId = decodeURIComponent(id);
+    const result = await contentDetailService.getContentDetail<ContributionCustomFields>(
+      'contribute',
+      decodedId
+    );
+
+    if (!result.success || !result.content) {
+      return {
+        title: 'Contribution Not Found',
+        description: 'The contribution you are looking for could not be found.',
+      };
+    }
+
+    const { content } = result;
+    return {
+      title: `${content.title} | Nomad Contributions`,
+      description: content.summary || content.description || 'View this nomad contribution',
+      openGraph: {
+        title: content.title,
+        description: content.summary || content.description || 'View this nomad contribution',
+        images: content.media[0]?.source?.url ? [{ url: content.media[0].source.url }] : [],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Contribution | NomadCoin',
+      description: 'View nomad contributions',
+    };
+  }
+}
+
+export default async function ContributionPage({ params }: ContributionPageProps) {
+  try {
+    const { id } = await params;
+    const decodedId = decodeURIComponent(id);
+    const result = await contentDetailService.getContentDetail<ContributionCustomFields>(
+      'contribute',
+      decodedId
+    );
+
+    if (!result.success || !result.content) {
+      return <ContentNotFound />;
+    }
+
+    const { content } = result;
+
+    // Prepare JSON-LD data
+    const jsonLdData = {
+      id: content.id,
+      dTag: decodedId,
+      title: content.title,
+      description: content.description || content.summary || '',
+      category: content.customFields.category || 'General',
+      contributionType: content.customFields.contributionType,
+      location: content.customFields.location,
+      region: content.customFields.region,
+      country: content.customFields.country,
+      language: content.customFields.language,
+      publishedAt: content.publishedAt,
+      updatedAt: content.updatedAt,
+      author: {
+        name: content.author?.displayName || 'Anonymous Nomad',
+        npub: content.author?.npub,
+      },
+      image: content.media[0]?.source?.url,
+      tags: content.tags,
+    };
+
+    return (
+      <>
+        <ContributionJsonLd contribution={jsonLdData} />
+        <ContributionDetail detail={content} />
+      </>
+    );
+  } catch (error) {
+    console.error('Error loading contribution:', error);
+    return <ContentNotFound />;
+  }
 }
 

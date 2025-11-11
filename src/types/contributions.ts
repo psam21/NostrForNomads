@@ -304,3 +304,16 @@ export const validateContributionData = (data: Partial<ContributionData>): Contr
     errors,
   };
 };
+
+/**
+ * Custom fields for content detail display
+ */
+export interface ContributionCustomFields extends Record<string, unknown> {
+  contributionType?: string;
+  category?: string;
+  region?: string;
+  country?: string;
+  language?: string;
+  location?: string;
+}
+

@@ -1,14 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Search,
-  MapPin,
-  Users,
-  BookOpen,
   Layers,
   Activity,
   Play,
@@ -20,10 +16,22 @@ import {
   Globe,
 } from 'lucide-react';
 
-import { useExploreContributions } from '@/hooks/useExploreContributions';
+import { useExploreContributions, type ContributionFilters } from '@/hooks/useExploreContributions';
+import { ContributionCard } from './ContributionCard';
 
 export default function ExploreContent() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title-asc' | 'title-desc'>('newest');
+
+  // Build filters object
+  const filters: ContributionFilters = useMemo(() => ({
+    searchTerm,
+    category: categoryFilter,
+    region: regionFilter,
+    sortBy,
+  }), [searchTerm, categoryFilter, regionFilter, sortBy]);
 
   const {
     contributionItems,
@@ -33,22 +41,21 @@ export default function ExploreContent() {
     loadMore,
     isLoadingMore,
     hasMore,
-  } = useExploreContributions();
+    availableCategories,
+    availableRegions,
+    activeFilterCount,
+  } = useExploreContributions(filters);
 
-  const filteredItems = contributionItems.filter((item) => {
-    if (!searchTerm) return true;
-    
-    const term = searchTerm.toLowerCase();
-    return (
-      item.name.toLowerCase().includes(term) ||
-      item.location.toLowerCase().includes(term) ||
-      item.region.toLowerCase().includes(term) ||
-      item.tags.some((tag) => tag.toLowerCase().includes(term))
-    );
-  });
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('all');
+    setRegionFilter('all');
+    setSortBy('newest');
+  };
 
-  const featured = filteredItems.slice(0, 2);
-  const grid = filteredItems.slice(2);
+  const featured = contributionItems.slice(0, 2);
+  const grid = contributionItems.slice(2);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
@@ -115,6 +122,74 @@ export default function ExploreContent() {
 
       <section className="section-padding">
         <div className="container-width">
+          {/* Filter UI */}
+          {isLoading ? (
+            // Loading skeleton for filters
+            <div className="flex flex-wrap gap-4 items-center justify-between mb-8 animate-pulse">
+              <div className="flex gap-4 items-center flex-wrap">
+                <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+                <div className="h-4 w-16 bg-gray-200 rounded ml-4"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="flex gap-4 items-center flex-wrap">
+                <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                <div className="h-10 w-32 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
+              <div className="flex gap-4 items-center flex-wrap">
+                <label className="text-sm font-medium text-gray-700">Category:</label>
+                <select
+                  value={categoryFilter}
+                  onChange={e => setCategoryFilter(e.target.value)}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  <option value="all">All</option>
+                  {availableCategories.map((cat: string) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+                <label className="text-sm font-medium text-gray-700 ml-4">Region:</label>
+                <select
+                  value={regionFilter}
+                  onChange={e => setRegionFilter(e.target.value)}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  <option value="all">All</option>
+                  {availableRegions.map((region: string) => (
+                    <option key={region} value={region}>{region}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-4 items-center flex-wrap">
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                  >
+                    Clear {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
+                  </button>
+                )}
+                <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value as 'newest' | 'oldest' | 'title-asc' | 'title-desc')}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="title-asc">Title A-Z</option>
+                  <option value="title-desc">Title Z-A</option>
+                </select>
+              </div>
+            </div>
+          )}
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-purple-600 animate-spin mb-4" />
@@ -136,7 +211,7 @@ export default function ExploreContent() {
             </div>
           )}
 
-          {!isLoading && !error && filteredItems.length === 0 && (
+          {!isLoading && !error && contributionItems.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20">
               <Globe className="w-16 h-16 text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -155,7 +230,7 @@ export default function ExploreContent() {
             </div>
           )}
 
-          {!isLoading && !error && filteredItems.length > 0 && (
+          {!isLoading && !error && contributionItems.length > 0 && (
             <>
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-serif font-bold text-purple-800">
@@ -163,8 +238,8 @@ export default function ExploreContent() {
                 </h2>
                 <div className="text-gray-600">
                   {searchTerm 
-                    ? `${filteredItems.length} result${filteredItems.length !== 1 ? 's' : ''}`
-                    : `${filteredItems.length} contribution${filteredItems.length !== 1 ? 's' : ''}`}
+                    ? `${contributionItems.length} result${contributionItems.length !== 1 ? 's' : ''}`
+                    : `${contributionItems.length} contribution${contributionItems.length !== 1 ? 's' : ''}`}
                 </div>
               </div>
 
@@ -174,95 +249,8 @@ export default function ExploreContent() {
                     Featured Nomad Contributions
                   </h3>
                   <div className="grid md:grid-cols-2 gap-8">
-                    {featured.map((item, index) => (
-                      <Link
-                        key={item.id}
-                        href={`/explore/${item.dTag}`}
-                        className="block"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 30 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: index * 0.1 }}
-                          className="culture-card group p-0 overflow-hidden cursor-pointer"
-                        >
-                          <div className="relative aspect-video">
-                          <Image
-                            src={item.image}
-                            alt={`Cultural scene representing ${item.name}`}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute top-4 right-4 bg-accent-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                            Featured
-                          </div>
-                          <div className="absolute bottom-4 left-4 right-4">
-                            <div className="bg-black/50 rounded-lg p-4 text-white">
-                              <h3 className="text-xl font-serif font-bold mb-1">{item.name}</h3>
-                              <p className="text-sm opacity-90 flex items-center">
-                                <MapPin className="w-4 h-4 mr-1" />
-                                {item.location} · {item.region}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-6">
-                          <p className="text-gray-700 mb-4 line-clamp-3">{item.description}</p>
-                          <div className="grid grid-cols-3 gap-4 mb-4 text-center">
-                            <div>
-                              <div className="flex items-center justify-center mb-1">
-                                <Users className="w-4 h-4 text-purple-600 mr-1" />
-                                <span className="font-semibold text-purple-800">
-                                  {item.contributors}
-                                </span>
-                              </div>
-                              <p className="text-xs text-gray-600">Contributor</p>
-                            </div>
-                            <div>
-                              <div className="flex items-center justify-center mb-1">
-                                <ImageIcon className="w-4 h-4 text-purple-600 mr-1" />
-                                <span className="font-semibold text-purple-800">
-                                  {item.mediaCount}
-                                </span>
-                              </div>
-                              <p className="text-xs text-gray-600">Media</p>
-                            </div>
-                            <div>
-                              <div className="flex items-center justify-center mb-1">
-                                <BookOpen className="w-4 h-4 text-purple-600 mr-1" />
-                                <span className="font-semibold text-purple-800">
-                                  {item.category}
-                                </span>
-                              </div>
-                              <p className="text-xs text-gray-600">Category</p>
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {item.tags.slice(0, 3).map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-xs"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {item.tags.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">
-                                +{item.tags.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-500">{item.relativeTime}</span>
-                            <span className="text-purple-800 font-medium group-hover:text-orange-600 transition-colors duration-200 flex items-center w-full justify-center py-2">
-                              Read Contribution
-                              <ArrowRight className="w-4 h-4 ml-2" />
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                      </Link>
+                    {featured.map((item) => (
+                      <ContributionCard key={item.id} contribution={item} featured />
                     ))}
                   </div>
                 </div>
@@ -274,99 +262,25 @@ export default function ExploreContent() {
                     More Nomad Contributions
                   </h3>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {grid.slice(0, 5).map((item, index) => (
-                      <Link
-                        key={item.id}
-                        href={`/explore/${item.dTag}`}
-                        className="block"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 30 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: index * 0.1 }}
-                          className="culture-card group cursor-pointer"
-                        >
-                          <div className="relative aspect-video overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt={`Cultural scene representing ${item.name}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width:1200px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                        <div className="p-6">
-                          <h3 className="text-xl font-serif font-bold text-purple-800 mb-2">
-                            {item.name}
-                          </h3>
-                          <p className="text-gray-600 mb-4 flex items-center">
-                            <MapPin className="w-4 h-4 mr-1" />
-                            {item.location}
-                          </p>
-                          <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                            <div className="flex items-center space-x-3">
-                              <span className="flex items-center">
-                                <ImageIcon className="w-4 h-4 mr-1" />
-                                {item.mediaCount}
-                              </span>
-                              <span className="flex items-center">
-                                <BookOpen className="w-4 h-4 mr-1" />
-                                {item.category}
-                              </span>
-                            </div>
-                            <span>{item.relativeTime}</span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {item.tags.slice(0, 2).map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-xs"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {item.tags.length > 2 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">
-                                +{item.tags.length - 2}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-purple-800 font-medium group-hover:text-orange-600 transition-colors duration-200 flex items-center w-full justify-center py-2">
-                            Read Contribution
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </span>
-                        </div>
-                      </motion.div>
-                      </Link>
+                    {grid.slice(0, 5).map((item) => (
+                      <ContributionCard key={item.id} contribution={item} />
                     ))}
-                    
-                    <Link
-                      href="/explore"
-                      className="block"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
-                        className="culture-card group cursor-pointer bg-gradient-to-br from-purple-50 to-orange-50 transition-all duration-300"
-                      >
-                        <div className="h-full flex flex-col items-center justify-center p-8 min-h-[400px]">
-                          <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <ArrowRight className="w-8 h-8 text-white" />
-                          </div>
-                          <h3 className="text-2xl font-serif font-bold text-purple-800 mb-2 text-center">
-                            See More Contributions
-                          </h3>
-                          <p className="text-gray-600 text-center mb-4">
-                            Explore all nomad contributions and experiences
-                          </p>
-                          <span className="text-orange-600 font-semibold group-hover:text-orange-700 transition-colors duration-200 flex items-center">
-                            View All Contributions
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </span>
-                        </div>
-                      </motion.div>
-                    </Link>
+                    {/* See More Card */}
+                    <div className="culture-card group cursor-pointer bg-gradient-to-br from-purple-50 to-orange-50 transition-all duration-300 flex flex-col items-center justify-center p-8 min-h-[400px]">
+                      <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <ArrowRight className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-serif font-bold text-purple-800 mb-2 text-center">
+                        See More Contributions
+                      </h3>
+                      <p className="text-gray-600 text-center mb-4">
+                        Explore all nomad contributions and experiences
+                      </p>
+                      <span className="text-orange-600 font-semibold group-hover:text-orange-700 transition-colors duration-200 flex items-center">
+                        View All Contributions
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
