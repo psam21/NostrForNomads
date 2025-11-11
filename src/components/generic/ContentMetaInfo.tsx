@@ -18,9 +18,9 @@ const formatDate = (timestamp: number): string => {
 
 export function ContentMetaInfo({ publishedAt, updatedAt, author, relays = [] }: ContentMetaInfoProps) {
   return (
-    <section className="space-y-3 rounded-2xl bg-white/70 p-4 shadow-sm ring-1 ring-primary-100">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Product Metadata</h3>
-      <dl className="space-y-2 text-sm text-gray-600">
+    <section className="space-y-4 rounded-2xl bg-white/80 p-5 shadow-sm ring-1 ring-primary-100">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Metadata</h3>
+      <dl className="space-y-3 text-sm text-gray-600">
         <div className="flex items-center gap-3">
           <dt className="flex items-center gap-2 font-medium text-primary-700">
             <Calendar className="h-4 w-4" /> Published
