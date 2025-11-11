@@ -61,10 +61,10 @@ export default function ExploreContent() {
             className="max-w-5xl mx-auto text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-purple-800 mb-6">
-              Explore Nomad Stories
+              Explore Nomad Contributions
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              Discover inspiring stories, experiences, and wisdom from digital nomads around the world. 
+              Discover inspiring contributions, experiences, and wisdom from digital nomads around the world. 
               Connect with the global nomad community through shared adventures.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6 text-purple-700">
@@ -73,7 +73,7 @@ export default function ExploreContent() {
                 title="Multiple dimensions of cultural data"
               >
                 <Layers className="w-4 h-4 mr-2 text-orange-500" />
-                <span>Real Stories</span>
+                <span>Real Contributions</span>
               </div>
               <div
                 className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
@@ -103,7 +103,7 @@ export default function ExploreContent() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search stories, locations, or nomad experiences..."
+                placeholder="Search contributions, locations, or nomad experiences..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-14 pr-4 py-3 text-base rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
@@ -118,14 +118,14 @@ export default function ExploreContent() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-purple-600 animate-spin mb-4" />
-              <p className="text-gray-600">Loading nomad stories...</p>
+              <p className="text-gray-600">Loading nomad contributions...</p>
             </div>
           )}
 
           {error && !isLoading && (
             <div className="flex flex-col items-center justify-center py-20">
               <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Failed to Load Stories</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Failed to Load Contributions</h3>
               <p className="text-gray-600 mb-6">{error}</p>
               <button
                 onClick={refetch}
@@ -140,16 +140,16 @@ export default function ExploreContent() {
             <div className="flex flex-col items-center justify-center py-20">
               <Globe className="w-16 h-16 text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {searchTerm ? 'No Results Found' : 'No Stories Yet'}
+                {searchTerm ? 'No Results Found' : 'No Contributions Yet'}
               </h3>
               <p className="text-gray-600 mb-6">
                 {searchTerm 
-                  ? `No stories match "${searchTerm}"`
+                  ? `No contributions match "${searchTerm}"`
                   : 'Be the first to share your nomad journey!'}
               </p>
               {!searchTerm && (
                 <Link href="/contribute" className="btn-primary">
-                  Share Your Story →
+                  Share Your Contribution →
                 </Link>
               )}
             </div>
@@ -159,19 +159,19 @@ export default function ExploreContent() {
             <>
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-serif font-bold text-purple-800">
-                  Nomad Stories from Around the World
+                  Nomad Contributions from Around the World
                 </h2>
                 <div className="text-gray-600">
                   {searchTerm 
                     ? `${filteredItems.length} result${filteredItems.length !== 1 ? 's' : ''}`
-                    : `${filteredItems.length} ${filteredItems.length !== 1 ? 'stories' : 'story'}`}
+                    : `${filteredItems.length} contribution${filteredItems.length !== 1 ? 's' : ''}`}
                 </div>
               </div>
 
               {featured.length > 0 && (
                 <div className="mb-12">
                   <h3 className="text-xl font-serif font-bold text-purple-800 mb-6">
-                    Featured Nomad Stories
+                    Featured Nomad Contributions
                   </h3>
                   <div className="grid md:grid-cols-2 gap-8">
                     {featured.map((item, index) => (
@@ -256,7 +256,7 @@ export default function ExploreContent() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-gray-500">{item.relativeTime}</span>
                             <span className="text-purple-800 font-medium group-hover:text-orange-600 transition-colors duration-200 flex items-center w-full justify-center py-2">
-                              Read Story
+                              Read Contribution
                               <ArrowRight className="w-4 h-4 ml-2" />
                             </span>
                           </div>
@@ -271,7 +271,7 @@ export default function ExploreContent() {
               {grid.length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-xl font-serif font-bold text-purple-800 mb-6">
-                    More Nomad Stories
+                    More Nomad Contributions
                   </h3>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {grid.slice(0, 5).map((item, index) => (
@@ -332,7 +332,7 @@ export default function ExploreContent() {
                             )}
                           </div>
                           <span className="text-purple-800 font-medium group-hover:text-orange-600 transition-colors duration-200 flex items-center w-full justify-center py-2">
-                            Read Story
+                            Read Contribution
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </span>
                         </div>
@@ -355,13 +355,13 @@ export default function ExploreContent() {
                             <ArrowRight className="w-8 h-8 text-white" />
                           </div>
                           <h3 className="text-2xl font-serif font-bold text-purple-800 mb-2 text-center">
-                            See More Stories
+                            See More Contributions
                           </h3>
                           <p className="text-gray-600 text-center mb-4">
-                            Explore all nomad stories and experiences
+                            Explore all nomad contributions and experiences
                           </p>
                           <span className="text-orange-600 font-semibold group-hover:text-orange-700 transition-colors duration-200 flex items-center">
-                            View All Stories
+                            View All Contributions
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </span>
                         </div>
@@ -385,7 +385,7 @@ export default function ExploreContent() {
                       </>
                     ) : (
                       <>
-                        Load More Stories
+                        Load More Contributions
                         <ArrowRight className="w-5 h-5 ml-2" />
                       </>
                     )}
