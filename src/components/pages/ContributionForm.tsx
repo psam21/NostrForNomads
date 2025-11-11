@@ -7,6 +7,7 @@ import {
   NOMAD_CATEGORIES,
   CONTRIBUTION_TYPES,
   COUNTRIES,
+  REGIONS,
 } from '@/config/contributions';
 import { AttachmentManager } from '@/components/generic/AttachmentManager';
 import { UserConsentDialog } from '@/components/generic/UserConsentDialog';
@@ -318,8 +319,30 @@ export const ContributionForm = ({
             />
           </div>
 
-          {/* Country and Location */}
+          {/* Region and Country */}
           <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
+                Region <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="region"
+                value={formData.region}
+                onChange={(e) => handleInputChange('region', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  errors.region ? 'border-red-500' : 'border-gray-300'
+                }`}
+              >
+                <option value="">Select a region</option>
+                {REGIONS.map((region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+              {errors.region && <p className="mt-1 text-sm text-red-600">{errors.region}</p>}
+            </div>
+
             <div>
               <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
                 Country <span className="text-red-500">*</span>
@@ -341,7 +364,10 @@ export const ContributionForm = ({
               </select>
               {errors.country && <p className="mt-1 text-sm text-red-600">{errors.country}</p>}
             </div>
+          </div>
 
+          {/* Location */}
+          <div>
             <div>
               <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
                 City/Place
