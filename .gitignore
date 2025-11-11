@@ -37,3 +37,6 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 .env*.local
+
+# Temporary reference files (not for production)
+temp-cb-reference/
