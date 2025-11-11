@@ -45,5 +45,17 @@ const baseConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  // Exclude temp-cb-reference from compilation
+  webpack: (config, { isServer }) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/temp-cb-reference/**', '**/node_modules/**'],
+    };
+    return config;
+  },
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  experimental: {
+    externalDir: false,
+  },
 };
 module.exports = withBundleAnalyzer(baseConfig);
