@@ -111,7 +111,7 @@ function parseHeritageEvent(event: NostrEvent): HeritageEvent | null {
     
     // Extract custom tags (all tags with 't' key except system tags)
     const customTags = tags
-      .filter(t => t[0] === 't' && !t[1].startsWith('culture-bridge-'))
+      .filter(t => t[0] === 't' && !t[1].startsWith('nostr-for-nomads-'))
       .map(t => t[1]);
     
     // Extract media
@@ -159,7 +159,7 @@ export async function fetchPublicHeritage(
     // Build relay filter
     const filter: Record<string, unknown> = {
       kinds: [30023],
-      '#t': ['culture-bridge-heritage-contribution'], // Must match tag used in event creation
+      '#t': ['nostr-for-nomads-contribution'], // Must match tag used in event creation
       limit,
     };
     

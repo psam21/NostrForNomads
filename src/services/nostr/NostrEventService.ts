@@ -266,9 +266,9 @@ export class NostrEventService {
         }
       });
 
-      // Only add culture-bridge-heritage-contribution tag if not already present
-      if (!heritageData.tags.includes('culture-bridge-heritage-contribution')) {
-        heritageTags.push(['t', 'culture-bridge-heritage-contribution']);
+      // Only add nostr-for-nomads-contribution tag if not already present
+      if (!heritageData.tags.includes('nostr-for-nomads-contribution')) {
+        heritageTags.push(['t', 'nostr-for-nomads-contribution']);
       }
 
       // Add media tags with hashes
