@@ -1,5 +1,3 @@
-import type { Metadata } from 'next';
-
 export const metadata = {
   title: 'Sign In | Nostr for Nomads',
   description: 'Sign in to your Nostr account',

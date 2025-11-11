@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import { SignUpFlow } from '@/components/auth/SignUpFlow';
 
 export const metadata = {

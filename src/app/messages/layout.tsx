@@ -1,5 +1,3 @@
-import type { Metadata } from 'next';
-
 export const metadata = {
   title: 'Messages | Nostr for Nomads',
   description: 'Send and receive encrypted messages on Nostr',
