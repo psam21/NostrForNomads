@@ -21,7 +21,7 @@ export interface UseNostrSignInReturn {
 }
 
 export function useNostrSignIn(): UseNostrSignInReturn {
-  const { isAvailable, isLoading, signer } = useNostrSigner();
+  const { isAvailable, isLoading, getSigner } = useNostrSigner();
   const { setUser, setAuthenticated } = useAuthStore();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [signinError, setSigninError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export function useNostrSignIn(): UseNostrSignInReturn {
   const signIn = async (): Promise<boolean> => {
     logger.info('Sign-in initiated', { service: 'useNostrSignIn' });
 
-    if (!isAvailable || !signer) {
+    if (!isAvailable) {
       const error = new AppError(
         'No Nostr signer available. Please install a Nostr browser extension.',
         ErrorCode.SIGNER_NOT_DETECTED,
@@ -38,7 +38,7 @@ export function useNostrSignIn(): UseNostrSignInReturn {
         ErrorCategory.AUTHENTICATION,
         ErrorSeverity.MEDIUM
       );
-      logger.warn('Sign-in failed: no signer', { isAvailable, hasSigner: !!signer });
+      logger.warn('Sign-in failed: no signer available', { isAvailable });
       setSigninError(error.message);
       return false;
     }
@@ -47,6 +47,9 @@ export function useNostrSignIn(): UseNostrSignInReturn {
     setSigninError(null);
 
     try {
+      // Get signer when needed (will use window.nostr for extension users)
+      const signer = await getSigner();
+      
       // Call ProfileBusinessService to orchestrate sign-in
       const result = await profileService.signInWithExtension(signer);
 
