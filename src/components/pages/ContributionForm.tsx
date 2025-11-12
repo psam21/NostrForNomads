@@ -579,7 +579,11 @@ export const ContributionForm = ({
             consentDialog.cancelConsent();
           }
         }}
-        files={consentDialog.consent?.files?.map(f => new File([], f.name, { type: f.type })) || []}
+        files={consentDialog.consent?.files?.map(f => {
+          // Create a Blob with the correct size to display properly in the dialog
+          const blob = new Blob([new ArrayBuffer(f.size)], { type: f.type });
+          return new File([blob], f.name, { type: f.type });
+        }) || []}
         estimatedTime={consentDialog.consent?.estimatedTime || 0}
         totalSize={consentDialog.consent?.totalSize || 0}
       />
