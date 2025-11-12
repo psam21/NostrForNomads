@@ -218,7 +218,7 @@ export async function createContribution(
       existingDTag
     );
 
-    // Step 5: Publish to relays
+    // Step 5: Publish to relays (optimistic - return on first success, continue in background)
     onProgress?.({
       step: 'publishing',
       progress: 85,
@@ -226,14 +226,21 @@ export async function createContribution(
       details: 'Broadcasting event',
     });
 
-    logger.info('Publishing event to relays', {
+    logger.info('Publishing event to relays with optimistic return', {
       service: 'ContributionService',
       method: 'createContribution',
       eventId: event.id,
       title: contributionData.title,
     });
 
-    const publishResult = await nostrEventService.publishEvent(
+    // Extract dTag before publishing
+    const dTag = event.tags.find(tag => tag[0] === 'd')?.[1];
+    if (!dTag) {
+      throw new Error('Created event missing required d tag');
+    }
+
+    // Start publishing - this runs in parallel to all relays
+    const publishPromise = nostrEventService.publishEvent(
       event,
       signer,
       (relay, status) => {
@@ -247,28 +254,80 @@ export async function createContribution(
       }
     );
 
+    // Create a race condition: return as soon as we have first confirmation OR all complete
+    const firstSuccessPromise = new Promise<CreateContributionResult>((resolve) => {
+      let resolvedEarly = false;
+      const publishedRelays: string[] = [];
+      
+      // Monitor progress and resolve early on first success
+      const progressHandler = (relay: string, status: 'publishing' | 'success' | 'failed') => {
+        if (status === 'success' && !resolvedEarly) {
+          publishedRelays.push(relay);
+          // Return immediately with partial result
+          resolvedEarly = true;
+          resolve({
+            success: true,
+            eventId: event.id,
+            dTag,
+            publishedRelays: [relay],
+            failedRelays: [],
+          });
+        }
+      };
+      
+      // Re-publish with progress monitoring
+      nostrEventService.publishEvent(event, signer, progressHandler);
+    });
+
+    // Wait for either first success or full completion (whichever comes first)
+    const publishResult = await Promise.race([
+      firstSuccessPromise,
+      publishPromise.then((result): CreateContributionResult => ({
+        success: result.success,
+        eventId: result.eventId,
+        dTag,
+        publishedRelays: result.publishedRelays,
+        failedRelays: result.failedRelays,
+      })),
+    ]);
+
+    // Background: Continue publishing to remaining relays (non-blocking)
+    publishPromise.then((finalResult) => {
+      logger.info('Background relay publishing completed', {
+        service: 'ContributionService',
+        method: 'createContribution',
+        eventId: event.id,
+        finalPublishedCount: finalResult.publishedRelays.length,
+        finalFailedCount: finalResult.failedRelays.length,
+      });
+    }).catch((err) => {
+      logger.warn('Background relay publishing encountered errors', {
+        service: 'ContributionService',
+        method: 'createContribution',
+        eventId: event.id,
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+    });
+
+    // We consider it success if at least one relay confirms
     if (!publishResult.success) {
       return {
         success: false,
         error: `Failed to publish to any relay: ${publishResult.error}`,
         eventId: event.id,
+        dTag,
         publishedRelays: publishResult.publishedRelays,
         failedRelays: publishResult.failedRelays,
       };
     }
 
-    // Step 7: Extract dTag from event
+    // Step 6: Report completion
     onProgress?.({
       step: 'complete',
       progress: 100,
       message: 'Contribution published!',
-      details: `Successfully published to ${publishResult.publishedRelays.length} relays`,
+      details: `Successfully published to ${publishResult.publishedRelays?.length || 1} relays`,
     });
-
-    const dTag = event.tags.find(tag => tag[0] === 'd')?.[1];
-    if (!dTag) {
-      throw new Error('Created event missing required d tag');
-    }
 
     logger.info('Contribution created successfully', {
       service: 'ContributionService',
@@ -276,7 +335,7 @@ export async function createContribution(
       eventId: event.id,
       dTag,
       title: contributionData.title,
-      publishedRelays: publishResult.publishedRelays.length,
+      publishedRelays: publishResult.publishedRelays?.length || 1,
     });
 
     return {
