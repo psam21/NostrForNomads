@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { logger } from '@/services/core/LoggingService';
-import { useNostrSigner } from './useNostrSigner';
 import { useConsentDialog } from './useConsentDialog';
 import type { NostrSigner } from '@/types/nostr';
 
@@ -72,9 +71,7 @@ export function useContentPublishing<
   TResult extends PublishResult,
   TProgress extends PublishProgress
 >(options: UseContentPublishingOptions<TResult, TProgress>) {
-  const { serviceName, methodName, stateSetters, onSuccess } = options;
-  const { isAvailable, getSigner } = useNostrSigner();
-  const consentDialog = useConsentDialog();
+  const { serviceName, methodName, stateSetters, onSuccess, consentDialog, isAvailable, getSigner } = options;
 
   const publishWithWrapper = useCallback(async (
     publishFn: PublishFunction<TData, TResult, TProgress>,
