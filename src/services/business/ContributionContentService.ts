@@ -202,6 +202,10 @@ class ContributionContentService extends BaseContentProvider<ContributionCustomF
         }
       }
 
+      // Clean up any trailing hashtag sequences that might be appended to content
+      // Pattern: #WORD#HASH#WORD... at end of content
+      fullDescription = fullDescription.replace(/\n*#[A-Z0-9#]+$/i, '').trim();
+
       return {
         success: true,
         content: {
