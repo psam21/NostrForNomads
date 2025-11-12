@@ -108,15 +108,29 @@ export const ContributionForm = ({
 
   // Auto-redirect to detail page after successful publication
   useEffect(() => {
-    if (result?.success && result.dTag) {
-      // Wait 1 second to show success message, then redirect
+    console.log('[ContributionForm] Redirect useEffect triggered', { 
+      hasResult: !!result, 
+      success: result?.success, 
+      dTag: result?.dTag,
+      isPublishing 
+    });
+    
+    // Only redirect when publishing is complete and we have a successful result with dTag
+    if (result?.success && result.dTag && !isPublishing) {
+      console.log('[ContributionForm] Setting redirect timer for dTag:', result.dTag);
+      
+      // Wait 1.5 seconds to show success message, then redirect
       const redirectTimer = setTimeout(() => {
+        console.log('[ContributionForm] Redirecting to:', `/explore/${result.dTag}`);
         router.push(`/explore/${result.dTag}`);
-      }, 1000);
+      }, 1500);
 
-      return () => clearTimeout(redirectTimer);
+      return () => {
+        console.log('[ContributionForm] Clearing redirect timer');
+        clearTimeout(redirectTimer);
+      };
     }
-  }, [result, router]);
+  }, [result, isPublishing, router]);
 
   const handleInputChange = (field: keyof ContributionFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
