@@ -119,11 +119,11 @@ export const ContributionForm = ({
     if (result?.success && result.dTag && !isPublishing) {
       console.log('[ContributionForm] Setting redirect timer for dTag:', result.dTag);
       
-      // Wait 1.5 seconds to show success message, then redirect
+      // Wait 0.5 seconds to show success message, then redirect
       const redirectTimer = setTimeout(() => {
         console.log('[ContributionForm] Redirecting to:', `/explore/${result.dTag}`);
         router.push(`/explore/${result.dTag}`);
-      }, 1500);
+      }, 500);
 
       return () => {
         console.log('[ContributionForm] Clearing redirect timer');
