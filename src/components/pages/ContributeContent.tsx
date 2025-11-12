@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   MapPin,
@@ -10,8 +11,10 @@ import {
   CheckCircle,
   Globe,
   Users,
+  LogIn,
 } from 'lucide-react';
 import { ContributionForm } from '@/components/pages/ContributionForm';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 // Nomad contribution types
 const contributionTypes = [
@@ -84,7 +87,19 @@ const uploadSteps = [
 ];
 
 export default function ContributeContent() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const [selectedType, setSelectedType] = useState<number | null>(null);
+
+  const handleTypeSelection = (index: number) => {
+    if (!isAuthenticated) {
+      // Store the intended return URL before redirecting to sign-in
+      const returnUrl = '/contribute';
+      router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
+      return;
+    }
+    setSelectedType(index);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -148,7 +163,7 @@ export default function ContributeContent() {
                 <motion.button
                   key={type.title}
                   type="button"
-                  onClick={() => setSelectedType(index)}
+                  onClick={() => handleTypeSelection(index)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -181,11 +196,36 @@ export default function ContributeContent() {
               );
             })}
           </div>
+
+          {/* Sign In Prompt for Unauthenticated Users */}
+          {!isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-gradient-to-br from-purple-50 to-orange-50 border-2 border-purple-200 rounded-xl p-8 text-center"
+            >
+              <LogIn className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <h3 className="text-2xl font-serif font-bold text-purple-800 mb-3">
+                Sign In to Contribute
+              </h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                To share your nomad experiences and help the community, please sign in with your Nostr account.
+              </p>
+              <button
+                onClick={() => router.push('/signin?returnUrl=' + encodeURIComponent('/contribute'))}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              >
+                <LogIn className="w-5 h-5" />
+                Sign In to Continue
+              </button>
+            </motion.div>
+          )}
         </div>
       </section>
 
       {/* Contribution Form */}
-      {selectedType !== null && (
+      {selectedType !== null && isAuthenticated && (
         <section className="section-padding bg-gray-50">
           <div className="container-width">
             <ContributionForm />
