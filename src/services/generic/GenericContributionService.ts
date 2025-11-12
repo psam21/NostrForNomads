@@ -51,12 +51,16 @@ function extractMedia(tags: string[][]): {
   const audio: string[] = [];
   const videos: string[] = [];
   
+  console.log('[GenericContributionService] extractMedia - total tags:', tags.length);
+  
   tags.forEach(tag => {
     // Check for imeta tags (full metadata)
     if (tag[0] === 'imeta') {
+      console.log('[GenericContributionService] Found imeta tag:', tag);
       const parsed = parseImetaTag(tag);
       if (parsed) {
         const { url, mimeType } = parsed;
+        console.log('[GenericContributionService] Parsed imeta:', { url, mimeType });
         
         // Categorize by mime type
         if (mimeType?.startsWith('video/')) {
@@ -66,16 +70,28 @@ function extractMedia(tags: string[][]): {
         } else {
           images.push(url);
         }
+      } else {
+        console.log('[GenericContributionService] Failed to parse imeta tag');
       }
     }
     // Fallback to simple tags
     else if (tag[0] === 'image' && tag[1]) {
+      console.log('[GenericContributionService] Found simple image tag:', tag[1]);
       images.push(tag[1]);
     } else if (tag[0] === 'video' && tag[1]) {
+      console.log('[GenericContributionService] Found simple video tag:', tag[1]);
       videos.push(tag[1]);
     } else if (tag[0] === 'audio' && tag[1]) {
+      console.log('[GenericContributionService] Found simple audio tag:', tag[1]);
       audio.push(tag[1]);
     }
+  });
+  
+  console.log('[GenericContributionService] extractMedia result:', {
+    imagesCount: images.length,
+    audiosCount: audio.length,
+    videosCount: videos.length,
+    total: images.length + audio.length + videos.length
   });
   
   return { images, audio, videos };
