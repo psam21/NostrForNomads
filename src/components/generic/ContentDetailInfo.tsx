@@ -57,11 +57,11 @@ export function ContentDetailInfo({
       </article>
 
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-4 border-t border-primary-100">
+        <div className="flex flex-wrap gap-2">
           {tags.map(tag => (
             <span
               key={tag}
-              className="rounded-full bg-primary-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary-700 hover:bg-primary-100 transition-colors"
+              className="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-700"
             >
               #{tag}
             </span>
@@ -70,11 +70,11 @@ export function ContentDetailInfo({
       )}
 
       {metaBadges.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-4 border-t border-primary-100">
+        <div className="flex flex-wrap gap-2">
           {metaBadges.map(meta => (
             <div
               key={`${meta.label}-${meta.value}`}
-              className="rounded-full border border-primary-200 bg-white px-4 py-1.5 text-xs font-medium text-primary-700 hover:border-primary-300 transition-colors"
+              className="rounded-full border border-primary-100 px-3 py-1 text-xs font-medium text-primary-700"
               title={meta.tooltip}
             >
               {meta.label}: {meta.value}

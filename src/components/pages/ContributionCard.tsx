@@ -140,13 +140,13 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
               {contribution.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-xs"
+                  className="bg-accent-50 text-accent-700 text-xs rounded-full font-medium px-2 py-1"
                 >
-                  {tag}
+                  #{tag}
                 </span>
               ))}
               {contribution.tags.length > 3 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">
+                <span className="text-gray-500 text-xs">
                   +{contribution.tags.length - 3} more
                 </span>
               )}
@@ -217,7 +217,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
                 <ImageIcon className="w-4 h-4 mr-1" />
                 {contribution.mediaCount}
               </span>
-              <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-md text-xs">
+              <span className="bg-primary-50 text-primary-700 px-3 py-1 rounded-full font-medium text-sm">
                 {contribution.category}
               </span>
             </div>
@@ -228,13 +228,13 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
             {contribution.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-xs"
+                className="bg-accent-50 text-accent-700 text-xs rounded-full font-medium px-2 py-1"
               >
-                {tag}
+                #{tag}
               </span>
             ))}
             {contribution.tags.length > 2 && (
-              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">
+              <span className="text-gray-500 text-xs">
                 +{contribution.tags.length - 2}
               </span>
             )}
