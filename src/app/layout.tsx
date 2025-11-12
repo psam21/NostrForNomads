@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: 'Nostr for Nomads',
     description: 'Decentralized platform for nomadic lifestyle on Nostr',
     type: 'website',
-    url: 'https://nostrcoin.vercel.app',
+    ...(process.env.NEXT_PUBLIC_BASE_URL && { url: process.env.NEXT_PUBLIC_BASE_URL }),
   },
   twitter: {
     card: 'summary_large_image',
