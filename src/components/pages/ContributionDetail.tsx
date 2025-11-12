@@ -130,7 +130,7 @@ export function ContributionDetail({ detail, backHref = '/explore' }: Contributi
   }, [detail.tags]);
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-10">
       <ContentDetailHeader
         title={detail.title}
         actions={actions}
@@ -179,22 +179,22 @@ export function ContributionDetail({ detail, backHref = '/explore' }: Contributi
         main={
           <section
             aria-labelledby="contribution-details"
-            className="space-y-5 rounded-2xl bg-white/90 p-6 shadow-sm ring-1 ring-purple-100"
+            className="space-y-5 rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-primary-100"
           >
             <h2
               id="contribution-details"
-              className="text-xs font-semibold uppercase tracking-wider text-gray-500"
+              className="text-sm font-semibold uppercase tracking-wide text-gray-500"
             >
               Contribution Details
             </h2>
 
             {allMetadata.length > 0 && (
-              <dl className="grid grid-cols-1 gap-4 rounded-xl bg-gradient-to-br from-purple-50/50 to-white p-5 shadow-inner ring-1 ring-purple-50 md:grid-cols-2">
+              <dl className="grid grid-cols-1 gap-4 rounded-2xl bg-white/70 p-4 shadow-inner ring-1 ring-primary-100 md:grid-cols-2">
                 {allMetadata.map(item => (
                   <div key={item.label}>
                     <dt className="text-xs uppercase tracking-wide text-gray-500">{item.label}</dt>
                     <dd
-                      className={`mt-1.5 text-base font-medium ${item.emphasis ? 'text-purple-900' : 'text-gray-700'}`}
+                      className={`mt-1 text-base font-medium ${item.emphasis ? 'text-primary-900' : 'text-gray-700'}`}
                     >
                       {item.value}
                     </dd>

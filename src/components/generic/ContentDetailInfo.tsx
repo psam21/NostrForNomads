@@ -28,17 +28,17 @@ export function ContentDetailInfo({
   metaBadges = [],
 }: ContentDetailInfoProps) {
   return (
-    <section aria-labelledby="content-detail-info" className="space-y-8 rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-primary-100 lg:p-8">
-      <header className="border-b border-primary-100 pb-4">
-        <h2 id="content-detail-info" className="text-2xl font-serif font-bold text-primary-900 lg:text-3xl">
+    <section aria-labelledby="content-detail-info" className="space-y-6">
+      <header>
+        <h2 id="content-detail-info" className="text-2xl font-serif font-bold text-primary-900">
           {title}
         </h2>
         {price && <p className="mt-2 text-2xl font-semibold text-accent-600">{price}</p>}
-        {summary && <p className="mt-3 text-base text-gray-600 leading-relaxed">{summary}</p>}
+        {summary && <p className="mt-2 text-sm text-gray-600">{summary}</p>}
       </header>
 
       {metadata.length > 0 && (
-        <dl className="grid grid-cols-1 gap-4 rounded-xl bg-white/50 p-5 shadow-inner ring-1 ring-primary-50 md:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-4 rounded-2xl bg-white/70 p-4 shadow-sm ring-1 ring-primary-100 md:grid-cols-2">
           {metadata.map(item => (
             <div key={item.label}>
               <dt className="text-xs uppercase tracking-wide text-gray-500">{item.label}</dt>
@@ -52,7 +52,7 @@ export function ContentDetailInfo({
         </dl>
       )}
 
-      <article className="prose prose-primary prose-lg max-w-none text-gray-700">
+      <article className="prose prose-primary max-w-none text-base leading-relaxed text-gray-700">
         <MarkdownRenderer content={description} />
       </article>
 
