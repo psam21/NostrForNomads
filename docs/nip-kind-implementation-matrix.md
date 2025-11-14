@@ -19,6 +19,7 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 | Explore | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
 | Meetups | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Mock Data |
 | Contribute | ✅ Event creation | ❌ | ✅ Signing | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
+| My Contributions | ✅ Query events | ❌ | ✅ Signing | ✅ Deletion | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ✅ Delete events | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
 | User Event Log | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Production |
 
 ## NIP Descriptions
@@ -38,7 +39,7 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 
 ### NIPs Available but Not Yet Integrated
 
-- **NIP-09**: Event deletion - Kind 5 deletion events (implemented in GenericEventService.createDeletionEvent())
+- **NIP-09**: ✅ Event deletion - Kind 5 deletion events (✅ IMPLEMENTED in My Contributions feature)
 - **NIP-23**: Long-form content - articles, blog posts (✅ IMPLEMENTED in Contribute/Explore features)
 - **NIP-33**: Parameterized replaceable events - unique dTag, update-in-place (✅ IMPLEMENTED in Contribute/Explore features)
 - **NostrEventService methods**:
@@ -60,9 +61,9 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 
 ### Event Kinds Available but Not Yet Used
 
-- **Kind 5**: Event deletion - NIP-09 deletion events (implemented in GenericEventService)
+- **Kind 5**: ✅ Event deletion - NIP-09 deletion events (✅ IMPLEMENTED in My Contributions feature)
 - **Kind 10063**: User server list - Blossom CDN server discovery (implemented in GenericEventService)
-- **Kind 30023**: Long-form content - ✅ IN USE for contributions (Contribute/Explore features)
+- **Kind 30023**: Long-form content - ✅ IN USE for contributions (Contribute/Explore/My Contributions features)
 
 ## Feature Implementation Details
 
@@ -160,6 +161,36 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - Field-level validation (title, description, category, type, location, etc.)
 - Multi-attachment support with progress tracking
 - Auto-redirect to detail page after successful publish (1 second delay)
+
+### My Contributions
+
+- **Status**: Production - personal contribution management dashboard
+- Full CRUD operations for user's own Kind 30023 contributions
+- **Core operations**:
+  - `fetchContributionsByAuthor()` - Query by author pubkey + system tag
+  - `fetchContributionById()` - Fetch single contribution by dTag for editing
+  - `deleteContribution()` - NIP-09 Kind 5 deletion event publishing
+  - Edit workflow - Reuses ContributionForm in edit mode
+- **Dashboard features**:
+  - Statistics: Total contributions, by type, by category
+  - Filters: Search, contribution type, category
+  - Grid layout: Responsive (1/2/3 columns)
+  - Card actions: View (/explore/[dTag]), Edit, Delete
+- **Delete workflow**:
+  - Modal confirmation with contribution title
+  - Fetches full contribution to get eventId
+  - Publishes NIP-09 Kind 5 deletion event
+  - Multi-relay publishing with success tracking
+  - Optimistic local state removal
+- **Edit page**:
+  - Ownership verification (redirect if pubkey mismatch)
+  - Converts ContributionEvent to form defaultValues
+  - Maps media URLs to GenericAttachment format
+  - Reuses existing ContributionForm in edit mode
+  - Success redirects to dashboard after 1.5s
+- **Auth-gated**: Redirects to signin if not authenticated
+- **Navigation**: Mobile menu link (authenticated users only)
+- **SOA compliant**: Page → Component → Service layer architecture
 
 ### User Event Log
 
@@ -323,10 +354,10 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 
 ### Planned NIPs
 
-- **NIP-09**: Event deletion (service layer ready, needs UI integration)
+- **NIP-09**: ✅ Event deletion (IMPLEMENTED in My Contributions feature)
 - **NIP-11**: Relay capability discovery
-- **NIP-23**: Long-form content for articles/posts (service layer ready)
-- **NIP-33**: Parameterized replaceable events (service layer ready)
+- **NIP-23**: ✅ Long-form content for articles/posts (IMPLEMENTED in Contribute/Explore/My Contributions)
+- **NIP-33**: ✅ Parameterized replaceable events (IMPLEMENTED in Contribute/Explore/My Contributions)
 - **NIP-46**: Remote signer protocol (mobile apps, Nostr Connect)
 - **NIP-65**: Relay list metadata (user's preferred relay list)
 
@@ -363,12 +394,12 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 
 ---
 
-**Last Updated**: November 12, 2025  
+**Last Updated**: January 17, 2025  
 **Codebase Version**: Next.js 15.4.6, React 18  
-**Active NIPs**: 7 implemented (NIP-01, NIP-05, NIP-07, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44 + Blossom)  
-**Active Event Kinds**: 6 kinds (Kind 0, Kind 1, Kind 14, Kind 1059, Kind 24242, Kind 30023)
+**Active NIPs**: 8 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44 + Blossom)  
+**Active Event Kinds**: 7 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023)
 
-**Production Features**: Sign Up, Sign In, Profile, Messages, Contribute, Explore  
+**Production Features**: Sign Up, Sign In, Profile, Messages, Contribute, Explore, My Contributions  
 **UI Mockup Features**: Meetings, Payments, Shop, Travel, Gigs, Work, Meetups
 
 **Architecture**: Service-Oriented Architecture (SOA) with strict layer separation
