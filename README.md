@@ -8,16 +8,22 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 
 ## 🌟 Features
 
+### Production Features (Full Nostr Integration)
+
+- **Messages** - Encrypted, peer-to-peer messaging with NIP-17 gift-wrapped DMs and NIP-44 encryption
+- **Profile** - User metadata management with NIP-05 verification, Lightning addresses, and Blossom media uploads
+- **Contribute** - Create and share nomad contributions using Kind 30023 parameterized replaceable events
+- **Explore** - Discover community contributions with real-time relay queries and media galleries
+
+### UI-Only Features (Coming Soon)
+
 - **Gigs** - Decentralized job marketplace for freelancers and employers
 - **Work** - Browse and post job opportunities with Bitcoin payments
-- **Messages** - Encrypted, peer-to-peer messaging on Nostr (NIP-04)
 - **Meetings** - Video conferencing and virtual collaboration
 - **Payments** - Bitcoin and Lightning Network transactions
-- **Shop** - Decentralized marketplace for products and services
+- **Shop** - Decentralized marketplace for products and services (service layer ready)
 - **Travel** - Book accommodations, experiences, and transport
-- **Explore** - Discover events, locations, communities, and stories
 - **Meetups** - Find and organize local meetups with the Nostr community
-- **Contribute** - Support open source development and community initiatives
 
 ---
 
@@ -34,9 +40,9 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 
 ### Nostr Integration
 
-- **nostr-tools 2.17.0** - Nostr protocol implementation (NIPs 01, 04, 05, 07, 19, 96)
-- **WebSocket** - Real-time relay connections
-- **Blossom Client SDK 4.1.0** - Decentralized media protocol
+- **nostr-tools 2.17.0** - Nostr protocol implementation (NIPs 01, 05, 07, 17, 19, 23, 33, 44)
+- **WebSocket** - Real-time relay connections to 8 high-reliability relays
+- **Blossom Client SDK 4.1.0** - Decentralized media protocol (NIP-96)
 
 ### State Management
 
@@ -113,10 +119,13 @@ The application follows a **layered Service-Oriented Architecture** with clear s
 Encapsulates domain-specific business rules and workflows:
 
 - **AuthBusinessService**: Authentication flows, key management, sign-up/sign-in
-- **MessagingBusinessService**: Message composition, threading, encryption
-- **ProfileBusinessService**: Profile management, validation, updates
+- **MessagingBusinessService**: Message composition, threading, NIP-17/NIP-44 encryption
+- **ProfileBusinessService**: Profile management, validation, NIP-05 verification
 - **MediaBusinessService**: Media upload orchestration, Blossom integration
-- **MessageCacheService**: Message caching strategies and optimization
+- **MessageCacheService**: Message caching with 30-day TTL and adaptive sync
+- **ContributionService**: Contribution creation, validation, and publishing
+- **ContributionValidationService**: Field-level validation for contributions
+- **ContributionContentService**: Content provider interface for contributions
 
 **Key Characteristics**:
 
@@ -470,14 +479,22 @@ npm run enrich:nostr     # Enrich Nostr handles
 
 ### NIPs (Nostr Implementation Possibilities)
 
-- **NIP-01**: Basic protocol - events, signatures, relays
-- **NIP-04**: Encrypted Direct Messages (implemented in EncryptionService)
-- **NIP-05**: Mapping Nostr keys to DNS-based identifiers (NIP-05 verification)
-- **NIP-07**: Browser extension signing (window.nostr support)
-- **NIP-19**: bech32-encoded entities (npub, nsec, note, nprofile, nevent)
-- **NIP-23**: Long-form content (articles, blogs)
-- **NIP-33**: Parameterized replaceable events (d-tag based content)
-- **NIP-96**: HTTP File Storage Integration (Blossom protocol)
+#### Implemented NIPs
+
+- **NIP-01**: Basic protocol - events, signatures, relays ✅
+- **NIP-05**: DNS-based verification - `alice@example.com` identifiers ✅
+- **NIP-07**: Browser extension signing - `window.nostr` interface (Alby, nos2x, Nostore) ✅
+- **NIP-17**: Private Direct Messages - gift-wrapped encrypted messages (double encryption) ✅
+- **NIP-19**: Bech32-encoded entities - npub, nsec, note, nprofile, nevent ✅
+- **NIP-23**: Long-form content - articles, blogs (used in Contribute/Explore) ✅
+- **NIP-33**: Parameterized replaceable events - d-tag based content (used in Contribute/Explore) ✅
+- **NIP-44**: Encrypted payloads (v2) - ChaCha20-Poly1305 + HKDF-SHA256 for NIP-17 encryption ✅
+- **NIP-96**: Blossom protocol - decentralized media hosting with SHA-256 verification ✅
+
+#### Available but Not Yet Used
+
+- **NIP-09**: Event deletion - Kind 5 deletion events (service layer ready)
+- **NIP-46**: Remote signer protocol - Nostr Connect for mobile apps
 
 ### Relays
 
