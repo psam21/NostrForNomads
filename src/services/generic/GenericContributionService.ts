@@ -9,6 +9,7 @@ export interface ContributionEvent {
   pubkey: string;
   title: string;
   summary: string;
+  description: string; // Full content from event.content field
   category: string;
   contributionType: string;
   location: string;
@@ -133,12 +134,23 @@ function parseContributionEvent(event: NostrEvent): ContributionEvent | null {
     // Extract media
     const media = extractMedia(tags);
     
+    // Parse description from event.content (NIP-23 long-form content)
+    let description = '';
+    try {
+      const nip23Content = JSON.parse(event.content);
+      description = nip23Content.content || event.content || summary || title;
+    } catch {
+      // Fallback to raw content if not valid JSON
+      description = event.content || summary || title;
+    }
+    
     return {
       id: event.id,
       dTag,
       pubkey: event.pubkey,
       title,
       summary: summary || title, // Fallback to title if no summary
+      description,
       category,
       contributionType,
       location,

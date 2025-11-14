@@ -130,7 +130,7 @@ export default function ContributionEditPage() {
 
     return {
       title: contribution.title,
-      description: contribution.summary, // Using summary as description
+      description: contribution.description, // Full content from event.content
       category: contribution.category,
       contributionType: contribution.contributionType,
       language: '', // Not stored in ContributionEvent
@@ -140,7 +140,6 @@ export default function ContributionEditPage() {
       tags: contribution.tags,
       attachments,
       dTag: contribution.dTag,
-      contributionId: contribution.dTag, // For selective operations in edit mode
     };
   }, [contribution]);
 

@@ -512,6 +512,17 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
       
       const title = event.tags.find(t => t[0] === 'title')?.[1] || '';
       const summary = event.tags.find(t => t[0] === 'summary')?.[1] || title;
+      
+      // Parse description from event.content (NIP-23 long-form content)
+      let description = '';
+      try {
+        const nip23Content = JSON.parse(event.content);
+        description = nip23Content.content || event.content || summary;
+      } catch {
+        // Fallback to raw content if not valid JSON
+        description = event.content || summary;
+      }
+      
       const category = event.tags.find(t => t[0] === 'category')?.[1] || '';
       const contributionType = event.tags.find(t => t[0] === 'contribution-type')?.[1] || '';
       const location = event.tags.find(t => t[0] === 'location')?.[1] || '';
@@ -532,6 +543,7 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
         pubkey: event.pubkey,
         title,
         summary,
+        description,
         category,
         contributionType,
         location,
@@ -710,6 +722,17 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
     // Extract data from event tags
     const title = latestEvent.tags.find(t => t[0] === 'title')?.[1] || '';
     const summary = latestEvent.tags.find(t => t[0] === 'summary')?.[1] || title;
+    
+    // Parse description from event.content (NIP-23 long-form content)
+    let description = '';
+    try {
+      const nip23Content = JSON.parse(latestEvent.content);
+      description = nip23Content.content || latestEvent.content || summary;
+    } catch {
+      // Fallback to raw content if not valid JSON
+      description = latestEvent.content || summary;
+    }
+    
     const category = latestEvent.tags.find(t => t[0] === 'category')?.[1] || '';
     const contributionType = latestEvent.tags.find(t => t[0] === 'contribution-type')?.[1] || '';
     const location = latestEvent.tags.find(t => t[0] === 'location')?.[1] || '';
@@ -730,6 +753,7 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
       pubkey: latestEvent.pubkey,
       title,
       summary,
+      description,
       category,
       contributionType,
       location,
