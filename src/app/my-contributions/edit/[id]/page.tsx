@@ -133,7 +133,7 @@ export default function ContributionEditPage() {
       description: contribution.description, // Full content from event.content
       category: contribution.category,
       contributionType: contribution.contributionType,
-      language: '', // Not stored in ContributionEvent
+      language: contribution.language, // Parsed from language tag
       location: contribution.location,
       region: contribution.region,
       country: contribution.country || '',

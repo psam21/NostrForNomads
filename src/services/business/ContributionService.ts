@@ -525,6 +525,7 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
       
       const category = event.tags.find(t => t[0] === 'category')?.[1] || '';
       const contributionType = event.tags.find(t => t[0] === 'contribution-type')?.[1] || '';
+      const language = event.tags.find(t => t[0] === 'language')?.[1] || 'en';
       const location = event.tags.find(t => t[0] === 'location')?.[1] || '';
       const region = event.tags.find(t => t[0] === 'region')?.[1] || '';
       const country = event.tags.find(t => t[0] === 'country')?.[1];
@@ -546,6 +547,7 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
         description,
         category,
         contributionType,
+        language,
         location,
         region,
         country,
@@ -735,6 +737,7 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
     
     const category = latestEvent.tags.find(t => t[0] === 'category')?.[1] || '';
     const contributionType = latestEvent.tags.find(t => t[0] === 'contribution-type')?.[1] || '';
+    const language = latestEvent.tags.find(t => t[0] === 'language')?.[1] || 'en';
     const location = latestEvent.tags.find(t => t[0] === 'location')?.[1] || '';
     const region = latestEvent.tags.find(t => t[0] === 'region')?.[1] || '';
     const country = latestEvent.tags.find(t => t[0] === 'country')?.[1];
@@ -756,6 +759,7 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
       description,
       category,
       contributionType,
+      language,
       location,
       region,
       country,

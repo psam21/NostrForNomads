@@ -12,6 +12,7 @@ export interface ContributionEvent {
   description: string; // Full content from event.content field
   category: string;
   contributionType: string;
+  language: string; // Language tag from event
   location: string;
   region: string;
   country?: string;
@@ -122,6 +123,7 @@ function parseContributionEvent(event: NostrEvent): ContributionEvent | null {
     // Extract optional fields
     const category = tags.find(t => t[0] === 'category')?.[1] || 'Uncategorized';
     const contributionType = tags.find(t => t[0] === 'contribution-type')?.[1] || '';
+    const language = tags.find(t => t[0] === 'language')?.[1] || 'en';
     const location = tags.find(t => t[0] === 'location')?.[1] || '';
     const region = tags.find(t => t[0] === 'region')?.[1] || '';
     const country = tags.find(t => t[0] === 'country')?.[1];
@@ -153,6 +155,7 @@ function parseContributionEvent(event: NostrEvent): ContributionEvent | null {
       description,
       category,
       contributionType,
+      language,
       location,
       region,
       country,
