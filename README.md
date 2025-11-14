@@ -14,6 +14,7 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 - **Profile** - User metadata management with NIP-05 verification, Lightning addresses, and Blossom media uploads
 - **Contribute** - Create and share nomad contributions using Kind 30023 parameterized replaceable events
 - **Explore** - Discover community contributions with real-time relay queries and media galleries
+- **My Contributions** - Full CRUD management dashboard for user's contributions with NIP-09 deletion support
 
 ### UI-Only Features (Coming Soon)
 

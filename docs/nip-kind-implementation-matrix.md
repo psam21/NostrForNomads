@@ -394,12 +394,12 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 
 ---
 
-**Last Updated**: January 17, 2025  
+**Last Updated**: November 15, 2025  
 **Codebase Version**: Next.js 15.4.6, React 18  
-**Active NIPs**: 8 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44 + Blossom)  
+**Active NIPs**: 9 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44 + Blossom)  
 **Active Event Kinds**: 7 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023)
 
-**Production Features**: Sign Up, Sign In, Profile, Messages, Contribute, Explore, My Contributions  
+**Production Features**: Sign Up, Sign In, Profile, Messages, Contribute, Explore, My Contributions (CRUD)  
 **UI Mockup Features**: Meetings, Payments, Shop, Travel, Gigs, Work, Meetups
 
 **Architecture**: Service-Oriented Architecture (SOA) with strict layer separation
