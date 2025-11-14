@@ -90,40 +90,43 @@ export default function ContributionEditPage() {
     const attachments: GenericAttachment[] = [];
     
     // Add images
-    contribution.media.images.forEach((url, index) => {
+    contribution.media.images.forEach((media, index) => {
       attachments.push({
         id: `image-${index}`,
         type: 'image',
         name: `Image ${index + 1}`,
-        size: 0,
-        mimeType: 'image/jpeg',
-        url,
+        size: media.size || 0,
+        mimeType: media.mimeType || 'image/jpeg',
+        url: media.url,
+        hash: media.hash,
         createdAt: contribution.createdAt,
       });
     });
 
     // Add videos
-    contribution.media.videos.forEach((url, index) => {
+    contribution.media.videos.forEach((media, index) => {
       attachments.push({
         id: `video-${index}`,
         type: 'video',
         name: `Video ${index + 1}`,
-        size: 0,
-        mimeType: 'video/mp4',
-        url,
+        size: media.size || 0,
+        mimeType: media.mimeType || 'video/mp4',
+        url: media.url,
+        hash: media.hash,
         createdAt: contribution.createdAt,
       });
     });
 
     // Add audio
-    contribution.media.audio.forEach((url, index) => {
+    contribution.media.audio.forEach((media, index) => {
       attachments.push({
         id: `audio-${index}`,
         type: 'audio',
         name: `Audio ${index + 1}`,
-        size: 0,
-        mimeType: 'audio/mpeg',
-        url,
+        size: media.size || 0,
+        mimeType: media.mimeType || 'audio/mpeg',
+        url: media.url,
+        hash: media.hash,
         createdAt: contribution.createdAt,
       });
     });

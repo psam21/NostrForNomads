@@ -3,6 +3,14 @@ import { logger } from '../core/LoggingService';
 import { queryEvents } from './GenericRelayService';
 import type { NostrEvent } from '@/types/nostr';
 
+// Export media attachment interface for use in other services
+export interface MediaAttachment {
+  url: string;
+  mimeType?: string;
+  hash?: string;
+  size?: number;
+}
+
 export interface ContributionEvent {
   id: string;
   dTag: string;
@@ -18,15 +26,23 @@ export interface ContributionEvent {
   country?: string;
   tags: string[];
   media: {
-    images: string[];
-    audio: string[];
-    videos: string[];
+    images: MediaAttachment[];
+    audio: MediaAttachment[];
+    videos: MediaAttachment[];
   };
   createdAt: number;
   publishedAt: number;
 }
 
-function parseImetaTag(imetaTag: string[]): { url: string; mimeType?: string } | null {
+interface ParsedMedia {
+  url: string;
+  mimeType?: string;
+  hash?: string;
+  size?: number;
+}
+
+// Export parsing function for use in other services
+export function parseImetaTag(imetaTag: string[]): ParsedMedia | null {
   if (!imetaTag || imetaTag[0] !== 'imeta') return null;
   
   const imetaStr = imetaTag.slice(1).join(' ');
@@ -41,17 +57,26 @@ function parseImetaTag(imetaTag: string[]): { url: string; mimeType?: string } |
   const mimeMatch = imetaStr.match(/m\s+(\S+)/);
   const mimeType = mimeMatch ? mimeMatch[1] : undefined;
   
-  return { url, mimeType };
+  // Extract hash (x field in NIP-94)
+  const hashMatch = imetaStr.match(/x\s+(\S+)/);
+  const hash = hashMatch ? hashMatch[1] : undefined;
+  
+  // Extract size
+  const sizeMatch = imetaStr.match(/size\s+(\d+)/);
+  const size = sizeMatch ? parseInt(sizeMatch[1], 10) : undefined;
+  
+  return { url, mimeType, hash, size };
 }
 
-function extractMedia(tags: string[][]): {
-  images: string[];
-  audio: string[];
-  videos: string[];
+// Export media extraction function for use in other services
+export function extractMedia(tags: string[][]): {
+  images: MediaAttachment[];
+  audio: MediaAttachment[];
+  videos: MediaAttachment[];
 } {
-  const images: string[] = [];
-  const audio: string[] = [];
-  const videos: string[] = [];
+  const images: MediaAttachment[] = [];
+  const audio: MediaAttachment[] = [];
+  const videos: MediaAttachment[] = [];
   
   console.log('[GenericContributionService] extractMedia - total tags:', tags.length);
   
@@ -61,16 +86,16 @@ function extractMedia(tags: string[][]): {
       console.log('[GenericContributionService] Found imeta tag:', tag);
       const parsed = parseImetaTag(tag);
       if (parsed) {
-        const { url, mimeType } = parsed;
-        console.log('[GenericContributionService] Parsed imeta:', { url, mimeType });
+        const { url, mimeType, hash, size } = parsed;
+        console.log('[GenericContributionService] Parsed imeta:', { url, mimeType, hash, size });
         
         // Categorize by mime type
         if (mimeType?.startsWith('video/')) {
-          videos.push(url);
+          videos.push({ url, mimeType, hash, size });
         } else if (mimeType?.startsWith('audio/')) {
-          audio.push(url);
+          audio.push({ url, mimeType, hash, size });
         } else {
-          images.push(url);
+          images.push({ url, mimeType, hash, size });
         }
       } else {
         console.log('[GenericContributionService] Failed to parse imeta tag');
@@ -79,13 +104,13 @@ function extractMedia(tags: string[][]): {
     // Fallback to simple tags
     else if (tag[0] === 'image' && tag[1]) {
       console.log('[GenericContributionService] Found simple image tag:', tag[1]);
-      images.push(tag[1]);
+      images.push({ url: tag[1] });
     } else if (tag[0] === 'video' && tag[1]) {
       console.log('[GenericContributionService] Found simple video tag:', tag[1]);
-      videos.push(tag[1]);
+      videos.push({ url: tag[1] });
     } else if (tag[0] === 'audio' && tag[1]) {
       console.log('[GenericContributionService] Found simple audio tag:', tag[1]);
-      audio.push(tag[1]);
+      audio.push({ url: tag[1] });
     }
   });
   

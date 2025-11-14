@@ -56,7 +56,7 @@ export default function MyContributionsPage() {
           location: event.location,
           region: event.region,
           country: event.country,
-          imageUrl: event.media.images[0], // First image as thumbnail
+          imageUrl: event.media.images[0]?.url, // First image URL as thumbnail
           tags: event.tags,
           pubkey: event.pubkey,
           createdAt: event.createdAt,

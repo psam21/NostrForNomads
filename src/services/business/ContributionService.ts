@@ -4,7 +4,7 @@ import { validateContributionData } from './ContributionValidationService';
 import { nostrEventService } from '../nostr/NostrEventService';
 import type { NostrSigner, NostrEvent } from '@/types/nostr';
 import { uploadSequentialWithConsent } from '@/services/generic/GenericBlossomService';
-import { fetchPublicContributions as fetchPublicContributionsFromRelay, type ContributionEvent } from '@/services/generic/GenericContributionService';
+import { fetchPublicContributions as fetchPublicContributionsFromRelay, type ContributionEvent, extractMedia } from '@/services/generic/GenericContributionService';
 import { getRelativeTime } from '@/utils/dateUtils';
 import { queryEvents } from '@/services/generic/GenericRelayService';
 import { createDeletionEvent, signEvent } from '@/services/generic/GenericEventService';
@@ -390,8 +390,8 @@ function mapToExploreItem(event: ContributionEvent): ContributionExploreItem {
     event.media.audio.length +
     event.media.videos.length;
   
-  const image = event.media.images[0] || 
-                event.media.videos[0] || 
+  const image = event.media.images[0]?.url || 
+                event.media.videos[0]?.url || 
                 'https://images.unsplash.com/photo-1606114701010-e2b90b5ab7d8?w=400&h=300&fit=crop';
   
   return {
@@ -533,10 +533,8 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
         .filter(t => t[0] === 't' && !t[1].startsWith('nostr-for-nomads-'))
         .map(t => t[1]);
 
-      // Parse media from tags (simple URLs)
-      const images = event.tags.filter(t => t[0] === 'image').map(t => t[1]);
-      const videos = event.tags.filter(t => t[0] === 'video').map(t => t[1]);
-      const audio = event.tags.filter(t => t[0] === 'audio').map(t => t[1]);
+      // Parse media from tags using shared function
+      const media = extractMedia(event.tags);
 
       contributions.push({
         id: event.id,
@@ -552,11 +550,7 @@ export async function fetchContributionsByAuthor(pubkey: string): Promise<Contri
         region,
         country,
         tags,
-        media: {
-          images,
-          videos,
-          audio,
-        },
+        media,
         createdAt: event.created_at,
         publishedAt: event.created_at,
       });
@@ -745,10 +739,8 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
       .filter(t => t[0] === 't' && !t[1].startsWith('nostr-for-nomads-'))
       .map(t => t[1]);
 
-    // Parse media from tags
-    const images = latestEvent.tags.filter(t => t[0] === 'image').map(t => t[1]);
-    const videos = latestEvent.tags.filter(t => t[0] === 'video').map(t => t[1]);
-    const audio = latestEvent.tags.filter(t => t[0] === 'audio').map(t => t[1]);
+    // Parse media from tags using shared function
+    const media = extractMedia(latestEvent.tags);
 
     const contribution: ContributionEvent = {
       id: latestEvent.id,
@@ -764,11 +756,7 @@ export async function fetchContributionById(dTag: string): Promise<ContributionE
       region,
       country,
       tags,
-      media: {
-        images,
-        videos,
-        audio,
-      },
+      media,
       createdAt: latestEvent.created_at,
       publishedAt: latestEvent.created_at,
     };
