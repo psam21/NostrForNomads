@@ -809,7 +809,30 @@ export async function updateProductWithAttachments(
 }
 
 /**
- * Fetch public products for browse/listing view
+ * Transform product event to product explore item
+ * Maps full ProductEvent structure to simplified card data
+ * Following ContributionService pattern
+ */
+function mapToExploreItem(event: ProductEvent): ProductExploreItem {
+  return {
+    id: event.id,
+    dTag: event.dTag,
+    title: event.title,
+    description: event.description,
+    price: event.price,
+    currency: event.currency,
+    category: event.category,
+    condition: event.condition,
+    location: event.location,
+    imageUrl: event.media.images[0]?.url, // Extract first image URL
+    tags: event.tags,
+    pubkey: event.pubkey,
+    createdAt: event.createdAt,
+  };
+}
+
+/**
+ * Fetch public products for shop/listing view
  * Business layer method that orchestrates fetching and data transformation
  * 
  * @param limit - Maximum number of products to fetch
@@ -832,22 +855,8 @@ export async function fetchPublicProducts(
 
     const products = await fetchPublicProductsFromRelay(limit, until, onProgress);
     
-    // Convert ProductEvent[] to ProductExploreItem[] with imageUrl
-    const exploreItems: ProductExploreItem[] = products.map((product: ProductEvent) => ({
-      id: product.id,
-      dTag: product.dTag,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      currency: product.currency,
-      category: product.category,
-      condition: product.condition,
-      location: product.location,
-      imageUrl: product.media.images[0]?.url, // Extract first image URL
-      tags: product.tags,
-      pubkey: product.pubkey,
-      createdAt: product.createdAt,
-    }));
+    // Map events to explore items using transformation function
+    const exploreItems = products.map(mapToExploreItem);
     
     logger.info('Public products fetched', {
       service: 'ShopService',
