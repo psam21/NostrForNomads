@@ -180,7 +180,11 @@ export interface ProductValidationResult {
   };
 }
 
-interface MediaAttachment {
+/**
+ * Media attachment with metadata
+ * Extracted from imeta tags (NIP-94) or simple media tags
+ */
+export interface MediaAttachment {
   url: string;
   mimeType?: string;
   hash?: string;
@@ -190,3 +194,126 @@ interface MediaAttachment {
     height: number;
   };
 }
+
+// ============================================================================
+// CONSTANTS & HELPERS
+// ============================================================================
+
+/**
+ * Tag keys used in Product Nostr events (Kind 30023)
+ * Standardized tag identifiers for consistent event structure
+ */
+export const PRODUCT_TAG_KEYS = {
+  D_TAG: 'd',           // Unique identifier (NIP-33)
+  SYSTEM_TAG: 't',      // System tag marker
+  TITLE: 'title',       // Product title
+  PRICE: 'price',       // Price value
+  CURRENCY: 'currency', // Currency code
+  CATEGORY: 'category', // Product category
+  CONDITION: 'condition', // Product condition
+  LOCATION: 'location', // Location/region
+  CONTACT: 'contact',   // Contact method
+  USER_TAG: 't',        // User-defined tag
+  IMAGE: 'image',       // Image URL
+  VIDEO: 'video',       // Video URL
+  AUDIO: 'audio',       // Audio URL
+  IMETA: 'imeta',       // NIP-94 metadata
+} as const;
+
+/**
+ * System tag value for Shop products
+ * Used to identify and filter Shop events across the Nostr network
+ */
+export const PRODUCT_SYSTEM_TAG = 'nostr-for-nomads-shop';
+
+/**
+ * Type guard to check if an event is a valid ProductEvent
+ * Verifies presence of required fields and correct structure
+ */
+export function isProductEvent(event: unknown): event is ProductEvent {
+  if (!event || typeof event !== 'object') return false;
+  
+  const e = event as Record<string, unknown>;
+  
+  return (
+    typeof e.id === 'string' &&
+    typeof e.dTag === 'string' &&
+    typeof e.pubkey === 'string' &&
+    typeof e.title === 'string' &&
+    typeof e.description === 'string' &&
+    typeof e.price === 'number' &&
+    typeof e.currency === 'string' &&
+    typeof e.category === 'string' &&
+    typeof e.condition === 'string' &&
+    typeof e.createdAt === 'number' &&
+    typeof e.publishedAt === 'number'
+  );
+}
+
+/**
+ * Type guard to check if data is valid ProductData
+ * Validates required fields for product creation
+ */
+export function isProductData(data: unknown): data is ProductData {
+  if (!data || typeof data !== 'object') return false;
+  
+  const d = data as Record<string, unknown>;
+  
+  return (
+    typeof d.title === 'string' &&
+    typeof d.description === 'string' &&
+    typeof d.price === 'number' &&
+    typeof d.currency === 'string' &&
+    typeof d.category === 'string' &&
+    typeof d.condition === 'string' &&
+    typeof d.location === 'string' &&
+    typeof d.contact === 'string' &&
+    Array.isArray(d.tags) &&
+    Array.isArray(d.attachments)
+  );
+}
+
+/**
+ * Helper to extract dTag from ProductEvent
+ */
+export function getProductDTag(event: ProductEvent): string {
+  return event.dTag;
+}
+
+/**
+ * Helper to format product price with currency
+ */
+export function formatProductPrice(price: number, currency: string): string {
+  if (currency === 'BTC') {
+    return `₿${price.toFixed(8)}`;
+  } else if (currency === 'sats') {
+    return `${price.toLocaleString()} sats`;
+  } else {
+    // USD and other fiat
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency === 'USD' ? 'USD' : 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+  }
+}
+
+/**
+ * Helper to get product media count
+ */
+export function getProductMediaCount(product: ProductEvent): number {
+  return (
+    product.media.images.length +
+    product.media.videos.length +
+    product.media.audio.length
+  );
+}
+
+/**
+ * Helper to check if product has media
+ */
+export function hasProductMedia(product: ProductEvent): boolean {
+  return getProductMediaCount(product) > 0;
+}
+
