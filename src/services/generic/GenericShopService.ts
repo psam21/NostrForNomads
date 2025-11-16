@@ -37,6 +37,28 @@ export function parseImetaTag(imetaTag: string[]): ParsedMedia | null {
   
   const imetaStr = imetaTag.slice(1).join(' ');
   
+  // Try parsing as JSON first (backward compatibility with old format)
+  if (imetaStr.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(imetaStr);
+      if (!parsed.url) return null;
+      
+      return {
+        url: parsed.url,
+        mimeType: parsed.m,
+        hash: parsed.x,
+        size: parsed.size,
+        dimensions: parsed.dim ? (() => {
+          const match = parsed.dim.match(/(\d+)x(\d+)/);
+          return match ? { width: parseInt(match[1], 10), height: parseInt(match[2], 10) } : undefined;
+        })() : undefined,
+      };
+    } catch {
+      // If JSON parsing fails, fall through to space-separated format
+    }
+  }
+  
+  // Parse NIP-94 space-separated format (correct format)
   // Extract URL (required)
   const urlMatch = imetaStr.match(/url\s+(\S+)/);
   if (!urlMatch) return null;
