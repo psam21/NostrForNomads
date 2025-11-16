@@ -1393,18 +1393,30 @@ All pages re-fetch data on every visit (no caching between navigations).
 
 ## Implementation Order (Recommended)
 
+**Dependency-driven order for clean builds at each step:**
+
 1. **Types** (Phase 1) - Foundation for all other code
 2. **Configuration** (Phase 5) - Categories, conditions, currencies
 3. **Service Layer** (Phase 2-4) - Business logic, validation, protocol
-4. **Build & Test Services** (Phase 11.1) - Verify compilation
+4. **Build & Test Services** (Phase 11.1) - Verify services compile
 5. **Stores** (Phase 6) - Zustand state management (useShopStore, useMyShopStore)
-6. **Hooks** (Phase 7) - State management layer (useShopPublishing, usePublicProducts, useProductEditing)
-7. **Components** (Phase 8) - UI building blocks
-8. **My Shop Pages** (Phase 9.2, 9.4, 9.5) - User's product management
-9. **Shop Browse** (Phase 9.1, 9.3) - Public marketplace
-10. **Navigation** (Phase 10) - Header links
-11. **Manual Testing** (Phase 11.2-11.3) - End-to-end verification
-12. **Documentation** (Phase 12) - Update docs
+6. **Build & Test Stores** - `npm run build` - Verify stores compile (no Phase 11 step, just quick check)
+7. **Hooks** (Phase 7) - State orchestration (useShopPublishing, usePublicProducts, useProductEditing, useMyShopProducts)
+8. **Build & Test Hooks** - `npm run build` - Verify hooks compile
+9. **Components** (Phase 8) - UI building blocks (MyProductCard, ProductForm, ShopContent)
+10. **My Shop Pages** (Phase 9.2, 9.4, 9.5, 9.6) - User's product management (dashboard, create, edit)
+11. **Shop Browse** (Phase 9.1, 9.3) - Public marketplace (browse, detail)
+12. **Navigation** (Phase 10) - Header links
+13. **Build & Test Full App** (Phase 11.1) - Final compilation check
+14. **Manual Testing** (Phase 11.2-11.3) - End-to-end verification
+15. **Documentation** (Phase 12) - Update docs
+
+**Why this order?**
+- Each layer depends on previous layers being tested
+- Build after Services → catches type errors before Stores
+- Build after Stores → catches store API errors before Hooks
+- Build after Hooks → catches hook API errors before Components
+- Incremental testing prevents cascading errors
 
 ---
 
