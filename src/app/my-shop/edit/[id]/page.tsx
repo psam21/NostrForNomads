@@ -205,14 +205,12 @@ export default function EditProductPage() {
 
       {/* Main Content */}
       <div className="container-width py-8">
-        <div className="max-w-4xl mx-auto">
-          <ProductForm
-            onProductCreated={handleProductUpdated}
-            onCancel={handleCancel}
-            defaultValues={defaultValues}
-            isEditMode={true}
-          />
-        </div>
+        <ProductForm
+          onProductCreated={handleProductUpdated}
+          onCancel={handleCancel}
+          defaultValues={defaultValues}
+          isEditMode={true}
+        />
       </div>
     </div>
   );

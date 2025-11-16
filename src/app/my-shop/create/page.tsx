@@ -55,13 +55,11 @@ export default function CreateProductPage() {
 
       {/* Main Content */}
       <div className="container-width py-8">
-        <div className="max-w-4xl mx-auto">
-          <ProductForm
-            onProductCreated={handleProductCreated}
-            onCancel={handleCancel}
-            isEditMode={false}
-          />
-        </div>
+        <ProductForm
+          onProductCreated={handleProductCreated}
+          onCancel={handleCancel}
+          isEditMode={false}
+        />
       </div>
     </div>
   );
