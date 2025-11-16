@@ -111,6 +111,12 @@ export function useContentEditing<
       contentId,
       attachmentCount: attachmentFiles.length,
       hasSelectiveOps: !!selectiveOps,
+      selectiveOpsDetail: selectiveOps ? {
+        removedCount: selectiveOps.removedAttachments?.length || 0,
+        keptCount: selectiveOps.keptAttachments?.length || 0,
+        removed: selectiveOps.removedAttachments,
+        kept: selectiveOps.keptAttachments,
+      } : null,
     });
 
     setUpdating(true);
