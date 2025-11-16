@@ -92,14 +92,6 @@ export const ProductForm = ({
         .map(a => a.url!)
         .filter((url): url is string => !!url);
       
-      console.log('[ProductForm] Selective ops calculated:', {
-        existingCount: existingAttachments.length,
-        currentCount: attachments.length,
-        currentUrls: currentAttachmentUrls,
-        removed: removedAttachments,
-        kept: keptAttachments,
-      });
-      
       // Call updateContent with selective operations
       const result = await editingHook.updateContent(
         defaultValues.dTag!, // contentId (dTag for fetching existing product)
