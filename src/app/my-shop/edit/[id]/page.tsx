@@ -126,6 +126,51 @@ export default function EditProductPage() {
   }
 
   // Convert ProductEvent to form default values
+  // Convert media URLs to GenericAttachment format
+  const attachments: import('@/types/attachments').GenericAttachment[] = [];
+  
+  // Add images
+  product.media.images.forEach((media, index) => {
+    attachments.push({
+      id: `image-${index}`,
+      type: 'image',
+      name: `Image ${index + 1}`,
+      size: media.size || 0,
+      mimeType: media.mimeType || 'image/jpeg',
+      url: media.url,
+      hash: media.hash,
+      createdAt: product.createdAt,
+    });
+  });
+
+  // Add videos
+  product.media.videos.forEach((media, index) => {
+    attachments.push({
+      id: `video-${index}`,
+      type: 'video',
+      name: `Video ${index + 1}`,
+      size: media.size || 0,
+      mimeType: media.mimeType || 'video/mp4',
+      url: media.url,
+      hash: media.hash,
+      createdAt: product.createdAt,
+    });
+  });
+
+  // Add audio
+  product.media.audio.forEach((media, index) => {
+    attachments.push({
+      id: `audio-${index}`,
+      type: 'audio',
+      name: `Audio ${index + 1}`,
+      size: media.size || 0,
+      mimeType: media.mimeType || 'audio/mpeg',
+      url: media.url,
+      hash: media.hash,
+      createdAt: product.createdAt,
+    });
+  });
+
   const defaultValues = {
     title: product.title,
     description: product.description,
@@ -136,7 +181,7 @@ export default function EditProductPage() {
     location: product.location,
     contact: product.contact,
     tags: product.tags,
-    attachments: [], // User will re-upload if they want to change media
+    attachments,
     dTag,
     productId: product.id,
   };
