@@ -98,7 +98,8 @@ export const ProductForm = ({
       );
       
       // Return the result (success status and eventId)
-      return { success: result.success, eventId: result.eventId || defaultValues.productId! };
+      // Fallback to dTag if eventId not returned (though it should always be returned on success)
+      return { success: result.success, eventId: result.eventId || defaultValues.dTag! };
     },
     consentDialog: publishingHook.consentDialog, // Use publishing hook's consent dialog
   } : publishingHook;
