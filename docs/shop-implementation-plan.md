@@ -824,7 +824,135 @@ export function getCurrencies() {
 
 ---
 
-## Phase 6: Hooks
+## Phase 6: State Management Stores
+
+**Pattern from temp-cb-reference:** Zustand stores for centralized state management, separate from hooks.
+
+### 6.1 Create useShopStore (Public Browse State)
+- **File**: `/src/stores/useShopStore.ts` (NEW)
+- **Action**: CREATE new file
+- **Reference**: `temp-cb-reference/src/stores/useShopStore.ts`
+- **Purpose**: Centralized state for public shop browsing
+
+**Store State:**
+```typescript
+export interface ShopState {
+  // Products
+  products: ShopProduct[];
+  isLoadingProducts: boolean;
+  productsError: string | null;
+  
+  // UI State
+  searchQuery: string;
+  selectedCategory: string;
+  selectedCondition: string;
+  priceRange: { min: number; max: number };
+  sortBy: 'newest' | 'oldest' | 'price-low' | 'price-high';
+  viewMode: 'grid' | 'list';
+  
+  // Actions
+  setProducts: (products: ShopProduct[]) => void;
+  setLoadingProducts: (loading: boolean) => void;
+  setProductsError: (error: string | null) => void;
+  setSearchQuery: (query: string) => void;
+  setSelectedCategory: (category: string) => void;
+  setSelectedCondition: (condition: string) => void;
+  setPriceRange: (range: { min: number; max: number }) => void;
+  setSortBy: (sortBy: 'newest' | 'oldest' | 'price-low' | 'price-high') => void;
+  setViewMode: (mode: 'grid' | 'list') => void;
+  
+  // Computed getters
+  getFilteredProducts: () => ShopProduct[];
+  getProductsByCategory: (category: string) => ShopProduct[];
+  searchProducts: (query: string) => ShopProduct[];
+  clearFilters: () => void;
+  reset: () => void;
+}
+```
+
+**Key Features:**
+- Zustand devtools for debugging
+- Computed getters for filtered/searched products
+- UI state (filters, search, sort, view mode)
+- No persistence (public browse data, ephemeral)
+
+### 6.2 Create useMyShopStore (User's Products State)
+- **File**: `/src/stores/useMyShopStore.ts` (NEW)
+- **Action**: CREATE new file
+- **Reference**: `temp-cb-reference/src/stores/useMyShopStore.ts`
+- **Purpose**: Centralized state for user's product management
+
+**Store State:**
+```typescript
+export interface MyShopState {
+  // Products
+  myProducts: ShopProduct[];
+  isLoadingMyProducts: boolean;
+  myProductsError: string | null;
+  
+  // Editing
+  editingProduct: ShopProduct | null;
+  isEditing: boolean;
+  isUpdating: boolean;
+  updateProgress: ShopPublishingProgress | null;
+  updateError: string | null;
+  
+  // Deleting
+  isDeleting: boolean;
+  deleteProgress: ShopPublishingProgress | null;
+  deleteError: string | null;
+  
+  // UI State
+  showCreateForm: boolean;
+  showDeleteDialog: boolean;
+  deletingProduct: ShopProduct | null;
+  
+  // Actions
+  setMyProducts: (products: ShopProduct[]) => void;
+  setLoadingMyProducts: (loading: boolean) => void;
+  setMyProductsError: (error: string | null) => void;
+  
+  // Edit actions
+  startEditing: (product: ShopProduct) => void;
+  cancelEditing: () => void;
+  setUpdating: (updating: boolean) => void;
+  setUpdateProgress: (progress: ShopPublishingProgress | null) => void;
+  setUpdateError: (error: string | null) => void;
+  
+  // Delete actions
+  setDeleting: (deleting: boolean) => void;
+  setDeleteProgress: (progress: ShopPublishingProgress | null) => void;
+  setDeleteError: (error: string | null) => void;
+  
+  // Utility actions
+  addProduct: (product: ShopProduct) => void;
+  updateProduct: (productId: string, updatedProduct: ShopProduct) => void;
+  removeProduct: (productId: string) => void;
+  clearErrors: () => void;
+}
+```
+
+**Key Features:**
+- Tracks editing/deleting progress (for real-time UI feedback)
+- Modal/dialog state management
+- Error handling per operation
+- No persistence (re-fetch from relays on mount)
+
+### 6.3 Why Separate Stores?
+
+**Separation of Concerns:**
+- `useShopStore`: Public browse (anyone can use, no auth required)
+- `useMyShopStore`: User's products (auth-gated, management operations)
+
+**Benefits:**
+- Clear ownership boundaries
+- Independent state lifecycles
+- No auth state pollution in public store
+- Easier testing and debugging
+
+---
+
+## Phase 7: Hooks
 
 ### 6.1 Create useShopPublishing Hook
 - **File**: `/src/hooks/useShopPublishing.ts` (NEW)
@@ -875,7 +1003,7 @@ export function usePublicProducts(limit = 20) {
 
 ---
 
-## Phase 7: Components
+## Phase 8: Components
 
 ### 7.1 Create MyProductCard Component
 - **File**: `/src/components/generic/MyProductCard.tsx` (NEW)
@@ -970,7 +1098,7 @@ export function usePublicProducts(limit = 20) {
 
 ---
 
-## Phase 8: Pages
+## Phase 9: Pages
 
 ### 8.1 Update Shop Browse Page
 - **File**: `/src/app/shop/page.tsx`
@@ -1044,7 +1172,7 @@ export function usePublicProducts(limit = 20) {
 
 ---
 
-## Phase 9: Navigation
+## Phase 10: Navigation
 
 ### 9.1 Add My Shop Link to Header
 - **File**: `/src/components/Header.tsx`
@@ -1070,7 +1198,7 @@ export function usePublicProducts(limit = 20) {
 
 ---
 
-## Phase 10: Testing & Verification
+## Phase 11: Testing & Verification
 
 ### 10.1 Build Test
 - **Command**: `npm run build`
@@ -1118,7 +1246,7 @@ export function usePublicProducts(limit = 20) {
 
 ---
 
-## Phase 11: Documentation
+## Phase 12: Documentation
 
 ### 11.1 Update NIP Implementation Matrix
 - **File**: `/docs/nip-kind-implementation-matrix.md`
@@ -1144,30 +1272,33 @@ export function usePublicProducts(limit = 20) {
 1. **Types** (Phase 1) - Foundation for all other code
 2. **Configuration** (Phase 5) - Categories, conditions, currencies
 3. **Service Layer** (Phase 2-4) - Business logic, validation, protocol
-4. **Build & Test Services** (Phase 10.1) - Verify compilation
-5. **Hooks** (Phase 6) - State management layer
-6. **Components** (Phase 7) - UI building blocks
-7. **My Shop Pages** (Phase 8.2, 8.4, 8.5) - User's product management
-8. **Shop Browse** (Phase 8.1, 8.3) - Public marketplace
-9. **Navigation** (Phase 9) - Header links
-10. **Manual Testing** (Phase 10.2-10.3) - End-to-end verification
-11. **Documentation** (Phase 11) - Update docs
+4. **Build & Test Services** (Phase 11.1) - Verify compilation
+5. **Stores** (Phase 6) - Zustand state management (useShopStore, useMyShopStore)
+6. **Hooks** (Phase 7) - State management layer (useShopPublishing, usePublicProducts, useProductEditing)
+7. **Components** (Phase 8) - UI building blocks
+8. **My Shop Pages** (Phase 9.2, 9.4, 9.5) - User's product management
+9. **Shop Browse** (Phase 9.1, 9.3) - Public marketplace
+10. **Navigation** (Phase 10) - Header links
+11. **Manual Testing** (Phase 11.2-11.3) - End-to-end verification
+12. **Documentation** (Phase 12) - Update docs
 
 ---
 
 ## Files Summary
 
-### New Files (23)
+### New Files (25 total, was 23)
 1. `/src/types/shop.ts`
 2. `/src/config/shop.ts`
 3. `/src/services/business/ShopService.ts`
 4. `/src/services/business/ProductValidationService.ts`
 5. `/src/services/generic/GenericShopService.ts`
-6. `/src/hooks/useShopPublishing.ts`
-7. `/src/hooks/usePublicProducts.ts`
-8. `/src/hooks/useProductEditing.ts`
-9. `/src/components/generic/MyProductCard.tsx`
-10. `/src/components/pages/ProductForm.tsx`
+6. `/src/stores/useShopStore.ts` ← NEW from temp-cb-reference pattern
+7. `/src/stores/useMyShopStore.ts` ← NEW from temp-cb-reference pattern
+8. `/src/hooks/useShopPublishing.ts`
+9. `/src/hooks/usePublicProducts.ts`
+10. `/src/hooks/useProductEditing.ts`
+11. `/src/components/generic/MyProductCard.tsx`
+12. `/src/components/pages/ProductForm.tsx`
 11. `/src/components/pages/ShopContent.tsx`
 12. `/src/app/my-shop/page.tsx`
 13. `/src/app/my-shop/create/page.tsx`
