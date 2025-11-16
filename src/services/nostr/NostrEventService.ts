@@ -115,6 +115,7 @@ export class NostrEventService {
           ['currency', productData.currency],
           ['category', productData.category],
           ['condition', productData.condition],
+          ['location', productData.location],
           ['contact', productData.contact],
           ...productData.tags.map(tag => ['t', tag]),
           // Only add nostr-for-nomads-shop tag if not already present
