@@ -259,6 +259,17 @@ export default function Header() {
                   </Link>
                   
                   <Link
+                    href="/my-shop"
+                    className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg className="w-4 h-4 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    My Shop
+                  </Link>
+                  
+                  <Link
                     href="/payments"
                     className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
                     onClick={() => setIsOpen(false)}
