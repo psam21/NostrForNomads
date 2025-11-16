@@ -1534,50 +1534,39 @@ Kind 30023 {
 
 ---
 
-### 13.1 Add `updateProductWithAttachments()` Function 🔴 CRITICAL
+### 13.1 Add `updateProductWithAttachments()` Function ✅ COMPLETE
 
 **Priority**: 🔴 **HIGHEST - BLOCKING**  
 **File**: `/src/services/business/ShopService.ts`  
 **Effort**: 4-6 hours  
-**Status**: ❌ NOT STARTED
+**Status**: ✅ **COMPLETE** (Commit db7bef3)
 
 **Problem**: Edit page currently reuses `createProduct(data, files, signer, existingDTag)` which doesn't handle attachment merging correctly. Heritage has dedicated `updateHeritageWithAttachments()` function.
 
 **Reference Pattern**: `temp-cb-reference/src/services/business/HeritageContentService.ts` lines 780-950
 
-**Implementation Steps**:
+**Implementation Completed**:
 
-1. **Add function signature**:
-```typescript
-export async function updateProductWithAttachments(
-  productId: string,
-  updatedData: Partial<ProductData>,
-  attachmentFiles: File[],
-  signer: NostrSigner,
-  onProgress?: (progress: ProductPublishingProgress) => void,
-  selectiveOps?: { removedAttachments: string[]; keptAttachments: string[] }
-): Promise<UpdateProductResult>
-```
+1. ✅ **Added UpdateProductResult interface** to `/src/types/shop.ts`
+2. ✅ **Added updateProductWithAttachments function** to ShopService (356 lines added)
+3. ✅ **Supports selective operations**: `keep` and `remove` attachment lists
+4. ✅ **Progress tracking**: 5% → 10% → 15-70% → 75% → 85% → 100%
+5. ✅ **Handles media uploads**: Sequential upload with consent dialogs
+6. ✅ **No-change detection**: Skips update if content and attachments unchanged
+7. ✅ **NIP-33 replacement**: Same dTag, new event ID
+8. ✅ **Build successful**: 0 errors, 0 warnings
 
-2. **Add UpdateProductResult interface** to `/src/types/shop.ts`:
-```typescript
-export interface UpdateProductResult {
-  success: boolean;
-  eventId?: string;
-  product?: ProductEvent;
-  publishedRelays?: string[];
-  failedRelays?: string[];
-  error?: string;
-  [key: string]: unknown;
-}
-```
+**Testing Checklist** (User verification):
+- [ ] Create product via /my-shop/create
+- [ ] Edit product via /my-shop/edit/[id]
+- [ ] Verify attachments preserved
+- [ ] Add new attachments, verify merge
+- [ ] Remove attachments (selective), verify deletion
+- [ ] Test no-change scenario (no unnecessary update)
 
-3. **Implementation flow** (copy from Heritage lines 780-950):
-   - Step 1: Fetch original product via `fetchProductById(productId)`
-   - Step 2: Upload new attachment files via `uploadSequentialWithConsent()` (if any)
-   - Step 3: Merge attachments:
-     - If `selectiveOps` provided: Keep only `keptAttachments` + add new
-     - If no `selectiveOps`: Keep all existing + add new
+---
+
+### 13.2 Add Imeta Parsing Functions 🔴 CRITICAL
    - Step 4: Check for changes (avoid unnecessary updates if no content/attachment changes)
    - Step 5: Create NIP-33 replacement event (same dTag) via `nostrEventService.createProductEvent()`
    - Step 6: Publish to relays via `nostrEventService.publishEvent()`
