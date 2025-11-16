@@ -90,6 +90,165 @@
 
 ---
 
+## 👤 USER-FACING CHANGES - What Users Will See
+
+### Current State (Before Implementation)
+**Existing Page:**
+- `/shop` - Public shop page with **MOCK DATA** (hardcoded sample products)
+- Header navigation has "Shop" link visible to all users
+- **NO** "My Shop" link in navigation
+- **NO** ability to create/edit/delete products
+- **NO** connection to Nostr relays
+
+### Final State (After Implementation)
+
+#### 🌍 Public Pages (All Users - No Auth Required)
+
+**1. Browse Shop - `/shop`**
+- **STATUS**: Page EXISTS, needs Nostr integration (replace mock data)
+- **What Users See**: 
+  - All products from Nostr relays (Kind 30023 events)
+  - Search by product name/description
+  - Filter by: category, condition, price range
+  - Grid/List view toggle
+  - Product cards showing: image, name, price, seller, rating
+- **Actions**: 
+  - Click product → Navigate to `/shop/[id]` (detail page)
+  - Contact seller (opens messages)
+
+**2. Product Detail - `/shop/[id]`**
+- **STATUS**: NEW PAGE (create from scratch)
+- **What Users See**:
+  - Full product details (title, description, price, condition)
+  - Multiple product images (Blossom CDN)
+  - Seller profile info (name, avatar, npub)
+  - Product metadata (category, condition, tags)
+- **Actions**:
+  - "Contact Seller" button → Opens `/messages` with seller
+  - View all products from this seller
+
+#### 🔐 Authenticated Pages (Users Must Be Signed In)
+
+**3. My Shop Dashboard - `/my-shop`**
+- **STATUS**: NEW PAGE (create from scratch)
+- **What Users See**:
+  - List of their own products (only products they created)
+  - Statistics: Total products, active listings, views
+  - Search/filter own products
+  - Empty state: "Create your first product" if no products
+- **Actions**:
+  - "Create Product" button → Navigate to `/my-shop/create`
+  - "Edit" button on each product → Navigate to `/my-shop/edit/[id]`
+  - "Delete" button → Opens confirmation modal → Deletes product (NIP-09)
+
+**4. Create Product - `/my-shop/create`**
+- **STATUS**: NEW PAGE (create from scratch)
+- **What Users See**:
+  - Product form with fields:
+    - Title (required)
+    - Description (TipTap rich text editor)
+    - Price (number input)
+    - Currency dropdown (BTC, sats, USD)
+    - Category dropdown (Electronics, Clothing, Services, etc.)
+    - Condition dropdown (New, Used, Refurbished)
+    - Contact method (defaults to npub, can customize)
+    - Tags (optional keywords)
+    - Image uploads (up to 10 images via Blossom)
+- **Actions**:
+  - "Publish Product" → Creates Kind 30023 event → Navigate to `/my-shop`
+  - "Cancel" → Navigate back to `/my-shop`
+
+**5. Edit Product - `/my-shop/edit/[id]`**
+- **STATUS**: NEW PAGE (create from scratch)
+- **What Users See**:
+  - Same form as Create, pre-filled with existing product data
+  - Shows current images (can add/remove)
+  - Ownership verification (only edit your own products)
+- **Actions**:
+  - "Update Product" → Updates Kind 30023 event (same dTag) → Navigate to `/my-shop`
+  - "Cancel" → Navigate back to `/my-shop`
+
+#### 🧭 Navigation Changes
+
+**Header.tsx Updates:**
+- **Desktop Navigation** (top bar):
+  - "Shop" link remains (public, visible to all)
+  - **NEW**: "My Shop" link appears ONLY when authenticated (after "Shop")
+  
+- **Mobile Menu** (hamburger):
+  - "Shop" in public section
+  - **NEW**: "My Shop" in authenticated section (with lock icon)
+
+**Visual Example:**
+```
+BEFORE (Current):
+[Logo] [Explore] [Contribute] [Shop] [Messages] [Profile] [Sign In]
+
+AFTER (Authenticated User):
+[Logo] [Explore] [Contribute] [Shop] [My Shop] [Messages] [Profile] [Jack ▼]
+
+AFTER (Anonymous User):
+[Logo] [Explore] [Contribute] [Shop] [Sign In]
+```
+
+### Page Replacement Summary
+
+| Page Path | Status | Change | What Happens |
+|-----------|--------|--------|--------------|
+| `/shop` | **MODIFIED** | Replace mock data with Nostr queries | Existing page gets real data from relays |
+| `/shop/[id]` | **NEW** | Create product detail page | New page for viewing product details |
+| `/my-shop` | **NEW** | Create dashboard page | New auth-gated page for managing own products |
+| `/my-shop/create` | **NEW** | Create product form page | New page for creating products |
+| `/my-shop/edit/[id]` | **NEW** | Create edit form page | New page for editing own products |
+| `Header.tsx` | **MODIFIED** | Add "My Shop" link (auth-gated) | Existing component gets one new navigation link |
+
+### User Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    User Lands on Site                        │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │  Header Nav     │
+                    │  [Shop]         │
+                    └─────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   /shop (Public Browse)                       │
+│  • View all products from Nostr relays                       │
+│  • Search, filter, sort products                             │
+│  • NO AUTH REQUIRED                                          │
+└──────────────────────────────────────────────────────────────┘
+                    │                    │
+          Click Product               Sign In
+                    │                    │
+                    ▼                    ▼
+          ┌─────────────────┐  ┌──────────────────┐
+          │ /shop/[id]      │  │ Header Nav       │
+          │ Product Detail  │  │ [Shop] [My Shop] │
+          │                 │  └──────────────────┘
+          │ • Full details  │            │
+          │ • Images        │            ▼
+          │ • Contact       │  ┌──────────────────────────┐
+          └─────────────────┘  │   /my-shop (Dashboard)   │
+                                │ • List own products      │
+                                │ • Create/Edit/Delete     │
+                                │ • AUTH REQUIRED          │
+                                └──────────────────────────┘
+                                    │            │
+                            ┌───────┴────────┐   │
+                            ▼                ▼   ▼
+                  ┌─────────────────┐  ┌────────────────┐
+                  │ /my-shop/create │  │ /my-shop/edit/ │
+                  │ Create Product  │  │ Edit Product   │
+                  └─────────────────┘  └────────────────┘
+```
+
+---
+
 ## 🛡️ SOA COMPLIANCE GUARANTEES
 
 ### Architectural Rules Enforcement
