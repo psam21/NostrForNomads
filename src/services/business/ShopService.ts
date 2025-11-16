@@ -1,5 +1,5 @@
 import { logger } from '@/services/core/LoggingService';
-import type { ProductData, ProductPublishingProgress, ProductEvent, ProductExploreItem } from '@/types/shop';
+import type { ProductData, ProductPublishingProgress, ProductEvent, ProductExploreItem, UpdateProductResult } from '@/types/shop';
 import { validateProductData } from './ProductValidationService';
 import { nostrEventService } from '../nostr/NostrEventService';
 import type { NostrSigner, NostrEvent } from '@/types/nostr';
@@ -456,6 +456,348 @@ export async function deleteProduct(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Update an existing product with attachments (edit flow)
+ * Business layer method for updating products with selective attachment operations
+ * 
+ * @param productId - Product's dTag identifier
+ * @param updatedProductData - Updated product metadata
+ * @param newAttachmentFiles - New files to attach (optional)
+ * @param signer - Nostr signer for signing events and uploads
+ * @param selectiveOps - Selective operations for existing attachments (optional)
+ * @param onProgress - Progress callback (optional)
+ * @returns Result with success status, event ID, and relay info
+ */
+export async function updateProductWithAttachments(
+  productId: string,
+  updatedProductData: ProductData,
+  newAttachmentFiles: File[],
+  signer: NostrSigner,
+  selectiveOps?: { keep?: string[]; remove?: string[] },
+  onProgress?: (progress: ProductPublishingProgress) => void
+): Promise<UpdateProductResult> {
+  try {
+    logger.info('Updating product with attachments', {
+      service: 'ShopService',
+      method: 'updateProductWithAttachments',
+      productId,
+      newFilesCount: newAttachmentFiles.length,
+      selectiveOps,
+    });
+
+    onProgress?.({
+      step: 'validating',
+      progress: 5,
+      message: 'Fetching original product...',
+    });
+
+    // Step 1: Fetch original product
+    const originalProduct = await fetchProductById(productId);
+    if (!originalProduct) {
+      return {
+        success: false,
+        error: 'Product not found',
+      };
+    }
+
+    onProgress?.({
+      step: 'uploading',
+      progress: 10,
+      message: 'Processing attachments...',
+    });
+
+    // Step 2: Handle existing attachments with selective operations
+    // Extract all media URLs from the original product's structured media object
+    const originalMediaUrls: string[] = [
+      ...originalProduct.media.images.map(img => img.url),
+      ...originalProduct.media.videos.map(vid => vid.url),
+      ...originalProduct.media.audio.map(aud => aud.url),
+    ];
+
+    let retainedMediaUrls: string[] = [];
+    if (originalMediaUrls.length > 0) {
+      if (selectiveOps?.keep) {
+        // Keep only specified attachments
+        retainedMediaUrls = originalMediaUrls.filter(url =>
+          selectiveOps.keep!.includes(url)
+        );
+      } else if (selectiveOps?.remove) {
+        // Remove specified attachments
+        retainedMediaUrls = originalMediaUrls.filter(
+          url => !selectiveOps.remove!.includes(url)
+        );
+      } else {
+        // Keep all existing attachments by default
+        retainedMediaUrls = [...originalMediaUrls];
+      }
+    }
+
+    // Step 3: Upload new attachment files (if any)
+    const uploadedAttachments: Array<{
+      type: 'image' | 'video' | 'audio';
+      url: string;
+      hash: string;
+      name: string;
+      id: string;
+      size: number;
+      mimeType: string;
+    }> = [];
+
+    if (newAttachmentFiles && newAttachmentFiles.length > 0) {
+      onProgress?.({
+        step: 'uploading',
+        progress: 15,
+        message: `Uploading ${newAttachmentFiles.length} new attachment(s)...`,
+      });
+
+      const uploadResult = await uploadSequentialWithConsent(
+        newAttachmentFiles,
+        signer,
+        (uploadProgress) => {
+          // Map upload progress (0-1) to publishing progress (15% to 70%)
+          const mappedProgress = 15 + (55 * uploadProgress.overallProgress);
+          onProgress?.({
+            step: 'uploading',
+            progress: mappedProgress,
+            message: uploadProgress.nextAction,
+            details: `File ${uploadProgress.currentFileIndex + 1} of ${uploadProgress.totalFiles}`,
+          });
+        }
+      );
+
+      // Check for cancellation or failure
+      if (uploadResult.userCancelled) {
+        return {
+          success: false,
+          error: 'User cancelled upload',
+        };
+      }
+
+      if (uploadResult.successCount === 0 && newAttachmentFiles.length > 0) {
+        return {
+          success: false,
+          error: 'All media uploads failed',
+        };
+      }
+
+      // Map uploaded files to attachment format (matching Shop's createProduct pattern)
+      for (let i = 0; i < uploadResult.uploadedFiles.length; i++) {
+        const uploadedFile = uploadResult.uploadedFiles[i];
+        const originalFile = newAttachmentFiles[i];
+        
+        // Determine media type from MIME type
+        const mimeType = originalFile.type;
+        let type: 'image' | 'video' | 'audio' = 'image';
+        if (mimeType.startsWith('video/')) type = 'video';
+        else if (mimeType.startsWith('audio/')) type = 'audio';
+
+        uploadedAttachments.push({
+          type,
+          url: uploadedFile.url,
+          hash: uploadedFile.hash,
+          name: originalFile.name,
+          id: `${uploadedFile.hash}-${Date.now()}`,
+          size: originalFile.size,
+          mimeType,
+        });
+      }
+
+      logger.info('Media upload completed', {
+        service: 'ShopService',
+        method: 'updateProductWithAttachments',
+        uploadedCount: uploadedAttachments.length,
+      });
+    }
+
+    // Step 4: Merge attachments - combine retained URLs as attachments + new uploads
+    // Convert retained URLs back to attachment format (preserve type info)
+    const retainedAttachments = [
+      ...originalProduct.media.images.filter(img => retainedMediaUrls.includes(img.url)).map(img => ({
+        type: 'image' as const,
+        url: img.url,
+        hash: img.hash || '',
+        name: '', // Original name not stored
+        id: `${img.hash}-retained`,
+        size: img.size || 0,
+        mimeType: img.mimeType || 'image/jpeg',
+      })),
+      ...originalProduct.media.videos.filter(vid => retainedMediaUrls.includes(vid.url)).map(vid => ({
+        type: 'video' as const,
+        url: vid.url,
+        hash: vid.hash || '',
+        name: '',
+        id: `${vid.hash}-retained`,
+        size: vid.size || 0,
+        mimeType: vid.mimeType || 'video/mp4',
+      })),
+      ...originalProduct.media.audio.filter(aud => retainedMediaUrls.includes(aud.url)).map(aud => ({
+        type: 'audio' as const,
+        url: aud.url,
+        hash: aud.hash || '',
+        name: '',
+        id: `${aud.hash}-retained`,
+        size: aud.size || 0,
+        mimeType: aud.mimeType || 'audio/mpeg',
+      })),
+    ];
+
+    const mergedAttachments = [...retainedAttachments, ...uploadedAttachments];
+
+    onProgress?.({
+      step: 'publishing',
+      progress: 75,
+      message: 'Creating updated product event...',
+    });
+
+    // Step 5: Check for changes
+    const hasContentChanges =
+      updatedProductData.title !== originalProduct.title ||
+      updatedProductData.description !== originalProduct.description ||
+      updatedProductData.price !== originalProduct.price ||
+      updatedProductData.condition !== originalProduct.condition ||
+      updatedProductData.category !== originalProduct.category ||
+      updatedProductData.currency !== originalProduct.currency ||
+      updatedProductData.location !== originalProduct.location ||
+      updatedProductData.contact !== originalProduct.contact ||
+      JSON.stringify(updatedProductData.tags) !== JSON.stringify(originalProduct.tags);
+
+    const hasAttachmentChanges =
+      mergedAttachments.length !== originalMediaUrls.length ||
+      mergedAttachments.some(
+        (item, index) => item.url !== originalMediaUrls[index]
+      );
+
+    if (!hasContentChanges && !hasAttachmentChanges) {
+      logger.info('No changes detected, skipping update', {
+        service: 'ShopService',
+        method: 'updateProductWithAttachments',
+        productId,
+      });
+
+      onProgress?.({
+        step: 'complete',
+        progress: 100,
+        message: 'No changes detected',
+      });
+
+      return {
+        success: true,
+        eventId: originalProduct.id,
+        product: originalProduct,
+      };
+    }
+
+    // Step 6: Create product event with merged attachments (using existing createProduct pattern)
+    const productDataWithAttachments: ProductData = {
+      ...updatedProductData,
+      attachments: mergedAttachments,
+    };
+
+    logger.info('Creating updated product event', {
+      service: 'ShopService',
+      method: 'updateProductWithAttachments',
+      existingDTag: productId,
+    });
+
+    const event = await nostrEventService.createProductEvent(
+      productDataWithAttachments,
+      signer,
+      productId // Pass existing dTag for NIP-33 replacement
+    );
+
+    // Extract dTag before publishing
+    const dTag = event.tags.find(tag => tag[0] === 'd')?.[1];
+    if (!dTag) {
+      throw new Error('Created event missing required d tag');
+    }
+
+    onProgress?.({
+      step: 'publishing',
+      progress: 85,
+      message: 'Publishing updated product...',
+    });
+
+    // Step 7: Publish to relays
+    logger.info('Publishing updated product event to relays', {
+      service: 'ShopService',
+      method: 'updateProductWithAttachments',
+      eventId: event.id,
+      dTag,
+    });
+
+    const publishResult = await nostrEventService.publishEvent(
+      event,
+      signer
+    );
+
+    if (!publishResult.success) {
+      logger.error('Failed to publish updated event', new Error(publishResult.error), {
+        service: 'ShopService',
+        method: 'updateProductWithAttachments',
+        productId,
+      });
+
+      onProgress?.({
+        step: 'complete',
+        progress: 0,
+        message: 'Publishing failed',
+        details: publishResult.error,
+      });
+
+      return {
+        success: false,
+        error: publishResult.error,
+        publishedRelays: publishResult.publishedRelays,
+        failedRelays: publishResult.failedRelays,
+      };
+    }
+
+    onProgress?.({
+      step: 'complete',
+      progress: 100,
+      message: 'Product updated successfully',
+    });
+
+    // Step 8: Parse and return updated product (query back from relay to get full parsed event)
+    const updatedProduct = await fetchProductById(productId);
+
+    logger.info('Product updated successfully', {
+      service: 'ShopService',
+      method: 'updateProductWithAttachments',
+      eventId: publishResult.eventId,
+      publishedRelays: publishResult.publishedRelays?.length,
+    });
+
+    return {
+      success: true,
+      eventId: publishResult.eventId,
+      product: updatedProduct || undefined,
+      publishedRelays: publishResult.publishedRelays,
+      failedRelays: publishResult.failedRelays,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    logger.error('Product update failed', error as Error, {
+      service: 'ShopService',
+      method: 'updateProductWithAttachments',
+      productId,
+    });
+    
+    onProgress?.({
+      step: 'complete',
+      progress: 0,
+      message: 'Update failed',
+      details: errorMessage,
+    });
+    
+    return {
+      success: false,
+      error: errorMessage,
     };
   }
 }

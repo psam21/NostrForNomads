@@ -122,6 +122,19 @@ export interface ProductPublishingResult {
 }
 
 /**
+ * Product update result
+ */
+export interface UpdateProductResult {
+  success: boolean;
+  eventId?: string;
+  product?: ProductEvent;
+  publishedRelays?: string[];
+  failedRelays?: string[];
+  error?: string;
+  [key: string]: unknown;
+}
+
+/**
  * Product publishing state
  */
 export interface ProductPublishingState {
