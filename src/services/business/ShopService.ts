@@ -2,7 +2,7 @@ import { logger } from '@/services/core/LoggingService';
 import type { ProductData, ProductPublishingProgress, ProductEvent, ProductExploreItem, UpdateProductResult } from '@/types/shop';
 import { validateProductData } from './ProductValidationService';
 import { nostrEventService } from '../nostr/NostrEventService';
-import type { NostrSigner, NostrEvent } from '@/types/nostr';
+import type { NostrSigner, NostrEvent, NIP23Event } from '@/types/nostr';
 import { uploadSequentialWithConsent } from '@/services/generic/GenericBlossomService';
 import { fetchPublicProducts as fetchPublicProductsFromRelay, extractMedia } from '@/services/generic/GenericShopService';
 import { queryEvents } from '@/services/generic/GenericRelayService';
@@ -841,8 +841,65 @@ export async function fetchPublicProducts(
 }
 
 /**
+ * Parse NIP-23 event content safely
+ * Handles both JSON-stringified content and plain text
+ * 
+ * @param event - Nostr event with content field
+ * @returns Parsed content object or fallback with raw content
+ */
+function parseEventContent(event: NostrEvent): { content: string } | null {
+  try {
+    // Try parsing as NIP-23 event (JSON content)
+    const parsedContent = nostrEventService.parseEventContent(event as NIP23Event);
+    if (parsedContent) {
+      return { content: parsedContent.content || event.content };
+    }
+    
+    // Fallback to raw content if parsing fails
+    return { content: event.content };
+  } catch {
+    // If all else fails, return raw content
+    return { content: event.content };
+  }
+}
+
+/**
+ * Clean legacy content that may have title embedded as H1 heading
+ * Provides backward compatibility with events created before content standardization
+ * 
+ * @param content - Raw content string from event
+ * @param title - Product title to remove if embedded
+ * @returns Cleaned content without redundant title or media sections
+ */
+function cleanLegacyContent(content: string, title: string): string {
+  if (!content || !title) return content;
+  
+  // Remove title as H1 heading from the beginning if it exists
+  // Escape special regex characters in title
+  const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const titleH1Pattern = new RegExp(`^#\\s+${escapedTitle}\\s*\\n+`, 'i');
+  let cleaned = content.replace(titleH1Pattern, '');
+  
+  // Also remove if title appears at the very start without the H1 marker
+  if (cleaned.startsWith(`${title}\n`)) {
+    cleaned = cleaned.substring(title.length + 1).trimStart();
+  }
+  
+  // Remove embedded media section added by old implementations
+  // Pattern: ## Media header followed by content until next section or end
+  const mediaHeaderPattern = /\n\n##\s+Media\s*\n\n(.*\n)*?(?=\n\n##|\n\n[^!\[]|$)/;
+  cleaned = cleaned.replace(mediaHeaderPattern, '');
+  
+  // Also handle case where ## Media section is at the end of content
+  const mediaHeaderAtEndPattern = /\n\n##\s+Media\s*\n\n[\s\S]*$/;
+  cleaned = cleaned.replace(mediaHeaderAtEndPattern, '');
+  
+  return cleaned.trim();
+}
+
+/**
  * Parse a Nostr event into a ProductEvent
- * Helper function for transforming relay events
+ * Helper function for transforming relay events with content parsing
  */
 function parseProductEvent(event: NostrEvent): ProductEvent | null {
   try {
@@ -864,13 +921,20 @@ function parseProductEvent(event: NostrEvent): ProductEvent | null {
 
     const media = extractMedia(event.tags);
 
+    // Parse content using helper (handles JSON and plain text)
+    const parsedContent = parseEventContent(event);
+    const rawDescription = parsedContent?.content || event.content;
+    
+    // Clean legacy content (removes embedded title/media sections for backward compatibility)
+    const description = cleanLegacyContent(rawDescription, title);
+
     return {
       id: event.id,
       dTag,
       pubkey: event.pubkey,
       title,
-      summary: event.content.substring(0, 200),
-      description: event.content,
+      summary: description.substring(0, 200),
+      description,
       price,
       currency,
       category,
