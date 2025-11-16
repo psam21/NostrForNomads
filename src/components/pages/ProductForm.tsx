@@ -78,7 +78,21 @@ export const ProductForm = ({
     error: editingHook.updateError,
     result: null, // Editing doesn't use result the same way
     publishProduct: async (data: ProductData, attachmentFiles: File[]) => {
-      // For editing, call updateContent with contentId and data
+      // For editing, track selective operations based on current form attachments
+      const existingAttachments = defaultValues?.attachments || [];
+      const currentAttachmentUrls = attachments.map(a => a.url).filter((url): url is string => !!url);
+      
+      // Track removed and kept attachments by URL (Shop uses URLs not IDs)
+      const removedAttachments = existingAttachments
+        .filter(a => a.url && !currentAttachmentUrls.includes(a.url))
+        .map(a => a.url!)
+        .filter((url): url is string => !!url);
+      const keptAttachments = existingAttachments
+        .filter(a => a.url && currentAttachmentUrls.includes(a.url))
+        .map(a => a.url!)
+        .filter((url): url is string => !!url);
+      
+      // Call updateContent with selective operations
       const result = await editingHook.updateContent(
         defaultValues.dTag!, // contentId (dTag for fetching existing product)
         {
@@ -93,8 +107,8 @@ export const ProductForm = ({
           tags: data.tags,
           attachments: [], // Attachments populated from files
         },
-        attachmentFiles
-        // Note: selectiveOps not passed here - future enhancement for attachment manager
+        attachmentFiles,
+        { removedAttachments, keptAttachments } // Pass selective operations
       );
       
       // Return the result (success status and eventId)
