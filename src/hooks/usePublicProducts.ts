@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/services/core/LoggingService';
 import { fetchPublicProducts } from '@/services/business/ShopService';
-import type { ProductExploreItem } from '@/types/shop';
 import { useShopStore } from '@/stores/useShopStore';
 import { AppError } from '@/errors/AppError';
 import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '@/errors/ErrorTypes';
