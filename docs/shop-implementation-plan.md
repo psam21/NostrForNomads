@@ -1589,14 +1589,20 @@ Kind 30023 {
 
 ---
 
-### 13.2 Add Imeta Parsing Functions 🔴 CRITICAL
+### 13.2 Add Imeta Parsing Functions ✅ COMPLETE
 
 **Priority**: 🔴 **CRITICAL**  
-**Files**: `/src/services/business/ShopService.ts`  
+**Files**: `/src/services/generic/GenericShopService.ts`, `/src/types/shop.ts`  
 **Effort**: 2 hours  
-**Status**: ❌ NOT STARTED
+**Status**: ✅ **COMPLETE** (Commit c00bd68)
 
 **Problem**: Product detail page won't show full media metadata (file sizes, dimensions, hashes). Current implementation doesn't parse NIP-94 imeta tags comprehensively.
+
+**Implementation Completed**:
+- ✅ Enhanced parseImetaTag() to extract dimensions (width x height) from dim field
+- ✅ Added dimensions field to MediaAttachment and ParsedMedia interfaces
+- ✅ Extract dimensions for images and videos in extractMedia()
+- ✅ Support NIP-94 imeta format: dim WxH
 
 **Reference Pattern**: `temp-cb-reference/src/services/business/HeritageContentService.ts` lines 32-150
 
@@ -1719,12 +1725,20 @@ function createMediaItemsFromImeta(event: { tags: string[][] }): ContentMediaIte
 
 ---
 
-### 13.3 Refactor `useProductEditing` Hook 🔴 CRITICAL
+### 13.3 Refactor `useProductEditing` Hook ✅ COMPLETE
 
 **Priority**: 🔴 **CRITICAL**  
-**File**: `/src/hooks/useProductEditing.ts`  
+**Files**: `/src/hooks/useProductEditing.ts`, `/src/components/pages/ProductForm.tsx`  
 **Effort**: 1 hour  
-**Status**: ❌ NOT STARTED
+**Status**: ✅ **COMPLETE** (Commit 5ca2884)
+
+**Implementation Completed**:
+- ✅ Refactored to use generic useContentEditing wrapper
+- ✅ Removed direct coupling with useMyShopStore
+- ✅ Added support for selective attachment operations (keep/remove)
+- ✅ Calls dedicated updateProductWithAttachments() function
+- ✅ Updated ProductForm to use new updateContent API
+- ✅ Code reduction: 95 lines → 45 lines (50 fewer lines)
 
 **Problem**: Hook is tightly coupled to `useMyShopStore`, doesn't use generic `useContentEditing` wrapper, and doesn't support `selectiveOps` (selective attachment operations).
 
@@ -1787,14 +1801,22 @@ export function useProductEditing() {
 
 ---
 
-### 13.4 Add Content Parsing Helpers 🟡 HIGH
+### 13.4 Add Content Parsing Helpers ✅ COMPLETE
 
 **Priority**: 🟡 **HIGH**  
 **File**: `/src/services/business/ShopService.ts`  
 **Effort**: 1 hour  
-**Status**: ❌ NOT STARTED
+**Status**: ✅ **COMPLETE** (Commit 0e1cb5e)
 
 **Problem**: Legacy events (if any) won't parse correctly. Missing backward compatibility helpers.
+
+**Implementation Completed**:
+- ✅ Added parseEventContent() helper for safe JSON parsing
+- ✅ Added cleanLegacyContent() helper to remove embedded titles/media
+- ✅ Integrated helpers into parseProductEvent()
+- ✅ Support both JSON-stringified and plain text content
+- ✅ Remove redundant H1 titles from legacy events
+- ✅ Strip embedded '## Media' sections
 
 **Reference Pattern**: `temp-cb-reference/src/services/business/HeritageContentService.ts` lines 123-160
 
