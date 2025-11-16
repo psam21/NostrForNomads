@@ -107,25 +107,46 @@
 **1. Browse Shop - `/shop`**
 - **STATUS**: Page EXISTS, needs Nostr integration (replace mock data)
 - **What Users See**: 
-  - All products from Nostr relays (Kind 30023 events)
-  - Search by product name/description
-  - Filter by: category, condition, price range
-  - Grid/List view toggle
-  - Product cards showing: image, name, price, seller, rating
+  - All products from Nostr relays (Kind 30023 events with `#t` = `nostr-for-nomads-shop`)
+  - **Search bar**: Search by product name/description (real-time filtering)
+  - **Filter panel**:
+    - Category filter (Art, Services, Hardware, Software, etc.)
+    - Condition filter (New, Used, Refurbished)
+    - Price range slider (min/max)
+  - **Sort options**: Newest first, Price low-high, Price high-low
+  - **View toggle**: Grid view (default) or List view
+  - **Product cards** showing: thumbnail image, title, price + currency badge, category, condition, seller name
+  - **Pagination**: "Load More" button for infinite scroll
+  - **Loading state**: Skeleton cards while querying relays
+  - **Error state**: "Failed to load products" with retry button
+  - **Empty state**: "No products found" when no results
 - **Actions**: 
-  - Click product → Navigate to `/shop/[id]` (detail page)
-  - Contact seller (opens messages)
+  - Click product card → Navigate to `/shop/[id]` (detail page)
+  - Contact seller button → Opens `/messages` with seller's npub
 
 **2. Product Detail - `/shop/[id]`**
 - **STATUS**: NEW PAGE (create from scratch)
 - **What Users See**:
-  - Full product details (title, description, price, condition)
-  - Multiple product images (Blossom CDN)
-  - Seller profile info (name, avatar, npub)
-  - Product metadata (category, condition, tags)
+  - **Full product details**:
+    - Title and description (rich text rendered)
+    - Price with currency badge (₿ BTC, sats, $ USD)
+    - Category and condition badges
+    - Location (where product ships from)
+    - Contact method (npub, email, or custom)
+    - Tags (clickable, filter by tag)
+  - **Media gallery**: Multiple product images/videos from Blossom CDN with lightbox viewer
+  - **Seller profile section**:
+    - Seller avatar and display name
+    - Seller npub (truncated with copy button)
+    - "View Seller's Shop" link
+  - **Product metadata**: Created date, last updated, dTag (event ID)
+  - **Loading state**: Skeleton layout while fetching
+  - **Error state**: "Product not found" or "Failed to load"
 - **Actions**:
-  - "Contact Seller" button → Opens `/messages` with seller
-  - View all products from this seller
+  - "Contact Seller" button → Opens `/messages` with pre-filled message to seller's npub
+  - Click seller name → Navigate to `/shop?seller=[npub]` (filter by seller)
+  - Click tag → Navigate to `/shop?tag=[tag]` (filter by tag)
+  - Share button → Copy product URL to clipboard
 
 #### 🔐 Authenticated Pages (Users Must Be Signed In)
 
@@ -133,27 +154,39 @@
 - **STATUS**: NEW PAGE (create from scratch)
 - **What Users See**:
   - List of their own products (only products they created)
-  - Statistics: Total products, active listings, views
-  - Search/filter own products
-  - Empty state: "Create your first product" if no products
+  - **Statistics dashboard**:
+    - Total products count
+    - Active listings count
+    - Products by category breakdown
+    - Products by condition breakdown
+    - Total value of all listings
+  - **Filter panel**: Search by name, filter by category/condition/price range
+  - **View toggle**: Grid view or List view
+  - Product cards showing: image, title, price, category, condition, Edit/Delete buttons
+  - **Empty state**: "Create your first product" button if no products exist
+  - **Loading state**: Skeleton cards while fetching from relays
+  - **Error state**: "Failed to load products" with retry button
 - **Actions**:
-  - "Create Product" button → Navigate to `/my-shop/create`
+  - "Create Product" button (top right) → Navigate to `/my-shop/create`
   - "Edit" button on each product → Navigate to `/my-shop/edit/[id]`
-  - "Delete" button → Opens confirmation modal → Deletes product (NIP-09)
+  - "Delete" button → Opens confirmation modal → Publishes NIP-09 deletion event
 
 **4. Create Product - `/my-shop/create`**
 - **STATUS**: NEW PAGE (create from scratch)
 - **What Users See**:
   - Product form with fields:
-    - Title (required)
-    - Description (TipTap rich text editor)
-    - Price (number input)
-    - Currency dropdown (BTC, sats, USD)
-    - Category dropdown (Electronics, Clothing, Services, etc.)
-    - Condition dropdown (New, Used, Refurbished)
-    - Contact method (defaults to npub, can customize)
-    - Tags (optional keywords)
-    - Image uploads (up to 10 images via Blossom)
+    - **Title** (required, 5-100 characters)
+    - **Description** (TipTap rich text editor, required, 20-5000 characters)
+    - **Price** (number input, required, > 0)
+    - **Currency** dropdown (BTC, sats, USD)
+    - **Category** dropdown (Art & Collectibles, Services, Hardware, Software, Education, Fashion, Food & Drink, Home & Garden, Sports & Outdoors, Other)
+    - **Condition** dropdown (New, Used, Refurbished)
+    - **Location** (text input, required, 3-100 characters) - where product is located/shipped from
+    - **Contact** method (defaults to npub, can customize with email/phone/other)
+    - **Tags** (optional keywords, max 20 tags)
+    - **Image uploads** (up to 10 images via Blossom, max 100MB per file)
+  - Real-time validation with error messages
+  - Image preview thumbnails with remove option
 - **Actions**:
   - "Publish Product" → Creates Kind 30023 event → Navigate to `/my-shop`
   - "Cancel" → Navigate back to `/my-shop`
@@ -871,12 +904,51 @@ export function usePublicProducts(limit = 20) {
 - **File**: `/src/components/pages/ProductForm.tsx` (NEW)
 - **Action**: CREATE new file
 - **Copy from**: `/src/components/pages/ContributionForm.tsx` (if exists) or adapt
-- **Sections**:
-  1. Basic Information (title, price, currency)
-  2. Product Details (category, condition, location, contact)
-  3. Description (Tiptap rich text editor)
-  4. Media & Attachments (image/video upload)
-  5. Tags & Keywords
+- **Purpose**: Reusable form for creating and editing products
+
+**Form Fields (matches user-facing section):**
+
+1. **Basic Information Section**:
+   - `title` - Text input (required, 5-100 characters)
+   - `price` - Number input (required, > 0)
+   - `currency` - Dropdown (BTC, sats, USD) - matches `/config/shop.ts` CURRENCIES
+
+2. **Product Details Section**:
+   - `category` - Dropdown (Art, Services, Hardware, Software, etc.) - matches `/config/shop.ts` PRODUCT_CATEGORIES
+   - `condition` - Dropdown (New, Used, Refurbished) - matches `/config/shop.ts` PRODUCT_CONDITIONS
+   - `location` - Text input (required, 3-100 characters)
+   - `contact` - Text input (defaults to user's npub, can customize)
+
+3. **Description Section**:
+   - `description` - TipTap rich text editor (required, 20-5000 characters)
+   - Supports: bold, italic, links, lists, headings
+
+4. **Media & Attachments Section**:
+   - Image/video upload via Blossom (NIP-96)
+   - Max 10 files, max 100MB per file
+   - Preview thumbnails with remove option
+   - Drag-and-drop support
+
+5. **Tags & Keywords Section**:
+   - `tags` - Tag input (optional, max 20 tags)
+   - Auto-suggestions from existing tags
+
+**Form Actions**:
+- "Publish Product" / "Update Product" button
+- "Cancel" button (navigates back to `/my-shop`)
+- Real-time validation with error messages
+- Loading state during publish
+
+**Props:**
+```typescript
+{
+  initialData?: ProductData; // For edit mode
+  mode: 'create' | 'edit';
+  onSubmit: (data: ProductData, files: File[]) => Promise<void>;
+  onCancel: () => void;
+  isPublishing: boolean;
+}
+```
 
 ### 7.3 Create ShopContent Component
 - **File**: `/src/components/pages/ShopContent.tsx` (NEW)
