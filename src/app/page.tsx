@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Briefcase, MessageCircle, Video, Wallet, ShoppingBag, Plane, Shield, Zap, Globe, ArrowRight } from 'lucide-react';
+import { Briefcase, MessageCircle, Users, Wallet, ShoppingBag, Plane, Shield, Zap, Globe, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -82,20 +82,20 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Meetings */}
+          {/* Meetups */}
           <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6">
-              <Video className="w-8 h-8 text-purple-600" />
+              <Users className="w-8 h-8 text-purple-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Meetings</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Meetups</h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              Host and join video calls. Connect face-to-face with your network from anywhere.
+              Connect with nomads in person. Join or organize meetups, workshops, and events worldwide.
             </p>
             <Link
-              href="/meetings"
+              href="/meetups"
               className="text-purple-600 font-semibold hover:text-purple-700 flex items-center gap-2"
             >
-              Schedule Meeting <ArrowRight className="w-4 h-4" />
+              Find Meetups <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
