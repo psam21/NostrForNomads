@@ -404,7 +404,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     )}
                     <span className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-purple-50 text-purple-700 rounded-md font-medium border border-purple-100">
                       <span>{conversation.context.type === 'product' ? '🛍️' : '🏛️'}</span>
-                      <span className="truncate max-w-[120px]">{conversation.context.title || conversation.context.id}</span>
+                      <span className="truncate max-w-[120px]">{conversation.context.title || 'Item'}</span>
                     </span>
                   </div>
                 )}
