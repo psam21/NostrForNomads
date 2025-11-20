@@ -431,6 +431,114 @@ Hook → Manually build events → Publish    // ARCHITECTURAL VIOLATION
 
 ---
 
+## 🔐 SIGNER PRIORITY & IDENTITY ISOLATION
+
+### Critical Rule
+
+Multiple signing methods MUST NOT cause identity confusion
+
+### Priority Order (Strictly Enforced)
+
+When multiple signing methods are available in the browser:
+
+1. **Priority 1: Nsec (Authenticated Users)**
+   - If user authenticated with nsec → ALWAYS use nsec signer
+   - Browser extension is COMPLETELY IGNORED
+   - No fallback, no override, no exceptions
+   
+2. **Priority 2: Browser Extension (Extension-Only Sessions)**
+   - If user authenticated via extension (no nsec) → Use extension signer
+   - Only for users who signed in with extension button
+   
+3. **Priority 3: None (Not Authenticated)**
+   - Extension detected but NOT activated until sign-in
+   - Prevents premature permission prompts
+
+### Implementation (useNostrSigner.ts)
+
+```typescript
+// Priority 1: Nsec takes absolute priority
+if (nsec && nsecSigner && isAuthenticated && user) {
+  // Use nsec signer, ignore extension completely
+  setSigner(nsecSigner);
+  return;
+}
+
+// Priority 2: Extension (only for extension-authenticated users)
+if (window.nostr && isAuthenticated && user) {
+  // Use extension signer
+  setSigner(window.nostr);
+  return;
+}
+
+// Priority 3: Not authenticated
+// Extension available but not used
+```
+
+### User Scenarios
+
+#### Scenario 1: User signs in with nsec, extension present
+
+```text
+✅ Nsec stored → User authenticated with nsec-derived pubkey
+✅ Extension detected but IGNORED
+✅ All operations use nsec signer
+✅ User identity = nsec identity (consistent)
+```
+
+#### Scenario 2: User signs in with extension
+
+```text
+✅ No nsec stored → User authenticated with extension pubkey
+✅ Extension used for all operations
+✅ User identity = extension identity (consistent)
+```
+
+#### Scenario 3: User switches from extension to nsec
+
+```text
+✅ User logs out (clears extension session)
+✅ User signs in with nsec
+✅ Nsec stored → takes priority
+✅ Extension ignored going forward
+```
+
+### Why This Matters
+
+**Problem:** User signs in with nsec, but browser extension contains a DIFFERENT identity
+**Without Priority:** App might accidentally use wrong signer → wrong pubkey → identity breach
+**With Priority:** Nsec always wins → consistent identity → user intent preserved
+
+### Security Guarantees
+
+1. **No Identity Confusion:** Authenticated users NEVER have their signer switched
+2. **Intent Preservation:** Sign-in method determines signer for entire session
+3. **Extension Isolation:** Extension only accessible during sign-in for non-authenticated users
+4. **Cross-Contamination Prevention:** Message cache, profiles, all keyed to authenticated pubkey
+
+### Red Flags (Identity Violations)
+
+- 🚩 Extension used when nsec is available
+- 🚩 Signer switches mid-session
+- 🚩 Multiple identities mixed in one session
+- 🚩 Extension prompts for already-authenticated users
+- 🚩 Cache shared between different user identities
+
+### Testing Requirements
+
+**Before marking signer implementation complete:**
+
+- [ ] Test: User with extension signs in with nsec → nsec used
+- [ ] Test: User with extension signs in with extension → extension used
+- [ ] Test: User signs out and back in → same signer method used
+- [ ] Test: Extension present but not authenticated → no prompts
+- [ ] Verify: Message cache isolated per authenticated pubkey
+- [ ] Verify: No signer switching mid-session
+
+**The cardinal rule: Once authenticated, signer method is LOCKED for that session.**
+
+---
+
 ## 📞 WHEN UNCERTAIN
 
 **ASK. DON'T ASSUME.**
