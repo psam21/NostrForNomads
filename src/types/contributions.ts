@@ -3,7 +3,7 @@ import type { NostrEvent } from './nostr';
 
 /**
  * Nomad Contribution Types
- * Simplified from heritage types for nomad-focused contributions
+ * Focused on nomad-centric contributions
  */
 
 /**

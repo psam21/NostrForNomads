@@ -337,7 +337,7 @@ export function useUserProfile(): UseUserProfileReturn {
 
     try {
       setIsLoadingContributions(true);
-      // Heritage service removed - set to 0 for messages-only app
+      // Contribution count removed - set to 0 for messages-only app
       setContributionsCount(0);
 
       logger.debug('Contributions count (messages-only mode)', { 

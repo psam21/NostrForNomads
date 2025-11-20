@@ -110,7 +110,7 @@ export class MessagingBusinessService {
    * @param recipientPubkey - Recipient's public key
    * @param content - Message content (plaintext)
    * @param signer - NIP-07 signer
-   * @param context - Optional conversation context (product/heritage reference)
+   * @param context - Optional conversation context (product/contribution reference)
    * @param onUploadProgress - Optional callback for tracking upload progress
    * @returns SendMessageResult with success status and message details
    */
@@ -1250,10 +1250,10 @@ export class MessagingBusinessService {
 
         // Parse context if present
         // Format: [Context: type/id|title|imageUrl]
-        const contextMatch = content.match(/^\[Context: (product|heritage)\/([^|\]]+)(?:\|([^|\]]+))?(?:\|([^\]]+))?\]\n\n/);
+        const contextMatch = content.match(/^\[Context: (product|contribution)\/([^|\]]+)(?:\|([^|\]]+))?(?:\|([^\]]+))?\]\n\n/);
         if (contextMatch) {
           context = {
-            type: contextMatch[1] as 'product' | 'heritage',
+            type: contextMatch[1] as 'product' | 'contribution',
             id: contextMatch[2],
             ...(contextMatch[3] && { title: contextMatch[3] }),
             ...(contextMatch[4] && { imageUrl: contextMatch[4] }),

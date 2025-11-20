@@ -18,7 +18,7 @@ export interface Conversation {
   /** Timestamp of last message */
   lastMessageAt: number;
   
-  /** Context (product/heritage) that started the conversation */
+  /** Context (product/contribution) that started the conversation */
   context?: ConversationContext;
   
   /** Number of unread messages */
@@ -50,7 +50,7 @@ export interface Message {
   /** Timestamp when message was created */
   createdAt: number;
   
-  /** Context (product/heritage reference) */
+  /** Context (product/contribution reference) */
   context?: ConversationContext;
   
   /** Whether this message was sent by current user */
@@ -79,7 +79,7 @@ export interface MessageMetadata {
 
 export interface ConversationContext {
   /** Type of content */
-  type: 'product' | 'heritage';
+  type: 'product' | 'contribution';
   
   /** Content ID (d tag) */
   id: string;

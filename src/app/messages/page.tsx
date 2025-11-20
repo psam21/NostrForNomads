@@ -23,7 +23,7 @@ function MessagesPageContent() {
   const [selectedPubkey, setSelectedPubkey] = useState<string | null>(null);
   const [currentUserPubkey, setCurrentUserPubkey] = useState<string | null>(null);
   const [conversationContext, setConversationContext] = useState<{
-    type: 'product' | 'heritage';
+    type: 'product' | 'contribution';
     id: string;
   } | undefined>(undefined);
   
@@ -51,9 +51,9 @@ function MessagesPageContent() {
 
       if (contextParam) {
         const [contextType, contextId] = contextParam.split(':');
-        const type = contextType as 'product' | 'heritage';
+        const type = contextType as 'product' | 'contribution';
         const id = contextId;
-        if ((type === 'product' || type === 'heritage') && id) {
+        if ((type === 'product' || type === 'contribution') && id) {
           setConversationContext({
             type,
             id,

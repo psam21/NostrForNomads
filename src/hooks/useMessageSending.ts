@@ -33,7 +33,7 @@ export const useMessageSending = () => {
    * @param recipientPubkey - Recipient's public key
    * @param content - Message content
    * @param attachments - Optional media attachments
-   * @param context - Optional conversation context (product/heritage reference)
+   * @param context - Optional conversation context (product/contribution reference)
    * @param options - Callbacks for optimistic UI and error handling
    */
   const sendMessage = useCallback(async (
