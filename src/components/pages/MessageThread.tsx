@@ -254,11 +254,11 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 )}
               </div>
 
-              {/* Context tag if present and has title */}
-              {message.context?.title && (
+              {/* Context tag if present */}
+              {message.context && (
                 <div className="mt-3 pt-3 border-t" style={{ borderColor: isSent ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }}>
                   <p className={`text-xs font-medium ${isSent ? 'text-purple-100' : 'text-gray-600'}`}>
-                    {message.context.type === 'product' ? '🛍️ Product' : '🏛️ Heritage'}: {message.context.title}
+                    {message.context.type === 'product' ? '🛍️ Product' : '🏛️ Heritage'}: {message.context.title || 'Item'}
                   </p>
                 </div>
               )}

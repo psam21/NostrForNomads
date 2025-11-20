@@ -211,7 +211,7 @@ export class MessagingBusinessService {
       // Add context to message content if provided
       let messageContent = content;
       if (context) {
-        const contextPrefix = `[Context: ${context.type}/${context.id}]\n\n`;
+        const contextPrefix = `[Context: ${context.type}/${context.id}${context.title ? `|${context.title}` : ''}]\n\n`;
         messageContent = contextPrefix + content;
       }
 
@@ -1248,11 +1248,12 @@ export class MessagingBusinessService {
         let context: ConversationContext | undefined;
 
         // Parse context if present
-        const contextMatch = content.match(/^\[Context: (product|heritage)\/([^\]]+)\]\n\n/);
+        const contextMatch = content.match(/^\[Context: (product|heritage)\/([^|\]]+)(?:\|([^\]]+))?\]\n\n/);
         if (contextMatch) {
           context = {
             type: contextMatch[1] as 'product' | 'heritage',
             id: contextMatch[2],
+            ...(contextMatch[3] && { title: contextMatch[3] }),
           };
           content = content.replace(contextMatch[0], ''); // Remove context prefix
         }
