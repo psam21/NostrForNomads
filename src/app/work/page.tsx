@@ -21,7 +21,7 @@ interface Job {
   poster: string;
 }
 
-export default function GigsPage() {
+export default function WorkPage() {
   const isHydrated = useAuthHydration();
   const { isAuthenticated } = useAuthStore();
   
@@ -101,7 +101,7 @@ export default function GigsPage() {
         <div className="text-center max-w-md px-6">
           <Briefcase className="w-16 h-16 text-purple-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-purple-900 mb-2">
-            Sign in to access Gigs
+            Sign in to access Work
           </h2>
           <p className="text-purple-600 mb-6">
             Find and post gig opportunities on Nostr
@@ -133,7 +133,7 @@ export default function GigsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-serif font-bold text-purple-800 flex items-center gap-3">
             <Briefcase className="w-8 h-8" />
-            Gigs
+            Work
           </h1>
           <p className="text-orange-600 mt-2 font-medium">
             Discover gig opportunities and freelance work
@@ -319,7 +319,7 @@ export default function GigsPage() {
         {/* Info Section */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-purple-900 mb-3">
-            💼 About Gigs
+            💼 About Work
           </h3>
           <ul className="space-y-2 text-sm text-gray-700">
             <li className="flex items-start gap-2">

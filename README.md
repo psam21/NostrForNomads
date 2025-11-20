@@ -25,7 +25,7 @@ A decentralized platform built on the Nostr protocol, enabling digital nomads to
 
 ### UI-Only Features (Coming Soon)
 
-- **Gigs** - Decentralized job marketplace for freelancers and employers
+- **Work** - Decentralized job marketplace for freelancers and employers
 - **Work** - Browse and post job opportunities with Bitcoin payments
 - **Meetings** - Video conferencing and virtual collaboration
 - **Payments** - Bitcoin and Lightning Network transactions
@@ -278,7 +278,7 @@ const [isOpen, setIsOpen] = useState(false) // Local
 │   ├── api/               # API routes (event logging)
 │   ├── contribute/        # Community contribution page
 │   ├── explore/           # Discover content and communities
-│   ├── gigs/              # Gigs marketplace page
+│   ├── work/              # Work marketplace page
 │   ├── meetups/           # Local meetup organizer
 │   ├── messages/          # Messaging page
 │   ├── meetings/          # Video meetings page

@@ -617,7 +617,6 @@ NO generic service usage
 - ✅ Decorator pattern for hook composition
 - ✅ No circular dependencies between layers
 
-**For detailed code quality analysis**: See [`code-quality-analysis.md`](./code-quality-analysis.md)
 
 ---
 

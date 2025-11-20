@@ -23,7 +23,7 @@ const noto = Noto_Sans({
 export const metadata: Metadata = {
   title: 'Nostr for Nomads',
   description:
-    'A decentralized platform built on Nostr for nomadic lifestyle - messaging, gigs, travel, shop, and more.',
+    'A decentralized platform built on Nostr for nomadic lifestyle - messaging, work, travel, shop, and more.',
   keywords: [
     'nostr',
     'messaging',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     'decentralized',
     'privacy',
     'travel',
-    'gigs',
+    'work',
     'marketplace',
     'nomad',
   ],

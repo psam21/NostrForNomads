@@ -12,12 +12,12 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 | Messages | ✅ Event queries | ❌ | ✅ Signing DMs | ❌ | ✅ Gift wraps | ❌ | ❌ | ✅ Encryption | ❌ | ❌ | ❌ | ❌ | ✅ Rumor events | ✅ Encrypted DMs | ❌ | ❌ | ❌ | Production |
 | Meetings | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | UI Only |
 | Payments | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | UI Only |
-| Shop | ✅ Event creation | ❌ | ✅ Signing | ✅ Deletion | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ✅ Delete events | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Products | Production |
-| Travel | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Mock Data |
-| Gigs | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Mock Data |
-| Work | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Mock Data |
-| Explore | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
-| Meetups | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Mock Data |
+| My Shop | ✅ Event creation | ❌ | ✅ Signing | ✅ Deletion | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ✅ Delete events | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Products | Production |
+| Shop | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Products | Production |
+| Travel | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Not Started |
+| Work | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Not Started |
+| Explore | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Contributions | Production |
+| Meetups | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Not Started |
 | Contribute | ✅ Event creation | ❌ | ✅ Signing | ❌ | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
 | My Contributions | ✅ Query events | ❌ | ✅ Signing | ✅ Deletion | ❌ | ✅ Long-form | ✅ Replaceable | ❌ | ✅ Media upload | ❌ | ❌ | ✅ Delete events | ❌ | ❌ | ❌ | ✅ Upload auth | ✅ Contributions | Production |
 | User Event Log | ✅ Query events | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Production |
@@ -132,14 +132,35 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - No backend implementation
 - Placeholder inputs for invoice/address
 
-### Shop, Travel, Gigs, Work, Meetups
+### Shop (Marketplace)
 
-- **Status**: Mock data - no Nostr integration
-- Static data arrays defined with `useState`
-- Client-side filtering and sorting only
-- No relay queries or event publishing
-- UI mockups for future implementation
-- **Service layer ready**: NostrEventService has `createProductEvent()` and `createHeritageEvent()` methods available
+- **Status**: Production - marketplace for products/services
+- **My Shop**: Full CRUD operations for user's own Kind 30023 products
+  - Create/edit/delete products via Kind 30023 events
+  - NIP-09 deletion events for removing products
+  - Multi-attachment support via Blossom (images)
+  - Tag pattern: `nostr-for-nomads-shop`
+  - Statistics dashboard: Total products, by category, by condition
+  - Filters: Search, category, condition
+- **Public Shop**: Browse all products from network
+  - Fetches Kind 30023 events with shop tag
+  - Product cards with pricing, category, condition
+  - Click to view product details
+- **Service architecture**:
+  - `ShopBusinessService` - Business logic orchestration
+  - `ShopService` - Relay queries and parsing
+  - `NostrEventService.createProductEvent()` - Event creation
+  - `useShopPublishing` - Generic wrapper pattern
+- **dTag prefix**: `product-{timestamp}-{random}` for stable IDs
+- Full integration with relays, Blossom uploads, NIP-33 replaceable events
+
+### Travel, Work, Meetups
+
+- **Status**: Not Started - no implementation
+- Planned features for future releases
+- No code, no UI, no services
+- **Note**: Work is the job/freelance marketplace feature
+- **Service layer ready**: NostrEventService has methods available for future use
 
 ### Explore & Contribute
 
@@ -366,13 +387,15 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 - **Shop**: ✅ IMPLEMENTED - Kind 30023 for product listings (NIP-33 parameterized replaceable) with full Nostr integration
   - Create/edit/delete products via Kind 30023 events
   - NIP-09 deletion events for removing products
-  - Multi-attachment support via Blossom (images/videos/audio)
+  - Multi-attachment support via Blossom (images)
   - Tag pattern: `nostr-for-nomads-shop`
   - Public browse + authenticated My Shop dashboard
-- **Gigs/Work**: Integrate Kind 30023 for job postings
-- **Travel**: Integrate Kind 30023 for accommodation/experience listings
+  - **Service architecture**: ShopBusinessService, ShopService, NostrEventService
+- **Travel/Work/Meetups**: Not started - awaiting implementation
+  - Work is the job/freelance marketplace feature
+  - Service methods available in NostrEventService
+  - Can follow Shop pattern for rapid development
 - **Explore**: ✅ IMPLEMENTED - Query Kind 30023 events for discovery
-- **Meetups**: Integrate Kind 31923 (calendar events) or Kind 30023
 - **Contribute**: ✅ IMPLEMENTED - Kind 30023 for community contributions with full Nostr integration
 
 ### Media Enhancements
@@ -399,18 +422,17 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 
 ---
 
-**Last Updated**: November 16, 2025  
+**Last Updated**: November 20, 2025  
 **Codebase Version**: Next.js 15.4.6, React 18  
 **Active NIPs**: 9 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44 + Blossom)  
 **Active Event Kinds**: 7 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023)  
-**Production Features**: 7 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, Shop)
-
-**Production Features**: Sign Up, Sign In, Profile, Messages, Contribute, Explore, My Contributions (CRUD)  
-**UI Mockup Features**: Meetings, Payments, Shop, Travel, Gigs, Work, Meetups
+**Production Features**: 9 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, My Shop, Shop, User Event Log)  
+**UI Only Features**: 2 features (Meetings, Payments)  
+**Not Started**: 3 features (Travel, Work, Meetups)
 
 **Architecture**: Service-Oriented Architecture (SOA) with strict layer separation
 
 - Presentation Layer: Pages, Components, Hooks
-- Business Logic Layer: AuthBusinessService, ProfileBusinessService, MessagingBusinessService, ContributionService
+- Business Logic Layer: AuthBusinessService, ProfileBusinessService, MessagingBusinessService, ContributionService, ShopBusinessService
 - Core Services Layer: KVService, LoggingService, ProfileCacheService, MessageCacheService, EventLoggingService
-- Protocol/Data Layer: GenericEventService, GenericRelayService, GenericBlossomService, GenericContributionService, EncryptionService, NostrEventService
+- Protocol/Data Layer: GenericEventService, GenericRelayService, GenericBlossomService, GenericContributionService, ShopService, EncryptionService, NostrEventService

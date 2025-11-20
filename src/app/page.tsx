@@ -48,20 +48,20 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Gigs */}
+          {/* Work */}
           <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6">
               <Briefcase className="w-8 h-8 text-purple-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Gigs</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Work</h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              Find freelance work or hire talent. Post gigs, browse opportunities, and get paid in Bitcoin.
+              Find freelance work or hire talent. Post jobs, browse opportunities, and get paid in Bitcoin.
             </p>
             <Link
-              href="/gigs"
+              href="/work"
               className="text-purple-600 font-semibold hover:text-purple-700 flex items-center gap-2"
             >
-              Explore Gigs <ArrowRight className="w-4 h-4" />
+              Explore Work <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
