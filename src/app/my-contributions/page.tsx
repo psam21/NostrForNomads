@@ -229,9 +229,9 @@ export default function MyContributionsPage() {
             <p className="text-gray-600 mb-6">
               You need to sign in to view your contributions.
             </p>
-            <a href="/signin" className="btn-primary-sm">
+            <Link href="/signin" className="btn-primary-sm">
               Sign In
-            </a>
+            </Link>
           </div>
         </div>
       </div>

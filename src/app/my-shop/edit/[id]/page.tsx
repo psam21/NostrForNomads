@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { fetchProductById } from '@/services/business/ShopService';
 import { ProductEvent } from '@/types/shop';
@@ -81,9 +82,9 @@ export default function EditProductPage() {
             <p className="text-gray-600 mb-6">
               You need to sign in to edit products.
             </p>
-            <a href="/signin" className="btn-primary-sm">
+            <Link href="/signin" className="btn-primary-sm">
               Sign In
-            </a>
+            </Link>
           </div>
         </div>
       </div>

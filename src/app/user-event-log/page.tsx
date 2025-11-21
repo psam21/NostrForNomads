@@ -188,7 +188,7 @@ export default function UserEventLogPage() {
                   <Clock className="h-4 w-4" />
                   <span>Avg Processing</span>
                 </div>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-2xl font-bold text-primary-600">
                   {Math.round(events.reduce((acc, e) => acc + e.processingDuration, 0) / events.length)}ms
                 </p>
               </div>

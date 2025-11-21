@@ -127,10 +127,10 @@ export function SignInFlow({ onSuccess, onCancel }: SignInFlowProps) {
                 Please install a Nostr browser extension to sign in:
               </p>
               <div className="space-y-2">
-                <a href="https://getalby.com" target="_blank" rel="noopener noreferrer" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <a href="https://getalby.com" target="_blank" rel="noopener noreferrer" className="block text-primary-600 hover:text-primary-700 text-sm">
                   • Alby (recommended)
                 </a>
-                <a href="https://github.com/fiatjaf/nos2x" target="_blank" rel="noopener noreferrer" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <a href="https://github.com/fiatjaf/nos2x" target="_blank" rel="noopener noreferrer" className="block text-primary-600 hover:text-primary-700 text-sm">
                   • nos2x
                 </a>
               </div>
