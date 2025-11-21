@@ -29,86 +29,38 @@ This document outlines the comprehensive, step-by-step implementation of the Wor
 **Pattern:** Copy from `src/types/contributions.ts`, adapt field names  
 **Status:** Not Started
 
-**File Structure:**
-```typescript
-import type { GenericAttachment } from './attachments';
-import type { NostrEvent } from './nostr';
+**Interfaces to Define:**
+- `WorkData` - Form submission data (title, category, jobType, description, duration, payRate, currency, location, region, country, attachments, tags, contact?)
+- `WorkNostrEvent` - Kind 30023 with work-specific tags
+- `WorkEventData` - For event creation
+- `WorkPublishingResult`, `WorkPublishingState`, `WorkPublishingProgress` - Publishing state types
+- `WorkAttachment` - Extends GenericAttachment
+- `WorkValidationResult` - Validation errors
+- `Work` - Display interface
+- `WorkCardData` - For my-work dashboard (lightweight)
+- `WorkEvent` - Parsed from Nostr event
+- `WorkCustomFields` - For ContentDetailService integration
 
-// Core interfaces
-- WorkData (form submission data)
-- WorkNostrEvent (Kind 30023 with work-specific tags)
-- WorkEventData (for event creation)
-- WorkPublishingResult
-- WorkPublishingState
-- WorkPublishingProgress
-- WorkAttachment (extends GenericAttachment)
-- WorkValidationResult
-- Work (display interface)
-- WorkCardData (for my-work dashboard)
-- WorkEvent (parsed from Nostr event)
-- WorkCustomFields (for content detail)
+**Constants to Define:**
+- `WORK_TAG_KEYS` - Tag key mappings
+- `WORK_SYSTEM_TAG = 'nostr-for-nomads-work'` - System identifier
 
-// Tag constants
-- WORK_TAG_KEYS
-- WORK_SYSTEM_TAG = 'nostr-for-nomads-work'
+**Helper Functions:**
+- `parseWorkEvent(event: NostrEvent): Work | null`
+- `isWorkEvent(event: NostrEvent): boolean`
 
-// Helper functions
-- parseWorkEvent(event: NostrEvent): Work | null
-- isWorkEvent(event: NostrEvent): boolean
-```
+**Key Work-Specific Fields:**
+- `jobType`: 'remote' | 'on-site' | 'hybrid'
+- `duration`: '1 week' | '2 weeks' | '1 month' | '2 months' | '3+ months' | 'ongoing'
+- `payRate`: number
+- `currency`: 'BTC' | 'sats' | 'USD' | 'per hour' | 'per day' | 'per project'
+- `contact?`: string (optional, defaults to Nostr DMs)
 
-**Key Fields:**
-```typescript
-interface WorkData {
-  // Basic Information
-  title: string;
-  category: string; // 'Development', 'Design', 'Writing', 'Marketing', 'Support', 'Other'
-  jobType: string; // 'remote', 'on-site', 'hybrid'
-  
-  // Details
-  description: string;
-  duration: string; // '1 week', '2 months', '3+ months'
-  language?: string;
-  location?: string; // City/place (for on-site/hybrid)
-  region: string;
-  country: string;
-  
-  // Compensation
-  payRate: number;
-  currency: string; // 'BTC', 'sats', 'USD', 'per hour', 'per day', 'per project'
-  
-  // Media & Tags
-  attachments: GenericAttachment[];
-  tags: string[];
-  
-  // Contact (optional - uses Nostr DMs by default)
-  contact?: string;
-}
-```
-
-**Tags Structure:**
-```typescript
-['d', dTag], // Unique identifier
-['t', 'nostr-for-nomads-work'], // System tag
-['title', title],
-['category', category],
-['job-type', jobType],
-['duration', duration],
-['region', region],
-['country', country],
-['pay-rate', payRate.toString()],
-['currency', currency],
-['language', language?],
-['location', location?],
-['contact', contact?],
-['t', ...userTags], // User-defined tags
-['image', imageUrl], // Media
-['video', videoUrl],
-['audio', audioUrl],
-```
+**Tag Structure:**
+`['d', dTag]`, `['t', 'nostr-for-nomads-work']`, `['title', ...]`, `['category', ...]`, `['job-type', ...]`, `['duration', ...]`, `['region', ...]`, `['country', ...]`, `['pay-rate', ...]`, `['currency', ...]`, `['language'?, ...]`, `['location'?, ...]`, `['contact'?, ...]`, `['t', ...userTags]`, `['image', ...]`, `['video', ...]`, `['audio', ...]`
 
 **Dependencies:** None  
-**Testing:** Import types in a test file, verify TypeScript compilation
+**Testing:** Import types, verify TypeScript compilation
 
 ---
 
@@ -118,57 +70,17 @@ interface WorkData {
 **Pattern:** Similar to `src/config/contributions.ts`  
 **Status:** Not Started
 
-**Content:**
-```typescript
-export const WORK_CATEGORIES = [
-  { id: 'development', name: 'Development', icon: '💻' },
-  { id: 'design', name: 'Design', icon: '🎨' },
-  { id: 'writing', name: 'Writing', icon: '✍️' },
-  { id: 'marketing', name: 'Marketing', icon: '📢' },
-  { id: 'support', name: 'Support', icon: '🎧' },
-  { id: 'other', name: 'Other', icon: '🔧' },
-] as const;
+**Constants to Define:**
+- `WORK_CATEGORIES` - Array of { id, name, icon } for Development, Design, Writing, Marketing, Support, Other
+- `WORK_JOB_TYPES` - Array of { id, name, icon } for Remote, On-site, Hybrid
+- `WORK_DURATIONS` - Array of { id, name, value } for 1 week through ongoing
+- `WORK_CURRENCIES` - Array of { id, name, symbol } for BTC, sats, USD, per hour, per day, per project
 
-export const WORK_JOB_TYPES = [
-  { id: 'remote', name: 'Remote', icon: '🌍' },
-  { id: 'on-site', name: 'On-site', icon: '🏢' },
-  { id: 'hybrid', name: 'Hybrid', icon: '🔀' },
-] as const;
-
-export const WORK_DURATIONS = [
-  { id: '1-week', name: '1 Week', value: '1 week' },
-  { id: '2-weeks', name: '2 Weeks', value: '2 weeks' },
-  { id: '1-month', name: '1 Month', value: '1 month' },
-  { id: '2-months', name: '2 Months', value: '2 months' },
-  { id: '3-months', name: '3+ Months', value: '3+ months' },
-  { id: 'ongoing', name: 'Ongoing', value: 'ongoing' },
-] as const;
-
-export const WORK_CURRENCIES = [
-  { id: 'btc', name: 'BTC', symbol: '₿' },
-  { id: 'sats', name: 'Sats', symbol: 'sats' },
-  { id: 'usd', name: 'USD', symbol: '$' },
-  { id: 'per-hour', name: 'Per Hour', symbol: '/hr' },
-  { id: 'per-day', name: 'Per Day', symbol: '/day' },
-  { id: 'per-project', name: 'Per Project', symbol: 'fixed' },
-] as const;
-
-export function getWorkCategories() {
-  return WORK_CATEGORIES;
-}
-
-export function getWorkJobTypes() {
-  return WORK_JOB_TYPES;
-}
-
-export function getWorkDurations() {
-  return WORK_DURATIONS;
-}
-
-export function getWorkCurrencies() {
-  return WORK_CURRENCIES;
-}
-```
+**Functions to Export:**
+- `getWorkCategories()`
+- `getWorkJobTypes()`
+- `getWorkDurations()`
+- `getWorkCurrencies()`
 
 **Dependencies:** None  
 **Testing:** Import functions, verify they return expected arrays
@@ -201,39 +113,24 @@ export function getWorkCurrencies() {
 **Pattern:** Copy from `src/services/generic/GenericContributionService.ts`  
 **Status:** Not Started
 
-**Methods:**
-```typescript
-// Fetch public work opportunities
-export async function fetchPublicWorkOpportunities(
-  limit: number = 20,
-  until?: number
-): Promise<WorkEvent[]>
+**Methods to Implement:**
+- `fetchPublicWorkOpportunities(limit: number, until?: number): Promise<WorkEvent[]>` - Query relays for work events
+- `extractMedia(tags: string[][]): WorkMediaUrls` - Parse image/video/audio tags
+- `parseWorkEvent(event: NostrEvent): WorkEvent | null` - Transform NostrEvent to WorkEvent
 
-// Extract media from work event tags
-export function extractMedia(tags: string[][]): WorkMediaUrls
-
-// Parse work event from NostrEvent
-export function parseWorkEvent(event: NostrEvent): WorkEvent | null
-```
-
-**Filter Structure:**
-```typescript
-{
-  kinds: [30023],
-  '#t': ['nostr-for-nomads-work'],
-  limit,
-  until,
-}
-```
+**Query Filter:**
+- kinds: [30023]
+- #t: ['nostr-for-nomads-work']
+- limit, until for pagination
 
 **Dependencies:** 
 - `src/types/work.ts` (Phase 1.1)
 - `GenericRelayService.queryEvents()`
 
 **Testing:**
-- Mock Nostr events with work tags
-- Verify parsing extracts all fields correctly
-- Test media extraction from tags
+- Mock Nostr events with work tags → verify parsing
+- Test media extraction → verify URL arrays
+- Test edge cases (missing fields, malformed tags)
 
 ---
 
@@ -431,6 +328,8 @@ export async function fetchWorkById(
 - `src/services/business/WorkValidationService.ts` (Phase 2.4)
 - `src/services/nostr/NostrEventService.ts` (Phase 2.3)
 - `src/services/generic/GenericWorkService.ts` (Phase 2.2)
+- `src/services/business/ContentDetailService.ts` (existing - **REUSE**)
+- `src/services/business/BaseContentProvider.ts` (existing - **EXTEND**)
 - `src/services/generic/GenericBlossomService.ts` (existing)
 - `src/services/generic/GenericEventService.ts` (existing)
 - `src/services/generic/GenericRelayService.ts` (existing)
@@ -441,6 +340,47 @@ export async function fetchWorkById(
 - Test fetchWorksByAuthor → expect user's work listings
 - Test deleteWork → expect deletion event published
 - Test fetchWorkById → expect specific work or null
+
+---
+
+### 2.6 Create WorkContentProvider (DRY - REUSE ContentDetailService)
+
+**Action:** CREATE `src/services/business/WorkContentProvider.ts`  
+**Pattern:** Extend `BaseContentProvider` (same as Shop/Contributions use)  
+**Status:** Not Started
+
+**Class:** `export class WorkContentProvider extends BaseContentProvider<WorkCustomFields>`
+
+**Method to Implement:**
+`async getContentDetail(dTag: string): Promise<ContentDetailResult<WorkCustomFields>>`
+
+**SOA Flow:**
+1. Fetch → Call `fetchWorkById(dTag)` from WorkBusinessService
+2. Transform → Map WorkEvent to ContentDetail format
+3. Author → Use `tryGetAuthorDisplayName()` and `tryGetNpub()` from BaseContentProvider
+4. Return → ContentDetailResult with work-specific custom fields (jobType, duration, payRate, currency, contact)
+
+**Registration (in app initialization):**
+Register provider: `contentDetailService.registerProvider('work', new WorkContentProvider())`
+
+**Why This Matters (DRY):**
+- ✅ Reuses existing ContentDetailService pattern (Shop, Contributions use this)
+- ✅ No need to duplicate detail page logic
+- ✅ Automatic SEO metadata handling
+- ✅ Consistent error handling across all content types
+- ✅ BaseContentProvider gives free author utilities
+- ✅ Single source of truth for content retrieval
+
+**Dependencies:**
+- `src/services/business/WorkBusinessService.ts` (Phase 2.5)
+- `src/services/business/ContentDetailService.ts` (existing)
+- `src/services/business/BaseContentProvider.ts` (existing)
+
+**Testing:**
+- Call `contentDetailService.getContentDetail('work', dTag)` → verify WorkEvent returned
+- Verify author display name populated
+- Verify npub conversion
+- Test 404 handling (invalid dTag)
 
 ---
 
