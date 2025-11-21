@@ -230,7 +230,7 @@ export default function AuthButton() {
               <svg className="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              New Shop Item
+              New Shop Listing
             </Link>
             
             <Link
@@ -242,7 +242,7 @@ export default function AuthButton() {
               <svg className="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              New Work Item
+              New Work Listing
             </Link>
             
             <div className="border-t border-purple-100 my-1"></div>
