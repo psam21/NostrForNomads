@@ -253,13 +253,13 @@ export default function MyWorkPage() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen bg-primary-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container-width py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-3xl font-serif font-bold text-blue-900 mb-2">My Work Opportunities</h1>
+              <h1 className="text-3xl font-serif font-bold text-primary-900 mb-2">My Work Opportunities</h1>
               <p className="text-gray-600 text-lg">
                 Manage and edit your posted opportunities
               </p>
@@ -280,13 +280,13 @@ export default function MyWorkPage() {
       <div className="container-width py-8">
         {/* Statistics Dashboard */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Opportunities */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Opportunities</p>
-                  <p className="text-3xl font-bold text-blue-900 mt-1">{statistics.total}</p>
+                  <p className="text-3xl font-bold text-primary-900 mt-1">{statistics.total}</p>
                 </div>
                 <div className="p-3 bg-primary-100 rounded-full">
                   <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,7 +305,7 @@ export default function MyWorkPage() {
                   return (
                     <div key={type} className="flex items-center justify-between text-sm">
                       <span className="text-gray-700">{jobType?.name || type}</span>
-                      <span className="font-semibold text-blue-900">{count}</span>
+                      <span className="font-semibold text-primary-900">{count}</span>
                     </div>
                   );
                 })}
@@ -324,7 +324,7 @@ export default function MyWorkPage() {
                   return (
                     <div key={category} className="flex items-center justify-between text-sm">
                       <span className="text-gray-700">{cat?.name || category}</span>
-                      <span className="font-semibold text-blue-900">{count}</span>
+                      <span className="font-semibold text-primary-900">{count}</span>
                     </div>
                   );
                 })}
@@ -343,7 +343,7 @@ export default function MyWorkPage() {
               <h2 className="text-lg font-semibold text-gray-900">Filter Your Opportunities</h2>
               <button
                 onClick={handleClearFilters}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-primary-600 hover:text-primary-700 font-medium"
               >
                 Clear All
               </button>
@@ -416,7 +416,7 @@ export default function MyWorkPage() {
         {isLoading && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
               <p className="text-gray-600 text-lg">Loading your opportunities...</p>
             </div>
           </div>
@@ -455,7 +455,7 @@ export default function MyWorkPage() {
         {/* No Results State (when filters applied but no matches) */}
         {!isLoading && !error && workItems.length > 0 && filteredWorkItems.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-blue-300 mb-4">
+            <div className="text-primary-300 mb-4">
               <svg
                 className="w-16 h-16 mx-auto"
                 fill="none"
@@ -470,7 +470,7 @@ export default function MyWorkPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-serif font-bold text-blue-800 mb-2">No matches found</h3>
+            <h3 className="text-2xl font-serif font-bold text-primary-800 mb-2">No matches found</h3>
             <p className="text-gray-600 mb-6 text-lg">
               Try adjusting your filters or search query
             </p>
@@ -486,7 +486,7 @@ export default function MyWorkPage() {
         {/* Empty State (no work opportunities at all) */}
         {!isLoading && !error && workItems.length === 0 && (
           <div className="text-center py-16">
-            <div className="text-blue-300 mb-4">
+            <div className="text-primary-300 mb-4">
               <svg
                 className="w-20 h-20 mx-auto"
                 fill="none"
@@ -501,7 +501,7 @@ export default function MyWorkPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-serif font-bold text-blue-800 mb-2">No work opportunities yet</h3>
+            <h3 className="text-2xl font-serif font-bold text-primary-800 mb-2">No work opportunities yet</h3>
             <p className="text-gray-600 mb-6 text-lg">
               Start posting opportunities to connect with talented professionals
             </p>
