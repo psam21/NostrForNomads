@@ -234,301 +234,284 @@ export const WorkForm = ({
               <h3 className="text-xl font-serif font-bold text-purple-800">Basic Information</h3>
             </div>
 
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            Job Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-4 py-3 border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            placeholder="e.g., Full Stack Developer, Content Writer..."
-          />
-          {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
-        </div>
-
-        {/* Category and Job Type Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Category <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="category"
-              value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.category ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            >
-              <option value="">Select a category</option>
-              {WORK_CATEGORIES.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
-              ))}
-            </select>
-            {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-2">
-              Job Type <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="jobType"
-              value={formData.jobType}
-              onChange={(e) => handleInputChange('jobType', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.jobType ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            >
-              <option value="">Select job type</option>
-              {WORK_JOB_TYPES.map(type => (
-                <option key={type.id} value={type.id}>{type.icon} {type.name}</option>
-              ))}
-            </select>
-            {errors.jobType && <p className="mt-1 text-sm text-red-600">{errors.jobType}</p>}
-          </div>
-        </div>
-
-        {/* Duration, Pay Rate, Currency Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
-              Duration <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="duration"
-              value={formData.duration}
-              onChange={(e) => handleInputChange('duration', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.duration ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            >
-              <option value="">Select duration</option>
-              {WORK_DURATIONS.map(dur => (
-                <option key={dur.id} value={dur.value}>{dur.name}</option>
-              ))}
-            </select>
-            {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="payRate" className="block text-sm font-medium text-gray-700 mb-2">
-              Pay Rate <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              id="payRate"
-              value={formData.payRate}
-              onChange={(e) => handleInputChange('payRate', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.payRate ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-              placeholder="e.g., 50, 1000"
-              min="0"
-              step="0.01"
-            />
-            {errors.payRate && <p className="mt-1 text-sm text-red-600">{errors.payRate}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-2">
-              Currency <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="currency"
-              value={formData.currency}
-              onChange={(e) => handleInputChange('currency', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.currency ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            >
-              <option value="">Select currency</option>
-              {WORK_CURRENCIES.map(curr => (
-                <option key={curr.id} value={curr.id}>{curr.symbol} {curr.name}</option>
-              ))}
-            </select>
-            {errors.currency && <p className="mt-1 text-sm text-red-600">{errors.currency}</p>}
-          </div>
-        </div>
-
-          </div>
-
-          {/* Section 2: Job Details */}
-          <div className="space-y-6">
-            <div className="border-b border-gray-200 pb-2">
-              <h3 className="text-xl font-serif font-bold text-purple-800">Job Details</h3>
+            {/* Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                Job Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                className={`w-full px-4 py-3 border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                placeholder="e.g., Full Stack Developer, Content Writer..."
+              />
+              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
             </div>
 
-          </div>
-
-          {/* Section 2: Job Details */}
-          <div className="space-y-6">
-            <div className="border-b border-gray-200 pb-2">
-              <h3 className="text-xl font-serif font-bold text-purple-800">Job Details</h3>
-            </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-            Job Description <span className="text-red-500">*</span>
-          </label>
-          <RichTextEditor
-            value={formData.description}
-            onChange={(html) => handleInputChange('description', html)}
-            placeholder="Describe the job opportunity, requirements, responsibilities..."
-            maxLength={50000}
-            minHeight={200}
-            error={errors.description}
-          />
-          {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
-        </div>
-
-        {/* Contact Information */}
-        <div>
-          <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-2">
-            Contact Information (Optional)
-          </label>
-          <input
-            type="text"
-            id="contact"
-            value={formData.contact}
-            onChange={(e) => handleInputChange('contact', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            placeholder="Email, Telegram, website, etc."
-          />
-          <p className="mt-1 text-sm text-gray-500">How should interested candidates reach you?</p>
-        </div>
-
-          </div>
-
-          {/* Section 3: Location & Tags */}
-          <div className="space-y-6">
-            <div className="border-b border-gray-200 pb-2">
-              <h3 className="text-xl font-serif font-bold text-purple-800">Location & Tags</h3>
-            </div>
-
-          </div>
-
-          {/* Section 3: Location & Tags */}
-          <div className="space-y-6">
-            <div className="border-b border-gray-200 pb-2">
-              <h3 className="text-xl font-serif font-bold text-purple-800">Location & Tags</h3>
-            </div>
-
-        {/* Region and Country Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
-              Region <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="region"
-              value={formData.region}
-              onChange={(e) => {
-                handleInputChange('region', e.target.value);
-                handleInputChange('country', ''); // Reset country when region changes
-              }}
-              className={`w-full px-4 py-3 border ${errors.region ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-            >
-              <option value="">Select a region</option>
-              {REGIONS.map(region => (
-                <option key={region.id} value={region.id}>{region.name}</option>
-              ))}
-            </select>
-            {errors.region && <p className="mt-1 text-sm text-red-600">{errors.region}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
-              Country <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="country"
-              value={formData.country}
-              onChange={(e) => handleInputChange('country', e.target.value)}
-              className={`w-full px-4 py-3 border ${errors.country ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
-              disabled={!formData.region}
-            >
-              <option value="">Select a country</option>
-              {formData.region && COUNTRIES
-                .filter(country => country.region === formData.region)
-                .map(country => (
-                  <option key={country.id} value={country.id}>{country.name}</option>
-                ))}
-            </select>
-            {errors.country && <p className="mt-1 text-sm text-red-600">{errors.country}</p>}
-          </div>
-        </div>
-
-        {/* Location */}
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-            Specific Location (Optional)
-          </label>
-          <input
-            type="text"
-            id="location"
-            value={formData.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            placeholder="City, state, or specific area..."
-          />
-        </div>
-
-        {/* Tags */}
-        <div>
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-            Tags (Optional)
-          </label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              id="tags"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder="Add tags like 'bitcoin', 'remote', 'urgent'..."
-            />
-            <button
-              type="button"
-              onClick={handleAddTag}
-              className="px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            >
-              Add
-            </button>
-          </div>
-          {formData.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map(tag => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800"
+            {/* Category and Job Type Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => handleInputChange('category', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.category ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
                 >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="ml-2 text-primary-600 hover:text-primary-800"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+                  <option value="">Select a category</option>
+                  {WORK_CATEGORIES.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
+                  ))}
+                </select>
+                {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
+              </div>
 
-        {/* Attachments */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Media Attachments (Optional)
-          </label>
-          <AttachmentManager
-            initialAttachments={attachments}
-            onAttachmentsChange={handleAttachmentsChange}
-            onError={handleAttachmentError}
-            config={{
-              maxAttachments: 5,
-              supportedTypes: ['image/*', 'video/*', 'audio/*'],
-            }}
-          />
-          {errors.attachments && <p className="mt-1 text-sm text-red-600">{errors.attachments}</p>}
-        </div>
+              <div>
+                <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-2">
+                  Job Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="jobType"
+                  value={formData.jobType}
+                  onChange={(e) => handleInputChange('jobType', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.jobType ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                >
+                  <option value="">Select job type</option>
+                  {WORK_JOB_TYPES.map(type => (
+                    <option key={type.id} value={type.id}>{type.icon} {type.name}</option>
+                  ))}
+                </select>
+                {errors.jobType && <p className="mt-1 text-sm text-red-600">{errors.jobType}</p>}
+              </div>
+            </div>
+
+            {/* Duration, Pay Rate, Currency Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
+                  Duration <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="duration"
+                  value={formData.duration}
+                  onChange={(e) => handleInputChange('duration', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.duration ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                >
+                  <option value="">Select duration</option>
+                  {WORK_DURATIONS.map(dur => (
+                    <option key={dur.id} value={dur.value}>{dur.name}</option>
+                  ))}
+                </select>
+                {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="payRate" className="block text-sm font-medium text-gray-700 mb-2">
+                  Pay Rate <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="payRate"
+                  value={formData.payRate}
+                  onChange={(e) => handleInputChange('payRate', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.payRate ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                  placeholder="e.g., 50, 1000"
+                  min="0"
+                  step="0.01"
+                />
+                {errors.payRate && <p className="mt-1 text-sm text-red-600">{errors.payRate}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-2">
+                  Currency <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="currency"
+                  value={formData.currency}
+                  onChange={(e) => handleInputChange('currency', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.currency ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                >
+                  <option value="">Select currency</option>
+                  {WORK_CURRENCIES.map(curr => (
+                    <option key={curr.id} value={curr.id}>{curr.symbol} {curr.name}</option>
+                  ))}
+                </select>
+                {errors.currency && <p className="mt-1 text-sm text-red-600">{errors.currency}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Job Details */}
+          {/* Section 2: Job Details */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Job Details</h3>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                Job Description <span className="text-red-500">*</span>
+              </label>
+              <RichTextEditor
+                value={formData.description}
+                onChange={(html) => handleInputChange('description', html)}
+                placeholder="Describe the job opportunity, requirements, responsibilities..."
+                maxLength={50000}
+                minHeight={200}
+                error={errors.description}
+              />
+              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            </div>
+
+            {/* Contact Information */}
+            <div>
+              <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-2">
+                Contact Information (Optional)
+              </label>
+              <input
+                type="text"
+                id="contact"
+                value={formData.contact}
+                onChange={(e) => handleInputChange('contact', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Email, Telegram, website, etc."
+              />
+              <p className="mt-1 text-sm text-gray-500">How should interested candidates reach you?</p>
+            </div>
+          </div>
+
+          {/* Section 3: Location & Tags */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Location & Tags</h3>
+            </div>
+
+            {/* Region and Country Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
+                  Region <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="region"
+                  value={formData.region}
+                  onChange={(e) => {
+                    handleInputChange('region', e.target.value);
+                    handleInputChange('country', ''); // Reset country when region changes
+                  }}
+                  className={`w-full px-4 py-3 border ${errors.region ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                >
+                  <option value="">Select a region</option>
+                  {REGIONS.map(region => (
+                    <option key={region.id} value={region.id}>{region.name}</option>
+                  ))}
+                </select>
+                {errors.region && <p className="mt-1 text-sm text-red-600">{errors.region}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="country"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  className={`w-full px-4 py-3 border ${errors.country ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                  disabled={!formData.region}
+                >
+                  <option value="">Select a country</option>
+                  {formData.region && COUNTRIES
+                    .filter(country => country.region === formData.region)
+                    .map(country => (
+                      <option key={country.id} value={country.id}>{country.name}</option>
+                    ))}
+                </select>
+                {errors.country && <p className="mt-1 text-sm text-red-600">{errors.country}</p>}
+              </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                Specific Location (Optional)
+              </label>
+              <input
+                type="text"
+                id="location"
+                value={formData.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="City, state, or specific area..."
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+                Tags (Optional)
+              </label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  id="tags"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Add tags like 'bitcoin', 'remote', 'urgent'..."
+                />
+                <button
+                  type="button"
+                  onClick={handleAddTag}
+                  className="px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                >
+                  Add
+                </button>
+              </div>
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formData.tags.map(tag => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-2 text-primary-600 hover:text-primary-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Attachments */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Media Attachments (Optional)
+              </label>
+              <AttachmentManager
+                initialAttachments={attachments}
+                onAttachmentsChange={handleAttachmentsChange}
+                onError={handleAttachmentError}
+                config={{
+                  maxAttachments: 5,
+                  supportedTypes: ['image/*', 'video/*', 'audio/*'],
+                }}
+              />
+              {errors.attachments && <p className="mt-1 text-sm text-red-600">{errors.attachments}</p>}
+            </div>
           </div>
         </fieldset>
 
