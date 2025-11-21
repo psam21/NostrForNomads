@@ -254,45 +254,47 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
-      <div className="container-width section-padding">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-serif font-bold text-purple-800">Nostr Profile</h1>
-              <p className="text-orange-600 mt-2 font-medium">
-                Manage your Nostr identity
-              </p>
-            </div>
-            <div className="flex space-x-3">
+      {/* Hero Section */}
+      <section className="pt-16 lg:pt-20 pb-8 md:pb-12 bg-gradient-to-r from-purple-600 to-orange-600 text-white">
+        <div className="container-width">
+          <div className="max-w-5xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-center">Nostr Profile</h1>
+            <p className="text-lg text-purple-50 text-center mb-6">
+              Manage your Nostr identity
+            </p>
+            <div className="flex justify-center space-x-3">
               {!isEditing ? (
                 <button
                   onClick={handleEdit}
-                  className="btn-outline-sm"
+                  className="inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-lg font-medium transition-colors shadow-lg"
                   disabled={isPublishing}
                 >
                   Edit Profile
                 </button>
               ) : (
-                <div className="flex space-x-2">
+                <>
                   <button
                     onClick={handleCancelEdit}
-                    className="btn-outline-sm"
+                    className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 px-6 py-3 rounded-lg font-medium transition-colors"
                     disabled={isPublishing}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="btn-primary-sm"
+                    className="inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-lg font-medium transition-colors shadow-lg"
                     disabled={isPublishing}
                   >
                     {isPublishing ? 'Publishing...' : 'Publish to Nostr'}
                   </button>
-                </div>
+                </>
               )}
             </div>
           </div>
         </div>
+      </section>
+
+      <div className="container-width py-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">

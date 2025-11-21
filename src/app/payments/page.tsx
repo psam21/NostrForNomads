@@ -40,17 +40,36 @@ export default function PaymentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50 pt-24 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent mb-4">
-            Payments
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Choose your preferred payment method
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50">
+      {/* Hero Section */}
+      <section className="pt-16 lg:pt-20 pb-16 md:pb-20 bg-gradient-to-r from-purple-600 to-orange-600 text-white">
+        <div className="container-width">
+          <div className="max-w-5xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">
+              Payments
+            </h1>
+            <p className="text-lg text-purple-50 max-w-2xl mx-auto mb-8">
+              Send and receive Bitcoin payments instantly. Choose from multiple payment methods for your transactions.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <Bitcoin className="w-4 h-4 mr-2 text-white" />
+                <span>Bitcoin Payments</span>
+              </div>
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <Zap className="w-4 h-4 mr-2 text-white" />
+                <span>Lightning Fast</span>
+              </div>
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <DollarSign className="w-4 h-4 mr-2 text-white" />
+                <span>Multiple Currencies</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {paymentMethods.map((method) => {
             const Icon = method.icon;

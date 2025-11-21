@@ -11,7 +11,7 @@ import { UnifiedWorkCard, UnifiedWorkData } from '@/components/generic/UnifiedWo
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
 import { WORK_CATEGORIES, WORK_JOB_TYPES } from '@/config/work';
 import { logger } from '@/services/core/LoggingService';
-import { Search, Briefcase } from 'lucide-react';
+import { Search, Briefcase, Plus } from 'lucide-react';
 
 // Work card data interface (similar to ContributionCardData)
 interface WorkCardData {
@@ -291,27 +291,29 @@ export default function MyWorkPage() {
 
   return (
     <div className="min-h-screen bg-primary-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container-width py-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-serif font-bold text-primary-900 mb-2">My Work Opportunities</h1>
-              <p className="text-gray-600 text-lg">
-                Manage and edit your posted opportunities
-              </p>
+      {/* Hero Section */}
+      <section className="pt-16 lg:pt-20 pb-16 md:pb-20 bg-gradient-to-r from-purple-600 to-orange-600 text-white">
+        <div className="container-width">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="flex items-center justify-center mb-6">
+              <Briefcase className="w-12 h-12 mr-4" />
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold">
+                My Work Opportunities
+              </h1>
             </div>
-            <div className="mt-4 lg:mt-0">
-              <Link
-                href="/my-work/create"
-                className="btn-primary-sm"
-              >
-                Post New Opportunity
-              </Link>
-            </div>
+            <p className="text-lg text-purple-50 max-w-2xl mx-auto mb-8">
+              Manage and edit your posted opportunities. Find talented nomads for your projects.
+            </p>
+            <Link
+              href="/my-work/create"
+              className="inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-lg font-medium transition-colors shadow-lg"
+            >
+              <Plus className="w-5 h-5" />
+              Post New Opportunity
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Main Content */}
       <div className="container-width py-8">
