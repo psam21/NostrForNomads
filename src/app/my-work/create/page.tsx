@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { WorkForm } from '@/components/pages/WorkForm';
 import { Briefcase } from 'lucide-react';
@@ -27,9 +28,9 @@ export default function WorkCreatePage() {
             <p className="text-gray-600 mb-6">
               You need to sign in to post work opportunities.
             </p>
-            <a href="/signin" className="btn-primary-sm">
+            <Link href="/signin" className="btn-primary-sm">
               Sign In
-            </a>
+            </Link>
           </div>
         </div>
       </div>

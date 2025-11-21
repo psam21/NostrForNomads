@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ProductForm } from '@/components/pages/ProductForm';
 import { Store } from 'lucide-react';
@@ -27,9 +28,9 @@ export default function CreateProductPage() {
             <p className="text-gray-600 mb-6">
               You need to sign in to list products.
             </p>
-            <a href="/signin" className="btn-primary-sm">
+            <Link href="/signin" className="btn-primary-sm">
               Sign In
-            </a>
+            </Link>
           </div>
         </div>
       </div>
