@@ -8,6 +8,7 @@ import type { WorkEvent } from '@/types/work';
 import { WorkForm } from '@/components/pages/WorkForm';
 import type { GenericAttachment } from '@/types/attachments';
 import { logger } from '@/services/core/LoggingService';
+import { Briefcase } from 'lucide-react';
 
 export default function WorkEditPage() {
   const router = useRouter();
@@ -216,27 +217,30 @@ export default function WorkEditPage() {
   // Edit form
   return (
     <div className="min-h-screen bg-primary-50">
-      <section className="section-padding">
-        <div className="container-width">
-          <div className="max-w-4xl mx-auto mb-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-800 mb-4">
-              Edit Work Opportunity
-            </h1>
-            <p className="text-gray-600">
-              Update your work opportunity details below
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <WorkForm
-              onWorkCreated={handleWorkUpdated}
-              onCancel={handleCancel}
-              defaultValues={formDefaultValues}
-              isEditMode={true}
-            />
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="container-width py-8">
+          <div className="flex items-center gap-3">
+            <Briefcase className="w-8 h-8 text-primary-600" />
+            <div>
+              <h1 className="text-3xl font-serif font-bold text-primary-900">Edit Work Opportunity</h1>
+              <p className="text-gray-600 text-lg mt-1">
+                Update your work opportunity details
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Main Content */}
+      <div className="container-width py-8">
+        <WorkForm
+          onWorkCreated={handleWorkUpdated}
+          onCancel={handleCancel}
+          defaultValues={formDefaultValues}
+          isEditMode={true}
+        />
+      </div>
     </div>
   );
 }

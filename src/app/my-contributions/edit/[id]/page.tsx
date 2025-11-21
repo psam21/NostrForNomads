@@ -8,6 +8,7 @@ import type { ContributionEvent } from '@/services/generic/GenericContributionSe
 import { ContributionForm } from '@/components/pages/ContributionForm';
 import type { GenericAttachment } from '@/types/attachments';
 import { logger } from '@/services/core/LoggingService';
+import { FileText } from 'lucide-react';
 
 export default function ContributionEditPage() {
   const router = useRouter();
@@ -224,21 +225,15 @@ export default function ContributionEditPage() {
     <div className="min-h-screen bg-primary-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="container-width py-6">
-          <div className="flex items-center justify-between">
+        <div className="container-width py-8">
+          <div className="flex items-center gap-3">
+            <FileText className="w-8 h-8 text-primary-600" />
             <div>
-              <h1 className="text-2xl font-bold text-primary-800">Edit Contribution</h1>
-              <p className="text-gray-600 mt-1">{contribution.title}</p>
+              <h1 className="text-3xl font-serif font-bold text-primary-900">Edit Contribution</h1>
+              <p className="text-gray-600 text-lg mt-1">
+                Update your nomad contribution
+              </p>
             </div>
-            <button
-              onClick={handleCancel}
-              className="btn-outline-sm flex items-center space-x-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>Back to My Contributions</span>
-            </button>
           </div>
         </div>
       </div>

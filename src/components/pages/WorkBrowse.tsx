@@ -275,14 +275,11 @@ export default function WorkContent() {
             <>
               {/* Featured Opportunities */}
               {featured.length > 0 && (
-                <div className="mb-16">
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-serif font-bold text-purple-800 flex items-center gap-2">
-                      <TrendingUp className="w-8 h-8" />
-                      Featured Opportunities
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="mb-12">
+                  <h3 className="text-xl font-serif font-bold text-purple-800 mb-6">
+                    Featured Work Opportunities
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-8">
                     {featured.map((item) => (
                       <UnifiedWorkCard
                         key={item.id}
@@ -295,25 +292,39 @@ export default function WorkContent() {
                 </div>
               )}
 
-              {/* All Opportunities Grid */}
+              {/* More Opportunities */}
               {grid.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-serif font-bold text-purple-800">
-                      {featured.length > 0 ? 'More Opportunities' : 'All Opportunities'}
-                    </h2>
-                    <span className="text-gray-600">
-                      {grid.length} opportunit{grid.length === 1 ? 'y' : 'ies'}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {grid.map((item) => (
+                <div className="mb-8">
+                  <h3 className="text-xl font-serif font-bold text-purple-800 mb-6">
+                    More Work Opportunities
+                  </h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {grid.slice(0, 5).map((item) => (
                       <UnifiedWorkCard
                         key={item.id}
                         work={toUnifiedData(item)}
                         variant="explore"
                       />
                     ))}
+                    {/* See More Card */}
+                    <div className="culture-card group cursor-pointer bg-gradient-to-br from-purple-50 to-orange-50 transition-all duration-300 flex flex-col items-center justify-center p-8 min-h-[400px]">
+                      <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <ArrowRight className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-serif font-bold text-purple-800 mb-2 text-center">
+                        See More Opportunities
+                      </h3>
+                      <p className="text-gray-600 text-center mb-4">
+                        Explore all work opportunities from the community
+                      </p>
+                      <button
+                        onClick={loadMore}
+                        disabled={isLoadingMore}
+                        className="btn-primary"
+                      >
+                        {isLoadingMore ? 'Loading...' : 'Load More'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

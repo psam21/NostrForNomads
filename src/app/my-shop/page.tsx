@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useAuthHydration } from '@/hooks/useAuthHydration';
 import { useMyShopProducts } from '@/hooks/useMyShopProducts';
@@ -213,13 +214,13 @@ export default function MyShopPage() {
               </p>
             </div>
             <div className="mt-4 lg:mt-0">
-              <button
-                onClick={() => router.push('/my-shop/create')}
+              <Link
+                href="/my-shop/create"
                 className="btn-primary-sm flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 List New Product
-              </button>
+              </Link>
             </div>
           </div>
         </div>

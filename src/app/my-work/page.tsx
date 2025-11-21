@@ -275,7 +275,7 @@ export default function MyWorkPage() {
       <div className="min-h-screen bg-primary-50">
         <div className="container-width py-16">
           <div className="text-center">
-            <h2 className="text-2xl font-serif font-bold text-blue-800 mb-4">Sign In Required</h2>
+            <h2 className="text-2xl font-serif font-bold text-primary-800 mb-4">Sign In Required</h2>
             <p className="text-gray-600 mb-6">
               You need to sign in to view your work opportunities.
             </p>
@@ -316,7 +316,7 @@ export default function MyWorkPage() {
       <div className="container-width py-8">
         {/* Statistics Dashboard */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Total Opportunities */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="flex items-center justify-between">
