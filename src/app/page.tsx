@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { Briefcase, MessageCircle, Users, Wallet, ShoppingBag, Plane, Shield, Zap, Globe, ArrowRight } from 'lucide-react';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuthStore();
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50">
       {/* Hero Section */}
@@ -17,21 +19,23 @@ export default function HomePage() {
             <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
               Connect, work, travel, and trade on the Nostr network. Own your identity, control your data, embrace freedom.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/signup"
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl font-bold text-lg flex items-center gap-2"
-              >
-                Get Started Free
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/signin"
-                className="px-8 py-4 bg-white text-purple-600 rounded-xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl font-bold text-lg border-2 border-purple-600"
-              >
-                Sign In
-              </Link>
-            </div>
+            {!isAuthenticated && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link
+                  href="/signup"
+                  className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl font-bold text-lg flex items-center gap-2"
+                >
+                  Get Started Free
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="/signin"
+                  className="px-8 py-4 bg-white text-purple-600 rounded-xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl font-bold text-lg border-2 border-purple-600"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -207,21 +211,23 @@ export default function HomePage() {
           <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
             Create your account in minutes and start connecting with the global nomad community on Nostr.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href="/signup"
-              className="px-10 py-5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl font-bold text-lg flex items-center gap-2"
-            >
-              Create Account
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/signin"
-              className="px-10 py-5 bg-white text-purple-600 rounded-xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl font-bold text-lg border-2 border-purple-600"
-            >
-              Sign In
-            </Link>
-          </div>
+          {!isAuthenticated && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/signup"
+                className="px-10 py-5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl font-bold text-lg flex items-center gap-2"
+              >
+                Create Account
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/signin"
+                className="px-10 py-5 bg-white text-purple-600 rounded-xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl font-bold text-lg border-2 border-purple-600"
+              >
+                Sign In
+              </Link>
+            </div>
+          )}
         </div>
       </section>
     </div>
