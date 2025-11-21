@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ProductForm } from '@/components/pages/ProductForm';
 import { CheckCircle } from 'lucide-react';
@@ -38,6 +38,7 @@ export default function CreateProductPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
+  const [selectedType, setSelectedType] = useState<number | null>(null);
 
   // Add detailed logging for debugging
   useEffect(() => {
@@ -110,40 +111,54 @@ export default function CreateProductPage() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {productTypes.map((type, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-purple-50 to-orange-50 rounded-xl p-6 border-2 border-purple-100 hover:border-orange-300 transition-all duration-300"
-              >
-                <span className="text-4xl mb-4 block">{type.icon}</span>
-                <h3 className="font-serif font-bold text-lg mb-2 text-purple-800">{type.title}</h3>
-                <p className="text-sm mb-3 leading-relaxed text-gray-600">
-                  {type.description}
-                </p>
-                <ul className="text-xs space-y-1 text-gray-500">
-                  {type.examples.map((ex) => (
-                    <li key={ex} className="flex items-center">
-                      <CheckCircle className="w-3 h-3 mr-2 text-orange-500" /> {ex}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
+            {productTypes.map((type, index) => {
+              const active = selectedType === index;
+              return (
+                <motion.button
+                  key={index}
+                  type="button"
+                  onClick={() => setSelectedType(index)}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className={`rounded-xl p-6 border-2 transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                    active
+                      ? 'bg-purple-800 text-white border-purple-700 shadow-lg'
+                      : 'bg-gradient-to-br from-purple-50 to-orange-50 border-purple-100 hover:border-orange-300'
+                  }`}
+                  aria-pressed={active}
+                >
+                  <span className={`text-4xl mb-4 block ${active ? 'grayscale-0' : ''}`}>{type.icon}</span>
+                  <h3 className={`font-serif font-bold text-lg mb-2 ${active ? 'text-white' : 'text-purple-800'}`}>{type.title}</h3>
+                  <p className={`text-sm mb-3 leading-relaxed ${active ? 'text-orange-100' : 'text-gray-600'}`}>
+                    {type.description}
+                  </p>
+                  <ul className={`text-xs space-y-1 ${active ? 'text-orange-200' : 'text-gray-500'}`}>
+                    {type.examples.map((ex) => (
+                      <li key={ex} className="flex items-center">
+                        <CheckCircle className="w-3 h-3 mr-2" /> {ex}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <div className="container-width py-8">
-        <ProductForm
-          onProductCreated={handleProductCreated}
-          onCancel={handleCancel}
-          isEditMode={false}
-        />
-      </div>
+      {/* Product Form - Only show when type is selected */}
+      {selectedType !== null && (
+        <section className="section-padding bg-gray-50">
+          <div className="container-width">
+            <ProductForm
+              onProductCreated={handleProductCreated}
+              onCancel={handleCancel}
+              isEditMode={false}
+            />
+          </div>
+        </section>
+      )}
     </div>
   );
 }

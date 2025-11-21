@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { WorkForm } from '@/components/pages/WorkForm';
 import { CheckCircle } from 'lucide-react';
@@ -38,6 +38,7 @@ export default function WorkCreatePage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
+  const [selectedType, setSelectedType] = useState<number | null>(null);
 
   // Add detailed logging for debugging
   useEffect(() => {
@@ -110,42 +111,62 @@ export default function WorkCreatePage() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {workTypes.map((type, index) => (
-            <motion.div
-              key={type.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-gradient-to-br from-purple-50 to-orange-50 border border-purple-100 hover:border-orange-300 rounded-xl p-6 transition-all duration-300"
-            >
-              <div className="text-4xl mb-4">{type.icon}</div>
-              <h3 className="text-xl font-serif font-bold text-purple-800 mb-2">
-                {type.title}
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {type.description}
-              </p>
-              <ul className="space-y-2">
-                {type.examples.map((example) => (
-                  <li key={example} className="flex items-start text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>{example}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {workTypes.map((type, index) => {
+            const active = selectedType === index;
+            return (
+              <motion.button
+                key={type.title}
+                type="button"
+                onClick={() => setSelectedType(index)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={`rounded-xl p-6 border-2 transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  active
+                    ? 'bg-purple-800 text-white border-purple-700 shadow-lg'
+                    : 'bg-gradient-to-br from-purple-50 to-orange-50 border-purple-100 hover:border-orange-300'
+                }`}
+                aria-pressed={active}
+              >
+                <div className="text-4xl mb-4">{type.icon}</div>
+                <h3 className={`text-xl font-serif font-bold mb-2 ${
+                  active ? 'text-white' : 'text-purple-800'
+                }`}>
+                  {type.title}
+                </h3>
+                <p className={`mb-4 ${
+                  active ? 'text-orange-100' : 'text-gray-600'
+                }`}>
+                  {type.description}
+                </p>
+                <ul className="space-y-2">
+                  {type.examples.map((example) => (
+                    <li key={example} className={`flex items-start text-sm ${
+                      active ? 'text-orange-200' : 'text-gray-600'
+                    }`}>
+                      <CheckCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>{example}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.button>
+            );
+          })}
         </div>
       </section>
 
-      {/* Work Form */}
-      <div className="container-width py-8">
-        <WorkForm
-          onWorkCreated={handleWorkCreated}
-          onCancel={handleCancel}
-          isEditMode={false}
-        />
-      </div>
+      {/* Work Form - Only show when type is selected */}
+      {selectedType !== null && (
+        <section className="section-padding bg-gray-50">
+          <div className="container-width">
+            <WorkForm
+              onWorkCreated={handleWorkCreated}
+              onCancel={handleCancel}
+              isEditMode={false}
+            />
+          </div>
+        </section>
+      )}
     </div>
   );
 }
