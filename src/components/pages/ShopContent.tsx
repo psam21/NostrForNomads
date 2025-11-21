@@ -70,7 +70,7 @@ export default function ShopContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
       {/* Hero Section */}
-      <section className="section-padding bg-white border-b border-gray-200">
+      <section className="section-padding bg-gradient-to-r from-purple-600 to-orange-600 text-white">
         <div className="container-width">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -78,33 +78,33 @@ export default function ShopContent() {
             transition={{ duration: 0.8 }}
             className="max-w-5xl mx-auto text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-purple-800 mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">
               Nomad Marketplace
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-purple-50 max-w-2xl mx-auto mb-8">
               Buy and sell products, services, and items with the digital nomad community. 
               Discover gear, services, and local finds from nomads around the world.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 text-purple-700">
+            <div className="flex flex-wrap items-center justify-center gap-6">
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Real products from real nomads"
               >
-                <Package className="w-4 h-4 mr-2 text-orange-500" />
+                <Package className="w-4 h-4 mr-2 text-white" />
                 <span>Real Products</span>
               </div>
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Direct peer-to-peer transactions"
               >
-                <Store className="w-4 h-4 mr-2 text-orange-500" />
+                <Store className="w-4 h-4 mr-2 text-white" />
                 <span>P2P Marketplace</span>
               </div>
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Browse products by category and condition"
               >
-                <Tag className="w-4 h-4 mr-2 text-orange-500" />
+                <Tag className="w-4 h-4 mr-2 text-white" />
                 <span>Smart Filters</span>
               </div>
             </div>

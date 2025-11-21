@@ -82,7 +82,7 @@ export default function ExploreContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
-      <section className="section-padding bg-white border-b border-gray-200">
+      <section className="section-padding bg-gradient-to-r from-purple-600 to-orange-600 text-white">
         <div className="container-width">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -90,35 +90,35 @@ export default function ExploreContent() {
             transition={{ duration: 0.8 }}
             className="max-w-5xl mx-auto text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-purple-800 mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">
               Explore Nomad Contributions
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-purple-50 max-w-2xl mx-auto mb-8">
               Discover inspiring contributions, experiences, and wisdom from digital nomads around the world. 
               Connect with the global nomad community through shared adventures.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 text-purple-700">
+            <div className="flex flex-wrap items-center justify-center gap-6">
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Multiple dimensions of cultural data"
               >
-                <Layers className="w-4 h-4 mr-2 text-orange-500" />
+                <Layers className="w-4 h-4 mr-2 text-white" />
                 <span>Real Contributions</span>
               </div>
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Real-time updates from the nomad community"
               >
-                <Activity className="w-4 h-4 mr-2 text-orange-500" />
+                <Activity className="w-4 h-4 mr-2 text-white" />
                 <span>Live Updates</span>
               </div>
               <div
-                className="flex items-center text-sm font-medium bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm"
+                className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm"
                 title="Photos, videos, and audio from nomad journeys"
               >
-                <Play className="w-4 h-4 mr-1 text-orange-500" />
-                <Headphones className="w-4 h-4 -ml-1 mr-1 text-orange-500" />
-                <ImageIcon className="w-4 h-4 -ml-1 mr-2 text-orange-500" />
+                <Play className="w-4 h-4 mr-1 text-white" />
+                <Headphones className="w-4 h-4 -ml-1 mr-1 text-white" />
+                <ImageIcon className="w-4 h-4 -ml-1 mr-2 text-white" />
                 <span>Rich Media</span>
               </div>
             </div>
