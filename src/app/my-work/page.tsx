@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthHydration } from '@/hooks/useAuthHydration';
 import { useNostrSigner } from '@/hooks/useNostrSigner';
 import { fetchWorkByAuthor, deleteWork, fetchWorkById } from '@/services/business/WorkService';
 import { UnifiedWorkCard, UnifiedWorkData } from '@/components/generic/UnifiedWorkCard';
@@ -59,6 +60,7 @@ function toUnifiedData(data: WorkCardData): UnifiedWorkData {
 export default function MyWorkPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const isHydrated = useAuthHydration();
   const { getSigner } = useNostrSigner();
 
   // State
@@ -233,6 +235,18 @@ export default function MyWorkPage() {
       setIsDeleting(false);
     }
   };
+
+  // Wait for hydration before checking auth to prevent false negatives
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

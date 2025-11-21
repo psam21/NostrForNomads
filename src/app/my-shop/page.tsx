@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthHydration } from '@/hooks/useAuthHydration';
 import { useMyShopProducts } from '@/hooks/useMyShopProducts';
 import { useMyShopStore } from '@/stores/useMyShopStore';
 import { UnifiedProductCard } from '@/components/generic/UnifiedProductCard';
@@ -17,6 +18,7 @@ import { Store, Plus, Search, Filter } from 'lucide-react';
 export default function MyShopPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const isHydrated = useAuthHydration();
   const { getSigner } = useNostrSigner();
   
   // Hooks
@@ -142,6 +144,18 @@ export default function MyShopPage() {
       alert(`Error: ${errorMsg}`);
     }
   };
+
+  // Wait for hydration before checking auth to prevent false negatives
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
