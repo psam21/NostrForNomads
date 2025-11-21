@@ -213,8 +213,27 @@ export const WorkForm = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="mb-8">
+        <h2 className="text-3xl font-serif font-bold text-purple-800 mb-2">
+          {isEditMode ? 'Edit Work Opportunity' : 'Post a Work Opportunity'}
+        </h2>
+        <p className="text-gray-600">
+          {isEditMode 
+            ? 'Update your work opportunity details.' 
+            : 'Share job opportunities and freelance work with the nomad community.'}
+        </p>
+      </div>
+
+      <div className="max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <fieldset disabled={isPublishing} className="space-y-8">
+          {/* Section 1: Basic Information */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Basic Information</h3>
+            </div>
+
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -326,6 +345,22 @@ export const WorkForm = ({
           </div>
         </div>
 
+          </div>
+
+          {/* Section 2: Job Details */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Job Details</h3>
+            </div>
+
+          </div>
+
+          {/* Section 2: Job Details */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Job Details</h3>
+            </div>
+
         {/* Description */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
@@ -357,6 +392,22 @@ export const WorkForm = ({
           />
           <p className="mt-1 text-sm text-gray-500">How should interested candidates reach you?</p>
         </div>
+
+          </div>
+
+          {/* Section 3: Location & Tags */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Location & Tags</h3>
+            </div>
+
+          </div>
+
+          {/* Section 3: Location & Tags */}
+          <div className="space-y-6">
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="text-xl font-serif font-bold text-purple-800">Location & Tags</h3>
+            </div>
 
         {/* Region and Country Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -478,6 +529,27 @@ export const WorkForm = ({
           />
           {errors.attachments && <p className="mt-1 text-sm text-red-600">{errors.attachments}</p>}
         </div>
+          </div>
+        </fieldset>
+
+        {/* Form Actions */}
+        <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={isPublishing}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isPublishing}
+            className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPublishing ? 'Publishing...' : (isEditMode ? 'Update Work' : 'Publish Work')}
+          </button>
+        </div>
 
         {/* Publishing Progress */}
         {isPublishing && (
@@ -513,29 +585,11 @@ export const WorkForm = ({
             <p className="text-green-800">Work opportunity published successfully! Redirecting...</p>
           </div>
         )}
-
-        {/* Action Buttons */}
-        <div className="flex gap-4 pt-4">
-          <button
-            type="submit"
-            disabled={isPublishing}
-            className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-          >
-            {isPublishing ? 'Publishing...' : (isEditMode ? 'Update Work' : 'Publish Work')}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={isPublishing}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Cancel
-          </button>
-        </div>
       </form>
+    </div>
 
-      {/* Consent Dialog */}
-      <UserConsentDialog
+    {/* Consent Dialog */}
+    <UserConsentDialog
         isOpen={consentDialog.isOpen}
         onClose={consentDialog.closeDialog}
         onConfirm={(accepted) => {
