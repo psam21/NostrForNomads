@@ -9,8 +9,6 @@ import {
   Lightbulb,
   Star,
   CheckCircle,
-  Globe,
-  Users,
   LogIn,
 } from 'lucide-react';
 import { ContributionForm } from '@/components/pages/ContributionForm';

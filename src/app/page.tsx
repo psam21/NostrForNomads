@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Briefcase, MessageCircle, Users, Wallet, ShoppingBag, Plane, Shield, Zap, Globe, ArrowRight } from 'lucide-react';
+import { Briefcase, MessageCircle, Users, Wallet, ShoppingBag, Shield, Zap, Globe, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function HomePage() {

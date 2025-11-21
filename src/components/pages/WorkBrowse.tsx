@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
-  TrendingUp,
 } from 'lucide-react';
 
 import { usePublicWorkOpportunities, type WorkFilters } from '@/hooks/usePublicWorkOpportunities';
