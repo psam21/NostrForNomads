@@ -153,16 +153,46 @@ export default function MeetupsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
-      <div className="container-width section-padding">
+      {/* Hero Section */}
+      <section className="pt-16 lg:pt-20 pb-16 md:pb-20 bg-gradient-to-r from-purple-600 to-orange-600 text-white">
+        <div className="container-width">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="flex items-center justify-center mb-6">
+              <Users className="w-12 h-12 mr-4" />
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold">
+                Meetups
+              </h1>
+            </div>
+            <p className="text-lg text-purple-50 max-w-2xl mx-auto mb-8">
+              Connect with nomads in person around the world. Join meetups, workshops, and conferences.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <MapPin className="w-4 h-4 mr-2 text-white" />
+                <span>Global Events</span>
+              </div>
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <Calendar className="w-4 h-4 mr-2 text-white" />
+                <span>Scheduled</span>
+              </div>
+              <div className="flex items-center text-sm font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 shadow-sm">
+                <Users className="w-4 h-4 mr-2 text-white" />
+                <span>Community</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-width py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-purple-800 flex items-center gap-3">
-              <Users className="w-8 h-8" />
-              Meetups
-            </h1>
-            <p className="text-orange-600 mt-2 font-medium">
-              Connect with nomads in person around the world
+            <h2 className="text-2xl font-serif font-bold text-purple-800">
+              Upcoming Meetups
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Find and join nomad gatherings near you
             </p>
           </div>
           <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
