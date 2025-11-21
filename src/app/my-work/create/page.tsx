@@ -4,7 +4,35 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { WorkForm } from '@/components/pages/WorkForm';
-import { Briefcase } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const workTypes = [
+  {
+    icon: '💻',
+    title: 'Development',
+    description: 'Software development, coding, and technical projects.',
+    examples: ['Web dev', 'Mobile apps', 'Backend', 'Frontend'],
+  },
+  {
+    icon: '🎨',
+    title: 'Design',
+    description: 'Creative design work and visual content creation.',
+    examples: ['UI/UX', 'Graphics', 'Branding', 'Illustration'],
+  },
+  {
+    icon: '✍️',
+    title: 'Writing & Content',
+    description: 'Content creation, copywriting, and documentation.',
+    examples: ['Blog posts', 'Copy', 'Technical docs', 'Marketing'],
+  },
+  {
+    icon: '📢',
+    title: 'Marketing & Support',
+    description: 'Marketing, community management, and customer support.',
+    examples: ['Social media', 'SEO', 'Community', 'Support'],
+  },
+];
 
 export default function WorkCreatePage() {
   const router = useRouter();
@@ -63,8 +91,54 @@ export default function WorkCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-primary-50">
-      {/* Main Content */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Intro Section */}
+      <section className="section-padding bg-white">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl lg:text-5xl font-serif font-bold text-purple-800 mb-4">
+            What Work Do You Offer?
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Share your skills and services with the nomad community. Whether you&apos;re a developer, designer, 
+            writer, or marketer, connect with clients looking for your expertise.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {workTypes.map((type, index) => (
+            <motion.div
+              key={type.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-gradient-to-br from-purple-50 to-orange-50 border border-purple-100 hover:border-orange-300 rounded-xl p-6 transition-all duration-300"
+            >
+              <div className="text-4xl mb-4">{type.icon}</div>
+              <h3 className="text-xl font-serif font-bold text-purple-800 mb-2">
+                {type.title}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {type.description}
+              </p>
+              <ul className="space-y-2">
+                {type.examples.map((example) => (
+                  <li key={example} className="flex items-start text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>{example}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Work Form */}
       <div className="container-width py-8">
         <WorkForm
           onWorkCreated={handleWorkCreated}
