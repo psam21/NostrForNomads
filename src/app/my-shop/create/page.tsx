@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ProductForm } from '@/components/pages/ProductForm';
 import { Store } from 'lucide-react';
@@ -9,6 +9,12 @@ import { Store } from 'lucide-react';
 export default function CreateProductPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/signin?returnUrl=' + encodeURIComponent('/my-shop/create'));
+    }
+  }, [user, router]);
 
   const handleProductCreated = (productId: string) => {
     console.log('Product created:', productId);
@@ -20,21 +26,7 @@ export default function CreateProductPage() {
   };
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-primary-50">
-        <div className="container-width py-16">
-          <div className="text-center">
-            <h2 className="text-2xl font-serif font-bold text-primary-800 mb-4">Sign In Required</h2>
-            <p className="text-gray-600 mb-6">
-              You need to sign in to list products.
-            </p>
-            <Link href="/signin" className="btn-primary-sm">
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return null; // Will redirect via useEffect
   }
 
   return (

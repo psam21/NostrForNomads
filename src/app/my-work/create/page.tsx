@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { WorkForm } from '@/components/pages/WorkForm';
 import { Briefcase } from 'lucide-react';
@@ -9,6 +9,12 @@ import { Briefcase } from 'lucide-react';
 export default function WorkCreatePage() {
   const router = useRouter();
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/signin?returnUrl=' + encodeURIComponent('/my-work/create'));
+    }
+  }, [user, router]);
 
   const handleWorkCreated = (workId: string) => {
     console.log('Work created:', workId);
@@ -20,21 +26,7 @@ export default function WorkCreatePage() {
   };
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-primary-50">
-        <div className="container-width py-16">
-          <div className="text-center">
-            <h2 className="text-2xl font-serif font-bold text-primary-800 mb-4">Sign In Required</h2>
-            <p className="text-gray-600 mb-6">
-              You need to sign in to post work opportunities.
-            </p>
-            <Link href="/signin" className="btn-primary-sm">
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return null; // Will redirect via useEffect
   }
 
   return (
