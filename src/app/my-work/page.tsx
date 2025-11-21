@@ -302,7 +302,7 @@ export default function MyWorkPage() {
             </div>
             <div className="mt-4 lg:mt-0">
               <Link
-                href="/work/create"
+                href="/my-work/create"
                 className="btn-primary-sm"
               >
                 Post New Opportunity
@@ -541,7 +541,7 @@ export default function MyWorkPage() {
             <p className="text-gray-600 mb-6 text-lg">
               Start posting opportunities to connect with talented professionals
             </p>
-            <Link href="/work/create" className="btn-primary-sm">
+            <Link href="/my-work/create" className="btn-primary-sm">
               Post Your First Opportunity
             </Link>
           </div>

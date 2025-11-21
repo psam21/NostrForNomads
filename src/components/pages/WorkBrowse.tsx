@@ -264,7 +264,7 @@ export default function WorkContent() {
                   : 'Be the first to post a work opportunity!'}
               </p>
               {!searchTerm && (
-                <Link href="/work/create" className="btn-primary">
+                <Link href="/my-work/create" className="btn-primary">
                   Post an Opportunity →
                 </Link>
               )}
@@ -357,7 +357,7 @@ export default function WorkContent() {
               Post your opportunity and find the perfect match for your project.
             </p>
             <Link
-              href="/work/create"
+              href="/my-work/create"
               className="btn-primary inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50"
             >
               <Briefcase className="w-5 h-5" />
