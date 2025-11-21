@@ -70,13 +70,22 @@ Built on battle-tested protocols (Nostr + Bitcoin), not venture-backed extractio
 - Multi-relay redundancy (censorship-resistant)
 - Encrypted cache with 30-day TTL
 
+**The Work Platform**
+- **💼 Work Marketplace** (Live in Production)
+  - Post freelance opportunities with **0% commission**
+  - 10+ categories: Development, Design, Marketing, Writing, Consulting
+  - Multi-media job listings (images, videos, audio)
+  - Full CRUD operations (My Work dashboard)
+  - Remote-first, location-flexible opportunities
+
 ### 🚀 Coming Soon (6-12 Months)
 
-- **💼 Work Marketplace** - Freelance jobs with Lightning escrow (Upwork without 20% fees)
+- **💰 Work Escrow** - Lightning-based escrow for safe payments
 - **🤝 Meetups** - Location-based events with RSVP and Lightning deposits
 - **✈️ Travel Tools** - P2P accommodation booking, visa crowdsourcing
 - **💰 Payments Hub** - Lightning wallet integration, invoicing, multi-currency
 - **⚡ Zaps** - Lightning tips for creators (NIP-57)
+- **🛒 Shopping Cart** - Multi-vendor cart with NIP-78 storage (service layer complete)
 - **📱 Mobile Apps** - Native iOS & Android
 
 ---
@@ -180,6 +189,8 @@ Encapsulates domain-specific business rules and workflows:
 - **ContributionService**: Contribution creation, validation, and publishing
 - **ContributionValidationService**: Field-level validation for contributions
 - **ContributionContentService**: Content provider interface for contributions
+- **ShopBusinessService**: Product marketplace logic, multi-attachment management
+- **WorkService**: Work opportunity posting and discovery orchestration
 
 **Key Characteristics**:
 
@@ -209,15 +220,19 @@ Provides technical infrastructure capabilities:
 
 Handles external protocols and data sources:
 
-- **NostrEventService**: Nostr event creation and formatting
+- **NostrEventService**: Nostr event creation and formatting (Kind 0, 1, 5, 14, 1059, 24242, 30023, 30078)
 - **GenericEventService**: Generic NIP-23/NIP-33 event building
-- **GenericRelayService**: WebSocket relay management
+- **GenericRelayService**: WebSocket relay management (8 high-reliability relays)
 - **GenericBlossomService**: Blossom media protocol (NIP-96)
 - **GenericAuthService**: Cryptographic authentication
 - **GenericContributionService**: Fetches and parses contribution events from Nostr relays
+- **GenericShopService**: Product event parsing with NIP-94 imeta tag support
+- **GenericWorkService**: Work opportunity event queries and parsing
 - **GenericMediaService**: Media upload and management
-- **EncryptionService**: NIP-04 encrypted messaging
+- **EncryptionService**: NIP-44 encrypted messaging
 - **MultiFileProgressTracker**: Batch file upload tracking
+- **WorkValidationService**: Work opportunity field validation
+- **WorkContentService**: Work content detail provider
 
 **Key Characteristics**:
 
@@ -368,7 +383,12 @@ const [isOpen, setIsOpen] = useState(false) // Local
 │   │   ├── MessagingBusinessService.ts
 │   │   ├── ProfileBusinessService.ts
 │   │   ├── MediaBusinessService.ts
-│   │   └── MessageCacheService.ts
+│   │   ├── MessageCacheService.ts
+│   │   ├── ContributionService.ts
+│   │   ├── ContributionValidationService.ts
+│   │   ├── ContributionContentService.ts
+│   │   ├── ShopBusinessService.ts
+│   │   └── WorkService.ts
 │   │
 │   ├── core/             # Infrastructure services
 │   │   ├── EventLoggingService.ts
@@ -382,13 +402,17 @@ const [isOpen, setIsOpen] = useState(false) // Local
 │   │   ├── GenericBlossomService.ts
 │   │   ├── GenericEventService.ts
 │   │   ├── GenericContributionService.ts
+│   │   ├── GenericShopService.ts
+│   │   ├── GenericWorkService.ts
 │   │   ├── GenericMediaService.ts
 │   │   ├── GenericRelayService.ts
 │   │   ├── EncryptionService.ts
 │   │   └── MultiFileProgressTracker.ts
 │   │
 │   └── nostr/            # Nostr protocol services
-│       └── NostrEventService.ts
+│       ├── NostrEventService.ts
+│       ├── WorkValidationService.ts
+│       └── WorkContentService.ts
 │
 ├── stores/               # Zustand state management
 │   └── useAuthStore.ts   # Global auth state
@@ -577,17 +601,22 @@ npm run enrich:nostr     # Enrich Nostr handles
 - **NIP-01**: Basic protocol - events, signatures, relays ✅
 - **NIP-05**: DNS-based verification - `alice@example.com` identifiers ✅
 - **NIP-07**: Browser extension signing - `window.nostr` interface (Alby, nos2x, Nostore) ✅
+- **NIP-09**: Event deletion - Kind 5 deletion events (used in My Contributions, My Shop, My Work) ✅
 - **NIP-17**: Private Direct Messages - gift-wrapped encrypted messages (double encryption) ✅
 - **NIP-19**: Bech32-encoded entities - npub, nsec, note, nprofile, nevent ✅
-- **NIP-23**: Long-form content - articles, blogs (used in Contribute/Explore) ✅
-- **NIP-33**: Parameterized replaceable events - d-tag based content (used in Contribute/Explore) ✅
+- **NIP-23**: Long-form content - articles, blogs (used in Contribute/Explore/Shop/Work) ✅
+- **NIP-33**: Parameterized replaceable events - d-tag based content (used in Contribute/Explore/Shop/Work) ✅
 - **NIP-44**: Encrypted payloads (v2) - ChaCha20-Poly1305 + HKDF-SHA256 for NIP-17 encryption ✅
+- **NIP-78**: Application-specific data - Kind 30078 for cart/settings storage (service layer ready) ✅
+- **NIP-94**: File metadata - imeta tags for media attachments ✅
 - **NIP-96**: Blossom protocol - decentralized media hosting with SHA-256 verification ✅
 
-#### Available but Not Yet Used
+#### Planned for Future Integration
 
-- **NIP-09**: Event deletion - Kind 5 deletion events (service layer ready)
+- **NIP-11**: Relay capability discovery
 - **NIP-46**: Remote signer protocol - Nostr Connect for mobile apps
+- **NIP-57**: Lightning Zaps - tip creators
+- **NIP-65**: Relay list metadata - user's preferred relay list
 
 ### Relays
 
@@ -738,11 +767,12 @@ For 15 years, we've been told:
 **Current Phase**: Production MVP with active users
 
 **Metrics (as of November 2025)**
-- ✅ 10 NIPs implemented (01, 05, 07, 09, 17, 19, 23, 33, 44, 96)
-- ✅ 8 global relays integrated
-- ✅ Service-Oriented Architecture (4-layer design)
+- ✅ 12 NIPs implemented (01, 05, 07, 09, 17, 19, 23, 33, 44, 78, 94, 96)
+- ✅ 8 high-reliability global relays integrated
+- ✅ Service-Oriented Architecture (4-layer design with 20+ services)
 - ✅ Production deployment on Vercel
 - ✅ 99.9% uptime target
+- ✅ Full CRUD for Shop, Work, and Contributions features
 - 🚀 Early adopter user base growing
 - 🚀 Community feedback driving roadmap
 
