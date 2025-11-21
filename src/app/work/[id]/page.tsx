@@ -77,7 +77,7 @@ export default function WorkDetailPage() {
   // Wait for client-side hydration
   if (!isClient) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-blue-600">Loading...</p>
@@ -89,7 +89,7 @@ export default function WorkDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="container-width section-padding">
           <div className="text-center py-16">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -103,7 +103,7 @@ export default function WorkDetailPage() {
   // Not found state
   if (!contentDetail) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+      <div className="min-h-screen bg-primary-50">
         <div className="container-width section-padding">
           <div className="text-center py-16">
             <h2 className="text-2xl font-serif font-bold text-blue-800 mb-4">
@@ -126,7 +126,7 @@ export default function WorkDetailPage() {
 
   // Work detail content
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-primary-50">
       <section className="section-padding">
         <div className="container-width">
           <WorkContent detail={contentDetail} backHref="/work" />

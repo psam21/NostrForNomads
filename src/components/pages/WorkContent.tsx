@@ -198,7 +198,7 @@ export function WorkContent({ detail, backHref = '/work' }: WorkContentProps) {
               type="button"
               onClick={() => setIsBookmarked(!isBookmarked)}
               className={`btn-outline-sm inline-flex items-center justify-center ${
-                isBookmarked ? '!border-blue-300 !bg-blue-50 !text-blue-700 hover:!bg-blue-100' : ''
+                isBookmarked ? '!border-primary-300 !bg-primary-50 !text-primary-700 hover:!bg-primary-100' : ''
               }`}
               aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark work opportunity'}
             >
@@ -250,7 +250,7 @@ export function WorkContent({ detail, backHref = '/work' }: WorkContentProps) {
             )}
 
             {/* Key Highlights */}
-            <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+            <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl bg-primary-50 p-6">
               {!!detail.customFields.jobType && (
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">

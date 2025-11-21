@@ -279,7 +279,7 @@ export default function WorkCreateContent() {
 
   // User has selected a category - show the form
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-primary-50">
       <section className="section-padding">
         <div className="container-width">
           <motion.div
@@ -287,7 +287,7 @@ export default function WorkCreateContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="max-w-4xl mx-auto mb-8 text-center">
+            <div className="mb-8 text-center">
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-purple-800 mb-4">
                 Post Your Opportunity
               </h1>
@@ -296,7 +296,7 @@ export default function WorkCreateContent() {
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+            <div className="bg-white rounded-xl shadow-lg p-8">
               <WorkForm
                 onWorkCreated={handleWorkCreated}
                 onCancel={handleCancel}
