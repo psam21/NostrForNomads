@@ -98,7 +98,7 @@ export default function CreateProductPage() {
         <div className="container-width">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
@@ -106,7 +106,8 @@ export default function CreateProductPage() {
               What Would You Like to List?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Share products or services with the nomad community. From physical items to digital goods and professional services.
+              Select the type of product or service you want to list. Your offerings help the nomad
+              community thrive.
             </p>
           </motion.div>
 
@@ -118,18 +119,18 @@ export default function CreateProductPage() {
                   key={index}
                   type="button"
                   onClick={() => setSelectedType(index)}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`rounded-xl p-6 border-2 transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className={`p-6 rounded-xl border transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                     active
                       ? 'bg-purple-800 text-white border-purple-700 shadow-lg'
-                      : 'bg-gradient-to-br from-purple-50 to-orange-50 border-purple-100 hover:border-orange-300'
+                      : 'bg-white hover:shadow-md border-gray-200'
                   }`}
                   aria-pressed={active}
                 >
-                  <span className={`text-4xl mb-4 block ${active ? 'grayscale-0' : ''}`}>{type.icon}</span>
-                  <h3 className={`font-serif font-bold text-lg mb-2 ${active ? 'text-white' : 'text-purple-800'}`}>{type.title}</h3>
+                  <span className={`text-4xl mb-4 block`}>{type.icon}</span>
+                  <h3 className="font-serif font-bold text-lg mb-2">{type.title}</h3>
                   <p className={`text-sm mb-3 leading-relaxed ${active ? 'text-orange-100' : 'text-gray-600'}`}>
                     {type.description}
                   </p>

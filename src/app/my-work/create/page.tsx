@@ -95,63 +95,59 @@ export default function WorkCreatePage() {
     <div className="min-h-screen bg-gray-50">
       {/* Intro Section */}
       <section className="section-padding bg-white">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl lg:text-5xl font-serif font-bold text-purple-800 mb-4">
-            What Work Do You Offer?
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Share your skills and services with the nomad community. Whether you&apos;re a developer, designer, 
-            writer, or marketer, connect with clients looking for your expertise.
-          </p>
-        </motion.div>
+        <div className="container-width">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-purple-800 mb-4">
+              What Work Do You Offer?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Select the type of work you want to post. Your skills help the nomad
+              community thrive.
+            </p>
+          </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {workTypes.map((type, index) => {
-            const active = selectedType === index;
-            return (
-              <motion.button
-                key={type.title}
-                type="button"
-                onClick={() => setSelectedType(index)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`rounded-xl p-6 border-2 transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                  active
-                    ? 'bg-purple-800 text-white border-purple-700 shadow-lg'
-                    : 'bg-gradient-to-br from-purple-50 to-orange-50 border-purple-100 hover:border-orange-300'
-                }`}
-                aria-pressed={active}
-              >
-                <div className="text-4xl mb-4">{type.icon}</div>
-                <h3 className={`text-xl font-serif font-bold mb-2 ${
-                  active ? 'text-white' : 'text-purple-800'
-                }`}>
-                  {type.title}
-                </h3>
-                <p className={`mb-4 ${
-                  active ? 'text-orange-100' : 'text-gray-600'
-                }`}>
-                  {type.description}
-                </p>
-                <ul className="space-y-2">
-                  {type.examples.map((example) => (
-                    <li key={example} className={`flex items-start text-sm ${
-                      active ? 'text-orange-200' : 'text-gray-600'
-                    }`}>
-                      <CheckCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>{example}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.button>
-            );
-          })}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {workTypes.map((type, index) => {
+              const active = selectedType === index;
+              return (
+                <motion.button
+                  key={type.title}
+                  type="button"
+                  onClick={() => setSelectedType(index)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className={`p-6 rounded-xl border transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                    active
+                      ? 'bg-purple-800 text-white border-purple-700 shadow-lg'
+                      : 'bg-white hover:shadow-md border-gray-200'
+                  }`}
+                  aria-pressed={active}
+                >
+                  <div className={`text-4xl mb-4 ${active ? 'grayscale-0' : ''}`}>{type.icon}</div>
+                  <h3 className="font-serif font-bold text-lg mb-2">{type.title}</h3>
+                  <p className={`text-sm mb-3 leading-relaxed ${
+                    active ? 'text-orange-100' : 'text-gray-600'
+                  }`}>
+                    {type.description}
+                  </p>
+                  <ul className={`text-xs space-y-1 ${active ? 'text-orange-200' : 'text-gray-500'}`}>
+                    {type.examples.map((example) => (
+                      <li key={example} className="flex items-center">
+                        <CheckCircle className="w-3 h-3 mr-2" />
+                        {example}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
