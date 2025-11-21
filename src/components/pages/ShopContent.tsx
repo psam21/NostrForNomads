@@ -19,7 +19,7 @@ import {
 import { usePublicProducts } from '@/hooks/usePublicProducts';
 import { useShopStore } from '@/stores/useShopStore';
 import { PRODUCT_CATEGORIES, PRODUCT_CONDITIONS } from '@/config/shop';
-import { ProductCard } from './ProductCard';
+import { UnifiedProductCard } from '@/components/generic/UnifiedProductCard';
 
 export default function ShopContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -317,7 +317,12 @@ export default function ShopContent() {
                   </h3>
                   <div className="grid md:grid-cols-2 gap-8">
                     {featured.map((product) => (
-                      <ProductCard key={product.id} product={product} featured />
+                      <UnifiedProductCard 
+                        key={product.id} 
+                        product={product} 
+                        variant="shop"
+                        featured 
+                      />
                     ))}
                   </div>
                 </div>
@@ -334,9 +339,10 @@ export default function ShopContent() {
                     : 'space-y-4'
                   }>
                     {grid.slice(0, 8).map((product) => (
-                      <ProductCard 
+                      <UnifiedProductCard 
                         key={product.id} 
                         product={product} 
+                        variant="shop"
                         viewMode={viewMode}
                       />
                     ))}

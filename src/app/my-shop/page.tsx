@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useMyShopProducts } from '@/hooks/useMyShopProducts';
 import { useMyShopStore } from '@/stores/useMyShopStore';
-import { MyProductCard } from '@/components/generic/MyProductCard';
+import { UnifiedProductCard } from '@/components/generic/UnifiedProductCard';
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
 import { ProductCardData } from '@/types/shop';
 import { PRODUCT_CATEGORIES, PRODUCT_CONDITIONS } from '@/config/shop';
@@ -366,14 +366,15 @@ export default function MyShopPage() {
         )}
 
         {/* Products Grid */}
-        {!isLoadingProducts && !loadError && filteredProducts.length > 0 && (
+        {!isLoading && !error && filteredProducts.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {filteredProducts.map(product => (
-              <MyProductCard 
+              <UnifiedProductCard 
                 key={product.id} 
                 product={product}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+                variant="my-shop"
+                onEdit={() => handleEdit(product)}
+                onDelete={() => handleDelete(product)}
               />
             ))}
           </div>
