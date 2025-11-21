@@ -327,6 +327,174 @@ export class NostrEventService {
   }
 
   /**
+   * Create a work opportunity event (Kind 30023)
+   * Dedicated method for work/job board opportunities
+   * 
+   * @param workData - Work opportunity data
+   * @param signer - Nostr signer
+   * @param dTag - Optional d tag for updates
+   * @returns Signed NIP-23 event
+   */
+  public async createWorkEvent(
+    workData: {
+      title: string;
+      description: string;
+      category: string;
+      jobType: string;
+      duration: string;
+      payRate: number;
+      currency: string;
+      contact?: string;
+      language: string;
+      location: string;
+      region: string;
+      country: string;
+      tags: string[];
+      attachments: Array<{
+        url: string;
+        type: string;
+        hash?: string;
+        name: string;
+        size?: number;
+        mimeType?: string;
+      }>;
+    },
+    signer: NostrSigner,
+    dTag?: string
+  ): Promise<NIP23Event> {
+    try {
+      logger.info('Creating Kind 30023 work opportunity event', {
+        service: 'NostrEventService',
+        method: 'createWorkEvent',
+        title: workData.title,
+        jobType: workData.jobType,
+        dTag,
+        attachmentCount: workData.attachments?.length || 0,
+      });
+
+      const now = Math.floor(Date.now() / 1000);
+      const pubkey = await signer.getPublicKey();
+
+      // Create markdown content
+      const markdownContent = workData.description;
+      
+      // Create NIP-23 content
+      const nip23Content: NIP23Content = {
+        title: workData.title,
+        content: markdownContent,
+        summary: workData.description.substring(0, 200),
+        published_at: now,
+        language: workData.language,
+        region: workData.region,
+        permissions: 'public',
+      };
+
+      // Build work-specific tags
+      const workTags: string[][] = [
+        ['title', workData.title],
+        ['category', workData.category],
+        ['job-type', workData.jobType],
+        ['duration', workData.duration],
+        ['pay-rate', workData.payRate.toString()],
+        ['currency', workData.currency],
+        ['region', workData.region],
+        ['country', workData.country],
+        ['language', workData.language],
+      ];
+
+      // Add contact if provided
+      if (workData.contact) {
+        workTags.push(['contact', workData.contact]);
+      }
+
+      // Add location if provided
+      if (workData.location) {
+        workTags.push(['location', workData.location]);
+      }
+
+      // Add user tags
+      workData.tags.forEach(tag => {
+        if (tag.trim()) {
+          workTags.push(['t', tag.trim()]);
+        }
+      });
+
+      // Add system tag for discovery
+      if (!workData.tags.includes('nostr-for-nomads-work')) {
+        workTags.push(['t', 'nostr-for-nomads-work']);
+      }
+
+      // Add media tags with NIP-94 imeta tags
+      workData.attachments.forEach(media => {
+        workTags.push([media.type, media.url]);
+        if (media.hash) {
+          const imetaParts = [`url ${media.url}`, `x ${media.hash}`];
+          
+          if (media.mimeType) {
+            imetaParts.push(`m ${media.mimeType}`);
+          }
+          
+          if (media.size) {
+            imetaParts.push(`size ${media.size}`);
+          }
+          
+          workTags.push(['imeta', ...imetaParts]);
+        }
+      });
+
+      // Create event using GenericEventService
+      const eventResult = createNIP23Event(nip23Content, pubkey, {
+        dTag,
+        dTagPrefix: 'work',
+        tags: workTags,
+      });
+
+      if (!eventResult.success || !eventResult.event) {
+        throw new AppError(
+          'Failed to create work event',
+          ErrorCode.NOSTR_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          ErrorCategory.EXTERNAL_SERVICE,
+          ErrorSeverity.HIGH,
+          { error: eventResult.error }
+        );
+      }
+
+      // Sign the event
+      const signingResult = await genericSignEvent(eventResult.event, signer);
+
+      if (!signingResult.success || !signingResult.signedEvent) {
+        throw new AppError(
+          'Failed to sign work event',
+          ErrorCode.NOSTR_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          ErrorCategory.EXTERNAL_SERVICE,
+          ErrorSeverity.HIGH,
+          { error: signingResult.error }
+        );
+      }
+
+      logger.info('Work event created and signed', {
+        service: 'NostrEventService',
+        method: 'createWorkEvent',
+        eventId: signingResult.signedEvent.id,
+        title: workData.title,
+      });
+
+      return signingResult.signedEvent as NIP23Event;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Failed to create work event', error instanceof Error ? error : new Error(errorMessage), {
+        service: 'NostrEventService',
+        method: 'createWorkEvent',
+        title: workData.title,
+        error: errorMessage,
+      });
+      throw error;
+    }
+  }
+
+  /**
    * Create a cart storage event (Kind 30078 - Application-Specific Data)
    * 
    * Creates NIP-78 parameterized replaceable event for cart storage.
