@@ -93,11 +93,11 @@ export const MeetupForm = ({
     },
     consentDialog: {
       isOpen: false,
-      onConfirm: () => {},
-      onDecline: () => {},
-      title: '',
-      confirmText: '',
-      cancelText: '',
+      consent: null,
+      showConsentDialog: async () => true,
+      acceptConsent: () => {},
+      cancelConsent: () => {},
+      closeDialog: () => {},
     },
   } : publishingHook;
 
@@ -613,7 +613,25 @@ export const MeetupForm = ({
         </div>
       </form>
 
-      {/* Consent Dialog - managed internally by publishing hook */}
+      {/* Consent Dialog */}
+      <UserConsentDialog
+        isOpen={consentDialog.isOpen}
+        onClose={consentDialog.closeDialog}
+        onConfirm={(accepted) => {
+          if (accepted) {
+            consentDialog.acceptConsent();
+          } else {
+            consentDialog.cancelConsent();
+          }
+        }}
+        files={consentDialog.consent?.files?.map(f => {
+          // Create a Blob with the correct size to display properly in the dialog
+          const blob = new Blob([new ArrayBuffer(f.size)], { type: f.type });
+          return new File([blob], f.name, { type: f.type });
+        }) || []}
+        estimatedTime={consentDialog.consent?.estimatedTime || 0}
+        totalSize={consentDialog.consent?.totalSize || 0}
+      />
     </div>
   );
 };
