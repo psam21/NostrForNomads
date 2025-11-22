@@ -28,6 +28,15 @@ import { validateMeetupData } from '@/services/business/MeetValidationService';
 import { uploadSequentialWithConsent } from '@/services/generic/GenericBlossomService';
 
 /**
+ * Relay progress interface for hook integration
+ */
+export interface RelayProgress {
+  step: string;
+  progress: number;
+  message: string;
+}
+
+/**
  * MeetService
  * Business logic layer for meetup operations
  * Layer: Business Service
