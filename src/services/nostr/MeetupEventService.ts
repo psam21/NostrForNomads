@@ -1,135 +1,15 @@
 import type { NostrEvent } from '@/types/nostr';
-import type {
-  MeetupData,
-  MeetupNostrEvent,
-  RSVPData,
-  RSVPNostrEvent,
-} from '@/types/meetup';
 import { MEETUP_CONFIG } from '@/config/meetup';
 
 /**
  * MeetupEventService
- * Handles creation and parsing of Nostr events for meetups
+ * Handles parsing of Nostr events for meetups
  * Layer: Event Service (stateless, pure functions)
+ * 
+ * Note: Event CREATION is handled by GenericEventService
+ * This service only handles PARSING events from relays
  */
 export class MeetupEventService {
-  /**
-   * Create a meetup event (Kind 31923)
-   */
-  static createMeetupEvent(
-    data: MeetupData,
-    signer: { getPublicKey: () => Promise<string> }
-  ): Promise<MeetupNostrEvent> {
-    return this.createEvent(data, signer);
-  }
-
-  /**
-   * Create meetup event implementation
-   */
-  private static async createEvent(
-    data: MeetupData,
-    signer: { getPublicKey: () => Promise<string> }
-  ): Promise<MeetupNostrEvent> {
-    const pubkey = await signer.getPublicKey();
-    const now = Math.floor(Date.now() / 1000);
-
-    // Generate deterministic dTag (use timestamp + pubkey for uniqueness)
-    const dTag = `meetup-${now}-${pubkey.slice(0, 8)}`;
-
-    // Build tags array
-    const tags: string[][] = [
-      ['d', dTag],
-      ['t', MEETUP_CONFIG.systemTag],
-      ['name', data.name],
-      ['start', data.startTime.toString()],
-      ['location', data.location],
-      ['p', data.hostPubkey, '', 'host'],
-    ];
-
-    // Optional tags
-    if (data.endTime) {
-      tags.push(['end', data.endTime.toString()]);
-    }
-
-    if (data.timezone) {
-      tags.push(['timezone', data.timezone]);
-    }
-
-    if (data.geohash) {
-      tags.push(['g', data.geohash]);
-    }
-
-    if (data.imageUrl) {
-      tags.push(['image', data.imageUrl]);
-    }
-
-    if (data.isVirtual && data.virtualLink) {
-      tags.push(['virtual', data.virtualLink]);
-    }
-
-    // Add meetup type tag
-    tags.push(['meetup-type', data.meetupType]);
-
-    // Add co-hosts
-    if (data.coHosts && data.coHosts.length > 0) {
-      data.coHosts.forEach((coHost) => {
-        tags.push(['p', coHost, '', 'co-host']);
-      });
-    }
-
-    // Add user tags
-    if (data.tags && data.tags.length > 0) {
-      data.tags.forEach((tag) => {
-        tags.push(['t', tag.toLowerCase()]);
-      });
-    }
-
-    const event: MeetupNostrEvent = {
-      kind: MEETUP_CONFIG.kinds.MEETUP,
-      pubkey,
-      created_at: now,
-      tags,
-      content: data.description,
-    } as MeetupNostrEvent;
-
-    return event;
-  }
-
-  /**
-   * Create an RSVP event (Kind 31925)
-   * Uses NIP-33 parameterized replaceable events
-   */
-  static async createRSVPEvent(
-    data: RSVPData,
-    signer: { getPublicKey: () => Promise<string> }
-  ): Promise<RSVPNostrEvent> {
-    const pubkey = await signer.getPublicKey();
-    const now = Math.floor(Date.now() / 1000);
-
-    // Deterministic dTag for replaceability (one RSVP per user per meetup)
-    const dTag = MEETUP_CONFIG.rsvp.dTagFormat(data.eventDTag);
-
-    // Canonical 'a' tag format
-    const aTag = MEETUP_CONFIG.rsvp.aTagFormat(data.eventPubkey, data.eventDTag);
-
-    const tags: string[][] = [
-      ['d', dTag],
-      ['a', aTag],
-      ['status', data.status],
-      ['p', data.eventPubkey], // Event creator
-    ];
-
-    const event: RSVPNostrEvent = {
-      kind: MEETUP_CONFIG.kinds.RSVP,
-      pubkey,
-      created_at: now,
-      tags,
-      content: data.comment || '',
-    } as RSVPNostrEvent;
-
-    return event;
-  }
-
   /**
    * Parse a meetup event from relay
    */
@@ -270,28 +150,6 @@ export class MeetupEventService {
       comment: event.content || undefined,
       timestamp: event.created_at,
     };
-  }
-
-  /**
-   * Create a deletion event for a meetup
-   */
-  static async createDeletionEvent(
-    eventIds: string[],
-    signer: { getPublicKey: () => Promise<string> },
-    reason?: string
-  ): Promise<NostrEvent> {
-    const pubkey = await signer.getPublicKey();
-    const now = Math.floor(Date.now() / 1000);
-
-    const tags: string[][] = eventIds.map((id) => ['e', id]);
-
-    return {
-      kind: 5,
-      pubkey,
-      created_at: now,
-      tags,
-      content: reason || 'Deleted',
-    } as NostrEvent;
   }
 
   /**

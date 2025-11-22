@@ -564,6 +564,199 @@ export class GenericEventService {
       };
     }
   }
+
+  /**
+   * Create a NIP-52 calendar event (Kind 31923)
+   * Time-based calendar event for meetups/events
+   */
+  public createCalendarEvent(
+    meetupData: {
+      name: string;
+      description: string;
+      startTime: number;
+      endTime?: number;
+      timezone?: string;
+      location: string;
+      geohash?: string;
+      isVirtual: boolean;
+      virtualLink?: string;
+      imageUrl?: string;
+      meetupType: string;
+      tags: string[];
+      hostPubkey: string;
+      coHosts?: string[];
+    },
+    userPubkey: string,
+    options: { dTag?: string; systemTag: string } = { systemTag: 'nostr-for-nomads-meetup' }
+  ): EventCreationResult {
+    try {
+      logger.info('Creating Kind 31923 calendar event', {
+        service: 'GenericEventService',
+        method: 'createCalendarEvent',
+        userPubkey: userPubkey.substring(0, 8) + '...',
+        name: meetupData.name,
+      });
+
+      const now = Math.floor(Date.now() / 1000);
+      const dTag = options.dTag || `meetup-${now}-${userPubkey.slice(0, 8)}`;
+
+      // Build tags array following NIP-52
+      const tags: string[][] = [
+        ['d', dTag],
+        ['t', options.systemTag],
+        ['name', meetupData.name],
+        ['start', meetupData.startTime.toString()],
+        ['location', meetupData.location],
+        ['p', meetupData.hostPubkey, '', 'host'],
+      ];
+
+      // Optional tags
+      if (meetupData.endTime) {
+        tags.push(['end', meetupData.endTime.toString()]);
+      }
+
+      if (meetupData.timezone) {
+        tags.push(['timezone', meetupData.timezone]);
+      }
+
+      if (meetupData.geohash) {
+        tags.push(['g', meetupData.geohash]);
+      }
+
+      if (meetupData.imageUrl) {
+        tags.push(['image', meetupData.imageUrl]);
+      }
+
+      if (meetupData.isVirtual && meetupData.virtualLink) {
+        tags.push(['virtual', meetupData.virtualLink]);
+      }
+
+      tags.push(['meetup-type', meetupData.meetupType]);
+
+      // Add co-hosts
+      if (meetupData.coHosts && meetupData.coHosts.length > 0) {
+        meetupData.coHosts.forEach((coHost) => {
+          tags.push(['p', coHost, '', 'co-host']);
+        });
+      }
+
+      // Add user tags
+      if (meetupData.tags && meetupData.tags.length > 0) {
+        meetupData.tags.forEach((tag) => {
+          tags.push(['t', tag.toLowerCase()]);
+        });
+      }
+
+      const event: Omit<NostrEvent, 'id' | 'sig'> = {
+        kind: 31923,
+        pubkey: userPubkey,
+        created_at: now,
+        tags,
+        content: meetupData.description,
+      };
+
+      logger.info('Kind 31923 calendar event created successfully', {
+        service: 'GenericEventService',
+        method: 'createCalendarEvent',
+        dTag,
+      });
+
+      return {
+        success: true,
+        event,
+        dTag,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create calendar event';
+      logger.error('Failed to create calendar event', error instanceof Error ? error : new Error(errorMessage), {
+        service: 'GenericEventService',
+        method: 'createCalendarEvent',
+        error: errorMessage,
+      });
+
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  }
+
+  /**
+   * Create a NIP-52 RSVP event (Kind 31925)
+   * NIP-33 parameterized replaceable event with deterministic dTag
+   */
+  public createRSVPEvent(
+    rsvpData: {
+      eventDTag: string;
+      eventPubkey: string;
+      status: 'accepted' | 'declined' | 'tentative';
+      comment?: string;
+    },
+    userPubkey: string,
+    eventId?: string
+  ): EventCreationResult {
+    try {
+      logger.info('Creating Kind 31925 RSVP event', {
+        service: 'GenericEventService',
+        method: 'createRSVPEvent',
+        userPubkey: userPubkey.substring(0, 8) + '...',
+        status: rsvpData.status,
+      });
+
+      const now = Math.floor(Date.now() / 1000);
+      
+      // Deterministic dTag for replaceability (one RSVP per user per meetup)
+      const rsvpDTag = `rsvp:${rsvpData.eventDTag}`;
+      
+      // Build canonical 'a' tag reference (EXACT format required)
+      const canonicalATag = `31923:${rsvpData.eventPubkey}:${rsvpData.eventDTag}`;
+      
+      // Build tags array
+      const tags: string[][] = [
+        ['d', rsvpDTag],
+        ['a', canonicalATag],
+        ['status', rsvpData.status],
+        ['p', rsvpData.eventPubkey],
+      ];
+      
+      // Add optional event snapshot reference
+      if (eventId) {
+        tags.push(['e', eventId]);
+      }
+
+      const event: Omit<NostrEvent, 'id' | 'sig'> = {
+        kind: 31925,
+        pubkey: userPubkey,
+        created_at: now,
+        tags,
+        content: rsvpData.comment || '',
+      };
+
+      logger.info('Kind 31925 RSVP event created successfully', {
+        service: 'GenericEventService',
+        method: 'createRSVPEvent',
+        dTag: rsvpDTag,
+      });
+
+      return {
+        success: true,
+        event,
+        dTag: rsvpDTag,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create RSVP event';
+      logger.error('Failed to create RSVP event', error instanceof Error ? error : new Error(errorMessage), {
+        service: 'GenericEventService',
+        method: 'createRSVPEvent',
+        error: errorMessage,
+      });
+
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  }
 }
 
 // Export singleton instance
@@ -599,3 +792,35 @@ export const createBlossomAuthEvent = (userPubkey: string) =>
 
 export const createUserServerListEvent = (userPubkey: string, servers: string[]) =>
   genericEventService.createUserServerListEvent(userPubkey, servers);
+
+export const createCalendarEvent = (
+  meetupData: {
+    name: string;
+    description: string;
+    startTime: number;
+    endTime?: number;
+    timezone?: string;
+    location: string;
+    geohash?: string;
+    isVirtual: boolean;
+    virtualLink?: string;
+    imageUrl?: string;
+    meetupType: string;
+    tags: string[];
+    hostPubkey: string;
+    coHosts?: string[];
+  },
+  userPubkey: string,
+  options?: { dTag?: string; systemTag: string }
+) => genericEventService.createCalendarEvent(meetupData, userPubkey, options);
+
+export const createRSVPEvent = (
+  rsvpData: {
+    eventDTag: string;
+    eventPubkey: string;
+    status: 'accepted' | 'declined' | 'tentative';
+    comment?: string;
+  },
+  userPubkey: string,
+  eventId?: string
+) => genericEventService.createRSVPEvent(rsvpData, userPubkey, eventId);

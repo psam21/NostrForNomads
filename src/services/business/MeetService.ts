@@ -8,6 +8,12 @@ import type {
 import type { NostrEvent, NostrSigner } from '@/types/nostr';
 import { MeetupEventService } from '@/services/nostr/MeetupEventService';
 import { queryEvents, publishEvent } from '@/services/generic/GenericRelayService';
+import { 
+  createCalendarEvent, 
+  createRSVPEvent, 
+  createDeletionEvent,
+  signEvent 
+} from '@/services/generic/GenericEventService';
 import { MEETUP_CONFIG } from '@/config/meetup';
 import type { Filter } from 'nostr-tools';
 
@@ -15,7 +21,7 @@ import type { Filter } from 'nostr-tools';
  * MeetService
  * Business logic layer for meetup operations
  * Layer: Business Service
- * Dependencies: MeetupEventService (Event), GenericRelayService (Generic)
+ * Dependencies: GenericEventService (Event), GenericRelayService (Generic)
  */
 
 /**
@@ -26,19 +32,54 @@ export async function publishMeetup(
   signer: NostrSigner
 ): Promise<MeetupPublishingResult> {
   try {
-    // Create the event
-    const unsignedEvent = await MeetupEventService.createMeetupEvent(data, signer);
+    const pubkey = await signer.getPublicKey();
 
-    // Sign and publish
-    const publishResult = await publishEvent(unsignedEvent, signer);
+    // Create the calendar event using GenericEventService
+    const eventResult = createCalendarEvent(
+      {
+        name: data.name,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        timezone: data.timezone,
+        location: data.location,
+        geohash: data.geohash,
+        isVirtual: data.isVirtual,
+        virtualLink: data.virtualLink,
+        imageUrl: data.imageUrl,
+        meetupType: data.meetupType,
+        tags: data.tags,
+        hostPubkey: data.hostPubkey,
+        coHosts: data.coHosts,
+      },
+      pubkey,
+      { systemTag: MEETUP_CONFIG.systemTag }
+    );
 
-    // Extract dTag from event
-    const dTag = unsignedEvent.tags.find((t: string[]) => t[0] === 'd')?.[1];
+    if (!eventResult.success || !eventResult.event) {
+      return {
+        success: false,
+        error: eventResult.error || 'Failed to create calendar event',
+      };
+    }
+
+    // Sign the event
+    const signResult = await signEvent(eventResult.event, signer);
+    
+    if (!signResult.success || !signResult.signedEvent) {
+      return {
+        success: false,
+        error: signResult.error || 'Failed to sign event',
+      };
+    }
+
+    // Publish to relays
+    const publishResult = await publishEvent(signResult.signedEvent, signer);
 
     return {
       success: publishResult.success,
       eventId: publishResult.eventId,
-      dTag,
+      dTag: eventResult.dTag,
       publishedRelays: publishResult.publishedRelays,
       failedRelays: publishResult.failedRelays,
     };
@@ -59,19 +100,49 @@ export async function updateMeetup(
   signer: NostrSigner
 ): Promise<MeetupPublishingResult> {
   try {
-    // Create the event
-    let unsignedEvent = await MeetupEventService.createMeetupEvent(data, signer);
+    const pubkey = await signer.getPublicKey();
 
-    // Replace the auto-generated dTag with the existing one
-    unsignedEvent = {
-      ...unsignedEvent,
-      tags: unsignedEvent.tags.map((tag: string[]) =>
-        tag[0] === 'd' ? ['d', existingDTag] : tag
-      ),
-    };
+    // Create the calendar event with existing dTag
+    const eventResult = createCalendarEvent(
+      {
+        name: data.name,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        timezone: data.timezone,
+        location: data.location,
+        geohash: data.geohash,
+        isVirtual: data.isVirtual,
+        virtualLink: data.virtualLink,
+        imageUrl: data.imageUrl,
+        meetupType: data.meetupType,
+        tags: data.tags,
+        hostPubkey: data.hostPubkey,
+        coHosts: data.coHosts,
+      },
+      pubkey,
+      { dTag: existingDTag, systemTag: MEETUP_CONFIG.systemTag }
+    );
 
-    // Sign and publish
-    const publishResult = await publishEvent(unsignedEvent, signer);
+    if (!eventResult.success || !eventResult.event) {
+      return {
+        success: false,
+        error: eventResult.error || 'Failed to create calendar event',
+      };
+    }
+
+    // Sign the event
+    const signResult = await signEvent(eventResult.event, signer);
+    
+    if (!signResult.success || !signResult.signedEvent) {
+      return {
+        success: false,
+        error: signResult.error || 'Failed to sign event',
+      };
+    }
+
+    // Publish to relays (will replace old event due to NIP-33)
+    const publishResult = await publishEvent(signResult.signedEvent, signer);
 
     return {
       success: publishResult.success,
@@ -125,15 +196,28 @@ export async function deleteMeetup(
       };
     }
 
-    // Create deletion event
-    const deletionEvent = await MeetupEventService.createDeletionEvent(
-      eventIds,
-      signer,
-      reason
-    );
+    // Create deletion event using GenericEventService
+    const deletionResult = createDeletionEvent(eventIds, pubkey, { reason });
+
+    if (!deletionResult.success || !deletionResult.event) {
+      return {
+        success: false,
+        error: deletionResult.error || 'Failed to create deletion event',
+      };
+    }
+
+    // Sign the deletion event
+    const signResult = await signEvent(deletionResult.event, signer);
+    
+    if (!signResult.success || !signResult.signedEvent) {
+      return {
+        success: false,
+        error: signResult.error || 'Failed to sign deletion event',
+      };
+    }
 
     // Publish deletion to all relays
-    const publishResult = await publishEvent(deletionEvent, signer);
+    const publishResult = await publishEvent(signResult.signedEvent, signer);
 
     return {
       success: publishResult.success,
@@ -278,11 +362,38 @@ export async function rsvpToMeetup(
   signer: NostrSigner
 ): Promise<MeetupPublishingResult> {
   try {
-    // Create RSVP event
-    const unsignedEvent = await MeetupEventService.createRSVPEvent(data, signer);
+    const pubkey = await signer.getPublicKey();
 
-    // Sign and publish (will replace any existing RSVP due to deterministic dTag)
-    const publishResult = await publishEvent(unsignedEvent, signer);
+    // Create RSVP event using GenericEventService
+    const rsvpResult = createRSVPEvent(
+      {
+        eventDTag: data.eventDTag,
+        eventPubkey: data.eventPubkey,
+        status: data.status,
+        comment: data.comment,
+      },
+      pubkey
+    );
+
+    if (!rsvpResult.success || !rsvpResult.event) {
+      return {
+        success: false,
+        error: rsvpResult.error || 'Failed to create RSVP event',
+      };
+    }
+
+    // Sign the event
+    const signResult = await signEvent(rsvpResult.event, signer);
+    
+    if (!signResult.success || !signResult.signedEvent) {
+      return {
+        success: false,
+        error: signResult.error || 'Failed to sign RSVP event',
+      };
+    }
+
+    // Publish to relays (will replace any existing RSVP due to deterministic dTag)
+    const publishResult = await publishEvent(signResult.signedEvent, signer);
 
     return {
       success: publishResult.success,
@@ -337,15 +448,28 @@ export async function deleteRSVP(
       };
     }
 
-    // Create deletion event
-    const deletionEvent = await MeetupEventService.createDeletionEvent(
-      eventIds,
-      signer,
-      reason
-    );
+    // Create deletion event using GenericEventService
+    const deletionResult = createDeletionEvent(eventIds, pubkey, { reason });
+
+    if (!deletionResult.success || !deletionResult.event) {
+      return {
+        success: false,
+        error: deletionResult.error || 'Failed to create deletion event',
+      };
+    }
+
+    // Sign the deletion event
+    const signResult = await signEvent(deletionResult.event, signer);
+    
+    if (!signResult.success || !signResult.signedEvent) {
+      return {
+        success: false,
+        error: signResult.error || 'Failed to sign deletion event',
+      };
+    }
 
     // Publish deletion
-    const publishResult = await publishEvent(deletionEvent, signer);
+    const publishResult = await publishEvent(signResult.signedEvent, signer);
 
     return {
       success: publishResult.success,
