@@ -21,11 +21,13 @@ interface EnrichedRSVP {
  * Hook for managing user's RSVP history
  * Fetches user's RSVPs enriched with meetup details
  * Provides filtered views and deletion capability
+ * 
+ * @param userPubkey - Optional user pubkey (if not provided, uses auth store)
  */
-export function useMyRSVPs() {
+export function useMyRSVPs(userPubkey?: string) {
   const { user, isAuthenticated } = useAuthStore();
   const { signer } = useNostrSigner();
-  const pubkey = user?.pubkey;
+  const pubkey = userPubkey || user?.pubkey;
 
   const [rsvps, setRSVPs] = useState<EnrichedRSVP[]>([]);
   const [isLoading, setIsLoading] = useState(false);
