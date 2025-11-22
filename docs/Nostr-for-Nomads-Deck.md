@@ -1714,7 +1714,7 @@ For 15 years, we've been promised "location independence":
 - 🌐 **Website**: https://nostr.co.in
 - 📧 **Contact**: contact@nostr.co.in
 - 📱 **Twitter**: @nostrfornomads (coming soon)
-- 📂 **GitHub**: github.com/psam21/ncoin (open-source components)
+- 📂 **GitHub**: github.com/psam21/NostrForNomads (open-source components)
 
 **Deck Version**: 2.0 (Revised for Investor Pitch)
 **Last Updated**: January 2025
@@ -1752,7 +1752,7 @@ https://nostr.co.in
 
 **Repository**
 ```
-https://github.com/psam21/ncoin
+https://github.com/psam21/NostrForNomads
 ```
 
 **Email / Phone**

@@ -545,8 +545,8 @@ async publishEvent(event: NostrEvent) {
 
 ```bash
 # Clone the repository
-git clone https://github.com/psam21/ncoin.git
-cd ncoin
+git clone https://github.com/psam21/NostrForNomads.git
+cd NostrForNomads
 
 # Install dependencies
 npm install
@@ -828,7 +828,7 @@ This project is open source and available under the MIT License.
 
 **Community**
 - [Nostr for Nomads on Nostr](https://nostr.co.in)
-- [GitHub Issues](https://github.com/psam21/ncoin/issues)
+- [GitHub Issues](https://github.com/psam21/NostrForNomads/issues)
 - [Pitch Deck](docs/Nostr-for-Nomads-Deck.md)
 
 ---
