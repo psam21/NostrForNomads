@@ -190,7 +190,6 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - **Status**: Production - location-based meetup organizer
 - **My Meet**: Full CRUD operations for user's own Kind 31923 meetup events
   - Create/edit/delete meetups via Kind 31923 calendar events (NIP-52)
-  - **Edit architecture**: Uses generic `useMeetupEditing` hook with `updateMeetup()` function
   - NIP-09 deletion events for removing meetups
   - **Single-image design** (intentional): One hero/banner image per event (see media config documentation)
     - Rationale: Matches calendar event best practices (Meetup.com, Eventbrite, Lu.ma)
@@ -207,9 +206,10 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
   - RSVP functionality with status tracking (accepted/declined/tentative)
   - Click to view meetup details with full RSVP list
 - **Service architecture**:
-  - `MeetService` - Business logic orchestration
-  - `MeetUpdateService` - Update service for editing meetups
+  - `MeetService` - Business logic orchestration with `updateMeetup()` function for editing
   - `useMeetupEditing` - Generic edit hook (56 lines, follows Contribution/Shop/Work pattern)
+  - `MeetContentService` - Content detail provider
+  - `MeetValidationService` - Field validation
   - `GenericMeetService` - Relay queries and parsing
   - `GenericEventService.createCalendarEvent()` - NIP-52 event creation
   - `GenericEventService.createRSVPEvent()` - RSVP event creation
@@ -266,7 +266,7 @@ All content features follow consistent architecture:
 | **Public Browse** | **Personal Management** | **Create Route** | **Event Kind** |
 |-------------------|-------------------------|------------------|----------------|
 | `/explore` | `/my-contributions` | `/my-contributions/create` | Kind 30023 |
-| `/shop` | `/my-shop` | `/my-shop/create` | Kind 30078 |
+| `/shop` | `/my-shop` | `/my-shop/create` | Kind 30023 |
 | `/work` | `/my-work` | `/my-work/create` | Kind 30023 |
 | `/meet` | `/my-meet` | `/my-meet/create` | Kind 31923 |
 
@@ -505,6 +505,8 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 **Architecture**: Service-Oriented Architecture (SOA) with strict layer separation
 
 - **Presentation Layer**: Pages, Components, Hooks
-- **Business Logic Layer**: AuthBusinessService, ProfileBusinessService, MessagingBusinessService, ContributionService, ShopBusinessService, WorkService
-- **Core Services Layer**: KVService, LoggingService, ProfileCacheService, MessageCacheService, EventLoggingService
-- **Protocol/Data Layer**: GenericEventService, GenericRelayService, GenericBlossomService, GenericContributionService, GenericWorkService, GenericShopService, EncryptionService, NostrEventService, WorkValidationService, WorkContentService, ContributionValidationService, ContributionContentService
+- **Business Logic Layer** (15 services): AuthBusinessService, ProfileBusinessService, MessagingBusinessService, MessageCacheService, MediaBusinessService, ContributionService, ContributionUpdateService, ContributionValidationService, ContributionContentService, ShopService, ProductValidationService, ShopContentService, WorkService, WorkUpdateService, WorkValidationService, WorkContentService, MeetService, MeetValidationService, MeetContentService, ContentDetailService
+- **Core Services Layer** (5 services): KVService, LoggingService, ProfileCacheService, EventLoggingService, CacheEncryptionService
+- **Protocol/Data Layer** (11 services): GenericEventService, GenericRelayService, GenericBlossomService, GenericMediaService, GenericAuthService, GenericContributionService, GenericWorkService, GenericShopService, GenericMeetService, EncryptionService, NostrEventService
+
+**Total Services**: 36

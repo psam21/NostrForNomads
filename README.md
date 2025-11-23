@@ -190,18 +190,28 @@ The application follows a **layered Service-Oriented Architecture** with clear s
 
 #### 2. **Business Logic Layer** (`/src/services/business`)
 
-Encapsulates domain-specific business rules and workflows:
+Encapsulates domain-specific business rules and workflows (15 services):
 
 - **AuthBusinessService**: Authentication flows, key management, sign-up/sign-in
 - **MessagingBusinessService**: Message composition, threading, NIP-17/NIP-44 encryption
+- **MessageCacheService**: Message caching with 30-day TTL and adaptive sync
 - **ProfileBusinessService**: Profile management, validation, NIP-05 verification
 - **MediaBusinessService**: Media upload orchestration, Blossom integration
-- **MessageCacheService**: Message caching with 30-day TTL and adaptive sync
 - **ContributionService**: Contribution creation, validation, and publishing
+- **ContributionUpdateService**: Update service for editing contributions
 - **ContributionValidationService**: Field-level validation for contributions
 - **ContributionContentService**: Content provider interface for contributions
-- **ShopBusinessService**: Product marketplace logic, multi-attachment management
+- **ShopService**: Product marketplace logic, multi-attachment management
+- **ProductValidationService**: Field-level validation for products
+- **ShopContentService**: Content provider interface for shop products
 - **WorkService**: Work opportunity posting and discovery orchestration
+- **WorkUpdateService**: Update service for editing work opportunities
+- **WorkValidationService**: Field-level validation for work opportunities
+- **WorkContentService**: Content provider interface for work opportunities
+- **MeetService**: Meetup creation, update (`updateMeetup()`), and deletion logic
+- **MeetValidationService**: Field-level validation for meetups
+- **MeetContentService**: Content provider interface for meetups
+- **ContentDetailService**: Generic content detail provider pattern
 
 **Key Characteristics**:
 
@@ -212,7 +222,7 @@ Encapsulates domain-specific business rules and workflows:
 
 #### 3. **Core Services Layer** (`/src/services/core`)
 
-Provides technical infrastructure capabilities:
+Provides technical infrastructure capabilities (5 services):
 
 - **EventLoggingService**: System event tracking and logging
 - **KVService**: Key-value storage abstraction
@@ -229,20 +239,19 @@ Provides technical infrastructure capabilities:
 
 #### 4. **Protocol/Data Layer** (`/src/services/nostr`, `/src/services/generic`)
 
-Handles external protocols and data sources:
+Handles external protocols and data sources (11 services):
 
 - **NostrEventService**: Nostr event creation and formatting (Kind 0, 1, 5, 14, 1059, 24242, 30023, 30078, 31923, 31925)
-- **GenericEventService**: Generic NIP-23/NIP-33 event building
+- **GenericEventService**: Generic NIP-23/NIP-33/NIP-52 event building
 - **GenericRelayService**: WebSocket relay management (8 high-reliability relays)
 - **GenericBlossomService**: Blossom media protocol (NIP-96)
+- **GenericMediaService**: Media upload and management
 - **GenericAuthService**: Cryptographic authentication
 - **GenericContributionService**: Fetches and parses contribution events from Nostr relays
 - **GenericShopService**: Product event parsing with NIP-94 imeta tag support
 - **GenericWorkService**: Work opportunity event queries and parsing
-- **GenericMediaService**: Media upload and management
+- **GenericMeetService**: Meetup/event queries and parsing (NIP-52 calendar events)
 - **EncryptionService**: NIP-44 encrypted messaging
-- **MultiFileProgressTracker**: Batch file upload tracking
-- **WorkValidationService**: Work opportunity field validation
 - **WorkContentService**: Work content detail provider
 
 **Key Characteristics**:
@@ -783,7 +792,7 @@ For 15 years, we've been told:
 - ✅ 10 Event kinds (Kinds 0, 1, 5, 14, 1059, 24242, 30023, 30078, 31923, 31925)
 - ✅ 14 Features in production (Sign Up, Sign In, Profile, Messages, Explore, My Contributions, My Shop, Shop, My Work, Work, My Meet, Meet, User Event Log, Payments UI)
 - ✅ 8 high-reliability global relays integrated
-- ✅ Service-Oriented Architecture (4-layer design with 25+ services)
+- ✅ Service-Oriented Architecture (4-layer design with 36 services)
 - ✅ Production deployment on Vercel
 - ✅ 99.9% uptime target
 - ✅ Full CRUD with generic edit architecture for Shop, Work, Meet, and Contributions
