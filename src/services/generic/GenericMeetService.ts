@@ -195,7 +195,7 @@ export async function fetchPublicMeetups(
   startAfter?: number
 ): Promise<MeetupCardData[]> {
   try {
-    logger.info('Fetching public meetups from relays', {
+    logger.info('Fetching public meetups', {
       service: 'GenericMeetService',
       method: 'fetchPublicMeetups',
       limit,
@@ -203,10 +203,10 @@ export async function fetchPublicMeetups(
       startAfter,
     });
 
-    // Query by kind only - don't filter by system tag for backward compatibility
-    // This allows old meetups without system tag to be discovered
+    // Query by kind AND system tag to get only our meetups
     const filter: Filter = {
       kinds: [MEETUP_CONFIG.kinds.MEETUP],
+      '#t': [MEETUP_CONFIG.systemTag],
       limit,
       until,
     };
