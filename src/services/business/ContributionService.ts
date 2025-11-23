@@ -165,17 +165,32 @@ export async function createContribution(
       });
     }
 
-    // Step 3: Use uploaded attachments only (for create mode)
-    // Note: For edit mode, use updateContributionWithAttachments instead
-    const allAttachments = uploadedAttachments.map(att => ({
-      id: att.id,
-      url: att.url,
-      type: att.type,
-      hash: att.hash,
-      name: att.name,
-      size: att.size,
-      mimeType: att.mimeType,
-    }));
+    // Step 3: Merge existing attachments (from contributionData) with newly uploaded ones
+    // During edit, contributionData.attachments contains existing media that should be preserved
+    const existingAttachments = contributionData.attachments
+      .filter(att => att.url && !att.originalFile) // Only existing (have URL but no originalFile)
+      .map(att => ({
+        id: att.id || `existing-${Date.now()}`,
+        url: att.url!,
+        type: att.type,
+        hash: att.hash || '',
+        name: att.name,
+        size: att.size || 0,
+        mimeType: att.mimeType || 'image/jpeg',
+      }));
+
+    const allAttachments = [
+      ...existingAttachments,
+      ...uploadedAttachments.map(att => ({
+        id: att.id,
+        url: att.url,
+        type: att.type,
+        hash: att.hash,
+        name: att.name,
+        size: att.size,
+        mimeType: att.mimeType,
+      }))
+    ];
 
     // Map GenericAttachment to simplified format for event service
     const mappedAttachments = allAttachments

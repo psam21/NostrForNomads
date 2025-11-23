@@ -184,16 +184,32 @@ export async function createWork(
       });
     }
 
-    // Step 3: Use uploaded attachments only
-    const allAttachments = uploadedAttachments.map(att => ({
-      id: att.id,
-      url: att.url,
-      type: att.type,
-      hash: att.hash,
-      name: att.name,
-      size: att.size,
-      mimeType: att.mimeType,
-    }));
+    // Step 3: Merge existing attachments (from workData) with newly uploaded ones
+    // During edit, workData.attachments contains existing media that should be preserved
+    const existingAttachments = workData.attachments
+      .filter(att => att.url && !att.originalFile) // Only existing (have URL but no originalFile)
+      .map(att => ({
+        id: att.id || `existing-${Date.now()}`,
+        url: att.url!,
+        type: att.type,
+        hash: att.hash || '',
+        name: att.name,
+        size: att.size || 0,
+        mimeType: att.mimeType || 'image/jpeg',
+      }));
+
+    const allAttachments = [
+      ...existingAttachments,
+      ...uploadedAttachments.map(att => ({
+        id: att.id,
+        url: att.url,
+        type: att.type,
+        hash: att.hash,
+        name: att.name,
+        size: att.size,
+        mimeType: att.mimeType,
+      }))
+    ];
 
     // Map to simplified format for event service
     const mappedAttachments = allAttachments
