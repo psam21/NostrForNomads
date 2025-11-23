@@ -71,7 +71,7 @@ export const MeetupForm = ({
     uploadProgress: editingHook.updateProgress,
     currentStep: editingHook.updateProgress?.step || 'idle',
     error: editingHook.updateError,
-    result: null,
+    result: editingHook.updateResult,
     publishMeetup: async (data: MeetupData, imageFile: File | null) => {
       const result = await editingHook.updateMeetupContent(
         defaultValues.dTag!,
