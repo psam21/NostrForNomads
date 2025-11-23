@@ -358,6 +358,7 @@ export async function fetchMeetupRSVPs(eventPubkey: string, eventDTag: string): 
     const filter: Filter = {
       kinds: [MEETUP_CONFIG.kinds.RSVP],
       '#a': [aTag],
+      '#t': [MEETUP_CONFIG.systemTag],
     };
 
     const queryResult = await queryEvents([filter as Record<string, unknown>]);
@@ -397,6 +398,7 @@ export async function fetchUserRSVPs(pubkey: string): Promise<ParsedRSVP[]> {
     const filter: Filter = {
       kinds: [MEETUP_CONFIG.kinds.RSVP],
       authors: [pubkey],
+      '#t': [MEETUP_CONFIG.systemTag],
     };
 
     const queryResult = await queryEvents([filter as Record<string, unknown>]);

@@ -716,6 +716,7 @@ export class GenericEventService {
       const tags: string[][] = [
         ['d', rsvpDTag],
         ['a', canonicalATag],
+        ['t', 'nostr-for-nomads-meetup'],
         ['status', rsvpData.status],
         ['p', rsvpData.eventPubkey],
       ];
