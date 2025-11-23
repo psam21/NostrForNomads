@@ -608,7 +608,7 @@ export class GenericEventService {
         ['name', meetupData.name],
         ['start', meetupData.startTime.toString()],
         ['location', meetupData.location],
-        ['p', userPubkey, 'host'], // NIP-52 p-tag: [pubkey, role] - use event author pubkey
+        ['p', userPubkey, 'wss://relay.damus.io', 'host'], // NIP-52 p-tag: [pubkey, relay, role]
       ];
 
       // Optional tags
@@ -637,7 +637,7 @@ export class GenericEventService {
       // Add co-hosts
       if (meetupData.coHosts && meetupData.coHosts.length > 0) {
         meetupData.coHosts.forEach((coHost) => {
-          tags.push(['p', coHost, 'co-host']); // NIP-52 p-tag: [pubkey, role]
+          tags.push(['p', coHost, 'wss://relay.damus.io', 'co-host']); // NIP-52 p-tag: [pubkey, relay, role]
         });
       }
 
