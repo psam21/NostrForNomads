@@ -103,6 +103,19 @@ export interface WorkPublishingResult {
 }
 
 /**
+ * Work update result
+ */
+export interface UpdateWorkResult {
+  success: boolean;
+  eventId?: string;
+  dTag?: string;
+  publishedRelays?: string[];
+  failedRelays?: string[];
+  error?: string;
+  [key: string]: unknown; // For generic wrapper compatibility
+}
+
+/**
  * Work publishing state
  */
 export interface WorkPublishingState {

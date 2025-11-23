@@ -15,6 +15,7 @@ import { UserConsentDialog } from '@/components/generic/UserConsentDialog';
 import { GenericAttachment } from '@/types/attachments';
 import { X, Loader2 } from 'lucide-react';
 import { useWorkPublishing } from '@/hooks/useWorkPublishing';
+import { useWorkEditing } from '@/hooks/useWorkEditing';
 import { validateWorkData } from '@/services/business/WorkValidationService';
 import { filterVisibleTags } from '@/utils/tagFilter';
 import type { WorkData } from '@/types/work';
@@ -62,15 +63,28 @@ export const WorkForm = ({
   isEditMode = false,
 }: WorkFormProps) => {
   const router = useRouter();
+
+  // Detect edit mode
+  const isEdit = isEditMode || !!defaultValues?.dTag;
   
-  // useWorkPublishing handles both create and edit modes
+  // Publishing hook (for create)
   const {
     publishWork,
-    state,
+    state: publishState,
     consentDialog,
+    resetPublishing,
   } = useWorkPublishing();
+
+  // Editing hook (for updates)
+  const {
+    updateWorkData,
+    isUpdating,
+    updateError,
+    updateProgress,
+    clearUpdateError,
+  } = useWorkEditing();
   
-  const { isPublishing, uploadProgress, currentStep, error: publishError, result } = state;
+  const { isPublishing, uploadProgress, currentStep, error: publishError, result } = publishState;
 
   const [formData, setFormData] = useState<WorkFormData>({
     title: defaultValues?.title || '',
@@ -119,13 +133,13 @@ export const WorkForm = ({
 
   // Auto-redirect after successful publication
   useEffect(() => {
-    if (result?.success && result.dTag && !isPublishing) {
+    if (result?.success && result.dTag && !isPublishing && !isUpdating) {
       const redirectTimer = setTimeout(() => {
         router.push(`/work/${result.dTag}`);
       }, 500);
       return () => clearTimeout(redirectTimer);
     }
-  }, [result, isPublishing, router]);
+  }, [result, isPublishing, isUpdating, router]);
 
   const handleInputChange = (field: keyof WorkFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -194,15 +208,37 @@ export const WorkForm = ({
       .map(att => att.originalFile)
       .filter((file): file is File => file !== undefined);
     
-    // Publish work opportunity
-    const result = await publishWork(
-      workData,
-      filesToUpload,
-      defaultValues?.dTag
-    );
-    
-    if (result.success && onWorkCreated) {
-      onWorkCreated(result.dTag!);
+    // Determine operation mode
+    if (isEdit && defaultValues?.dTag) {
+      // EDIT MODE: Use updateWorkData with selective operations
+      const keptAttachments = attachments
+        .filter(att => att.url && !att.originalFile)
+        .map(att => att.id);
+      
+      const result = await updateWorkData(
+        defaultValues.dTag,
+        workData,
+        filesToUpload,
+        {
+          keptAttachments,
+          removedAttachments: [], // Track removed attachments if needed
+        }
+      );
+      
+      if (result.success && onWorkCreated) {
+        onWorkCreated(result.dTag!);
+      }
+    } else {
+      // CREATE MODE: Use publishWork
+      const result = await publishWork(
+        workData,
+        filesToUpload,
+        undefined // No existing dTag for create
+      );
+      
+      if (result.success && onWorkCreated) {
+        onWorkCreated(result.dTag!);
+      }
     }
   };
 
@@ -218,17 +254,17 @@ export const WorkForm = ({
     <div className="bg-white rounded-lg shadow-sm border p-6">
       <div className="mb-8">
         <h2 className="text-3xl font-serif font-bold text-purple-800 mb-2">
-          {isEditMode ? 'Edit Work Opportunity' : 'Post a Work Opportunity'}
+          {isEdit ? 'Edit Work Opportunity' : 'Post a Work Opportunity'}
         </h2>
         <p className="text-gray-600">
-          {isEditMode 
+          {isEdit 
             ? 'Update your work opportunity details.' 
             : 'Share job opportunities and freelance work with the nomad community.'}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <fieldset disabled={isPublishing} className="space-y-8">
+        <fieldset disabled={isPublishing || isUpdating} className="space-y-8">
         {/* Section 1: Basic Information */}
         <div className="space-y-6">
             <div className="border-b border-gray-200 pb-2">
@@ -521,29 +557,33 @@ export const WorkForm = ({
           <button
             type="button"
             onClick={handleCancel}
-            disabled={isPublishing}
+            disabled={isPublishing || isUpdating}
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            disabled={isPublishing}
+            disabled={isPublishing || isUpdating}
             className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPublishing ? 'Publishing...' : (isEditMode ? 'Update Work' : 'Publish Work')}
+            {isPublishing || isUpdating ? (
+              isEdit ? 'Updating...' : 'Publishing...'
+            ) : (
+              isEdit ? 'Update Work' : 'Publish Work'
+            )}
           </button>
         </div>
 
         {/* Publishing Progress */}
-        {isPublishing && (
+        {(isPublishing || isUpdating) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-center mb-2">
               <Loader2 className="h-5 w-5 text-blue-600 animate-spin mr-2" />
               <span className="text-blue-900 font-medium">
                 {currentStep === 'validating' && 'Validating...'}
                 {currentStep === 'uploading' && 'Uploading media...'}
-                {currentStep === 'publishing' && 'Publishing to Nostr...'}
+                {currentStep === 'publishing' && (isEdit ? 'Updating...' : 'Publishing to Nostr...')}
                 {currentStep === 'complete' && 'Complete!'}
               </span>
             </div>
@@ -557,9 +597,9 @@ export const WorkForm = ({
         )}
 
         {/* Error Display */}
-        {publishError && (
+        {(publishError || updateError) && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{publishError}</p>
+            <p className="text-red-800">{publishError || updateError}</p>
           </div>
         )}
 
