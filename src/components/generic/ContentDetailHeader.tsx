@@ -88,7 +88,7 @@ export function ContentDetailHeader({
               </ol>
             </nav>
           )}
-          <h1 className="text-3xl font-serif font-bold text-primary-900 lg:text-4xl">{title}</h1>
+          <h1 className="text-3xl font-serif font-bold text-primary-900 lg:text-4xl break-words">{title}</h1>
           {subtitle && <p className="mt-1 text-sm text-gray-600">{subtitle}</p>}
         </div>
 
