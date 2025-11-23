@@ -288,6 +288,7 @@ export default function MeetPage() {
                   key={meetup.id}
                   meetup={meetup}
                   variant={viewMode}
+                  showRSVPButton={false}
                 />
               ))}
             </div>
@@ -315,6 +316,7 @@ export default function MeetPage() {
                   key={meetup.id}
                   meetup={meetup}
                   variant={viewMode}
+                  showRSVPButton={false}
                 />
               ))}
             </div>

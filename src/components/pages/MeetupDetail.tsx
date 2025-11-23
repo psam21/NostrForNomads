@@ -32,8 +32,9 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
   const {
     myRSVP,
     allRSVPs,
-    isLoading: rsvpLoading,
+    isSubmitting: rsvpLoading,
     rsvp: handleRSVP,
+    getRSVPCounts,
   } = useRSVP(meetup.dTag, meetup.hostPubkey);
 
   const isOwner = user?.pubkey === meetup.hostPubkey;
@@ -192,16 +193,14 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
     return startTime;
   }, [meetup.startTime, meetup.endTime]);
 
-  // RSVP counts
+  // RSVP counts - use live data from hook instead of static prop
   const rsvpCounts = useMemo(() => {
-    if (!meetup.rsvpCount) {
-      return { accepted: 0, tentative: 0, declined: 0, total: 0 };
-    }
+    const counts = getRSVPCounts();
     return {
-      ...meetup.rsvpCount,
-      total: meetup.rsvpCount.accepted + meetup.rsvpCount.tentative + meetup.rsvpCount.declined,
+      ...counts,
+      total: counts.accepted + counts.tentative + counts.declined,
     };
-  }, [meetup.rsvpCount]);
+  }, [getRSVPCounts]);
 
   // Filter out system tags
   const tags = useMemo(() => {
