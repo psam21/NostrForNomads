@@ -604,10 +604,11 @@ export class GenericEventService {
       const tags: string[][] = [
         ['d', dTag],
         ['t', options.systemTag],
+        ['title', meetupData.name], // NIP-52 requires 'title' tag
         ['name', meetupData.name],
         ['start', meetupData.startTime.toString()],
         ['location', meetupData.location],
-        ['p', meetupData.hostPubkey, '', 'host'],
+        ['p', meetupData.hostPubkey, 'host'], // NIP-52 p-tag: [pubkey, role]
       ];
 
       // Optional tags
@@ -636,7 +637,7 @@ export class GenericEventService {
       // Add co-hosts
       if (meetupData.coHosts && meetupData.coHosts.length > 0) {
         meetupData.coHosts.forEach((coHost) => {
-          tags.push(['p', coHost, '', 'co-host']);
+          tags.push(['p', coHost, 'co-host']); // NIP-52 p-tag: [pubkey, role]
         });
       }
 
