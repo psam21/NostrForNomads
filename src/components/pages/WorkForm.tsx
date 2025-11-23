@@ -189,8 +189,10 @@ export const WorkForm = ({
       return;
     }
     
-    // Extract files for upload - attachments are already GenericAttachment[]
-    const filesToUpload: File[] = [];
+    // Extract File objects from attachments
+    const filesToUpload = attachments
+      .map(att => att.originalFile)
+      .filter((file): file is File => file !== undefined);
     
     // Publish work opportunity
     const result = await publishWork(
