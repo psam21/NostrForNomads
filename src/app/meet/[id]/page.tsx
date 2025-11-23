@@ -26,11 +26,13 @@ export async function generateMetadata({
       };
     }
 
-    const formattedDate = new Date(meetup.startTime * 1000).toLocaleDateString('en-US', {
+    const date = new Date(meetup.startTime * 1000);
+    const formattedDate = date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC',
     });
 
     return {

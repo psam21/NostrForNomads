@@ -169,6 +169,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   }, [meetup.startTime]);
 
@@ -178,6 +179,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
+      timeZone: 'UTC',
     });
 
     if (meetup.endTime) {
@@ -186,6 +188,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
+        timeZone: 'UTC',
       });
       return `${startTime} - ${endTime}`;
     }
@@ -294,7 +297,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 mb-1">Date</p>
-                    <p className="text-lg font-bold text-purple-900">{formattedDate}</p>
+                    <p className="text-lg font-bold text-purple-900" suppressHydrationWarning>{formattedDate}</p>
                   </div>
                 </div>
                 
@@ -304,7 +307,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 mb-1">Time</p>
-                    <p className="text-lg font-bold text-blue-900">{formattedTime}</p>
+                    <p className="text-lg font-bold text-blue-900" suppressHydrationWarning>{formattedTime}</p>
                     {meetup.timezone && (
                       <p className="text-sm text-gray-600 mt-1">{meetup.timezone}</p>
                     )}
@@ -466,8 +469,8 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
                 </div>
                 <div>
                   <dt className="text-gray-500">Published</dt>
-                  <dd className="text-gray-900 font-medium">
-                    {new Date(meetup.publishedAt * 1000).toLocaleDateString()}
+                  <dd className="text-gray-900 font-medium" suppressHydrationWarning>
+                    {new Date(meetup.publishedAt * 1000).toLocaleDateString('en-US', { timeZone: 'UTC' })}
                   </dd>
                 </div>
                 <div>
