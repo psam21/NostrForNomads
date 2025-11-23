@@ -355,7 +355,7 @@ export default function ExploreContent() {
               traditions, and stories. Inspire others on their journey.
             </p>
             <Link
-              href="/contribute"
+              href="/my-contributions/create"
               className="btn-primary inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50"
             >
               <Globe className="w-5 h-5" />

@@ -93,7 +93,7 @@ export default function ContributeContent() {
   const handleTypeSelection = (index: number) => {
     if (!isAuthenticated) {
       // Store the intended return URL before redirecting to sign-in
-      const returnUrl = '/contribute';
+      const returnUrl = '/my-contributions/create';
       router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
       return;
     }

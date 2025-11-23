@@ -254,7 +254,7 @@ export default function MyContributionsPage() {
               Manage and edit your nomad contributions. Share your experiences with the community.
             </p>
             <Link
-              href="/contribute"
+              href="/my-contributions/create"
               className="inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-lg font-medium transition-colors shadow-lg"
             >
               <Plus className="w-5 h-5" />
@@ -469,7 +469,7 @@ export default function MyContributionsPage() {
             <p className="text-gray-600 mb-6 text-lg">
               Start sharing your nomad experiences with the community
             </p>
-            <Link href="/contribute" className="btn-primary-sm">
+            <Link href="/my-contributions/create" className="btn-primary-sm">
               Create Your First Contribution
             </Link>
           </div>
@@ -488,7 +488,7 @@ export default function MyContributionsPage() {
               Create valuable content and inspire fellow travelers.
             </p>
             <Link
-              href="/contribute"
+              href="/my-contributions/create"
               className="btn-primary inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-purple-50"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

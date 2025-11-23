@@ -210,7 +210,7 @@ export default function AuthButton() {
             </div>
             
             <Link
-              href="/contribute"
+              href="/my-contributions/create"
               className="flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50 transition-colors font-medium"
               role="menuitem"
               onClick={() => setShowDropdown(false)}

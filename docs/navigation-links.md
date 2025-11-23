@@ -19,10 +19,10 @@
 - [x] My Profile
 
 ### Authenticated Menu - Create Section
-- [x] New Contribution
-- [x] New Shop Listing
-- [x] New Work Listing
-- [x] New Meetup
+- [x] New Contribution → /my-contributions/create
+- [x] New Shop Listing → /my-shop/create
+- [x] New Work Listing → /my-work/create
+- [x] New Meetup → /my-meet/create
 
 ---
 
@@ -45,9 +45,9 @@
 - [x] My Profile
 
 ### Authenticated Menu - Create Section
-- [x] New Contribution
-- [x] New Shop Listing
-- [x] New Work Listing
-- [x] New Meetup
+- [x] New Contribution → /my-contributions/create
+- [x] New Shop Listing → /my-shop/create
+- [x] New Work Listing → /my-work/create
+- [x] New Meetup → /my-meet/create
 
 ---

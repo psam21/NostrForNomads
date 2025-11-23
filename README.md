@@ -230,7 +230,7 @@ Provides technical infrastructure capabilities:
 
 Handles external protocols and data sources:
 
-- **NostrEventService**: Nostr event creation and formatting (Kind 0, 1, 5, 14, 1059, 24242, 30023, 30078)
+- **NostrEventService**: Nostr event creation and formatting (Kind 0, 1, 5, 14, 1059, 24242, 30023, 30078, 31923, 31925)
 - **GenericEventService**: Generic NIP-23/NIP-33 event building
 - **GenericRelayService**: WebSocket relay management (8 high-reliability relays)
 - **GenericBlossomService**: Blossom media protocol (NIP-96)
@@ -348,7 +348,8 @@ const [isOpen, setIsOpen] = useState(false) // Local
 /src
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes (event logging)
-│   ├── contribute/        # Community contribution page
+│   ├── my-contributions/  # User's contributions management
+│   │   ├── create/        # Create new contribution
 │   ├── explore/           # Discover content and communities
 │   ├── work/              # Work marketplace page
 │   ├── meetups/           # Local meetup organizer
@@ -778,7 +779,7 @@ For 15 years, we've been told:
 
 **Metrics (as of November 2025)**
 - ✅ 12 NIPs implemented (01, 05, 07, 09, 17, 19, 23, 33, 44, 52, 78, 94, 96)
-- ✅ 10 Event kinds (Kinds 0, 1, 3, 5, 7, 10002, 30023, 30078, 31923, 31925)
+- ✅ 8 Event kinds (Kinds 0, 1, 5, 14, 1059, 24242, 30023, 30078, 31923, 31925)
 - ✅ 13 Features in production (Profiles, Articles, Messaging, Shop, My Shop, Work, My Work, Meet, My Meet, Contributions, Payments, Relay Management, User Activity)
 - ✅ 8 high-reliability global relays integrated
 - ✅ Service-Oriented Architecture (4-layer design with 20+ services)

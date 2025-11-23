@@ -237,7 +237,7 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - **Tag system**: Uses `nostr-for-nomads-contribution` discovery tag
 - **dTag prefix**: `contribution-{timestamp}-{random}` for stable IDs
 - **Explore page**: Fetches and displays public contributions from relays
-- **Contribute page**: Create/edit contribution workflow with media attachments
+- **My Contributions**: Create/edit contribution workflow with media attachments
 - Supports images, videos, and audio with NIP-94 imeta tags
 - Field-level validation (title, description, category, type, location, etc.)
 - Multi-attachment support with progress tracking
@@ -485,10 +485,10 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 ---
 
 **Last Updated**: November 23, 2025  
-**Codebase Version**: Next.js 15.4.6, React 18, nostr-tools 2.17.0, blossom-client-sdk 4.1.0  
-**Active NIPs**: 12 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44, NIP-52, NIP-78, NIP-94 + Blossom)  
-**Active Event Kinds**: 10 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023, Kind 30078, Kind 31923, Kind 31925)  
-**Production Features**: 13 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, My Shop, Shop, My Work, Work, My Meet, Meet, User Event Log)  
+**Codebase Version**: Next.js 15.4.6, React 18, nostr-tools 2.17.0, blossom-client-sdk 4.1.0
+**Active NIPs**: 12 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44, NIP-52, NIP-78, NIP-94 + Blossom)
+**Active Event Kinds**: 8 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023, Kind 30078, Kind 31923, Kind 31925)
+**Production Features**: 13 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, My Shop, Shop, My Work, Work, My Meet, Meet, User Event Log)
 **UI Only Features**: 1 feature (Payments)  
 **Removed Features**: 1 feature (Travel)  
 **Planned Features**: 1 feature (Cart)
