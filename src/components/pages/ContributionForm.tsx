@@ -282,18 +282,6 @@ export const ContributionForm = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">
-      <div className="mb-8">
-        <h2 className="text-3xl font-serif font-bold text-purple-800 mb-2">
-          {isEditMode ? 'Edit Contribution' : 'Share Your Nomad Experience'}
-        </h2>
-        <p className="text-gray-600">
-          {isEditMode 
-            ? 'Update your nomadic experience, knowledge, or resource.'
-            : 'Share your travel experiences, tips, and resources with the nomad community.'
-          }
-        </p>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-8">
         <fieldset disabled={isPublishing} className="space-y-8">
         {/* Section 1: Basic Information */}

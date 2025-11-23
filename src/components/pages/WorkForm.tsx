@@ -252,17 +252,6 @@ export const WorkForm = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">
-      <div className="mb-8">
-        <h2 className="text-3xl font-serif font-bold text-purple-800 mb-2">
-          {isEdit ? 'Edit Work Opportunity' : 'Post a Work Opportunity'}
-        </h2>
-        <p className="text-gray-600">
-          {isEdit 
-            ? 'Update your work opportunity details.' 
-            : 'Share job opportunities and freelance work with the nomad community.'}
-        </p>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-8">
         <fieldset disabled={isPublishing || isUpdating} className="space-y-8">
         {/* Section 1: Basic Information */}
