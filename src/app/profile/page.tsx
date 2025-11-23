@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Copy, Check } from 'lucide-react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNostrSigner } from '@/hooks/useNostrSigner';
@@ -50,6 +51,7 @@ export default function ProfilePage() {
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [copiedNpub, setCopiedNpub] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -144,6 +146,19 @@ export default function ProfilePage() {
       }
     } catch (error) {
       alert('❌ NIP-05 verification failed. Please try again.');
+    }
+  };
+
+  const handleCopyNpub = async () => {
+    const npubValue = user?.npub || user?.pubkey || '';
+    if (!npubValue) return;
+
+    try {
+      await navigator.clipboard.writeText(npubValue);
+      setCopiedNpub(true);
+      setTimeout(() => setCopiedNpub(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy npub:', error);
     }
   };
 
@@ -350,14 +365,22 @@ export default function ProfilePage() {
                         type="text"
                         value={user?.npub || user?.pubkey || ''}
                         readOnly
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-purple-800 font-mono text-sm select-all cursor-text"
+                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg bg-gray-50 text-purple-800 font-mono text-sm select-all cursor-text"
                       />
-                      <div className="absolute right-3 top-3 text-xs text-gray-500">
-                        Read-only
-                      </div>
+                      <button
+                        onClick={handleCopyNpub}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-200 rounded transition-colors"
+                        title="Copy to clipboard"
+                      >
+                        {copiedNpub ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <Copy className="w-4 h-4 text-gray-500" />
+                        )}
+                      </button>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
-                      Your unique Nostr identifier. Click to select and copy.
+                      Your unique Nostr identifier. Click the copy icon to copy.
                     </p>
                   </div>
 
