@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, MapPin, Clock, Users, Video, Globe, Share2, Edit, Trash2 } from 'lucide-react';
 import { ContentDetailHeader } from '@/components/generic/ContentDetailHeader';
@@ -27,6 +27,12 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
   const router = useRouter();
   const { user } = useAuthStore();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Wait for client-side hydration to complete
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // RSVP management
   const {
@@ -281,7 +287,6 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
             <section
               aria-labelledby="event-details"
               className="space-y-5 rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-primary-100"
-              suppressHydrationWarning
             >
               <h2
                 id="event-details"
@@ -358,8 +363,8 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
               </div>
 
               {/* RSVP Section */}
-              {isUpcoming && user && (
-                <div className="rounded-2xl bg-white/70 p-6 shadow-inner ring-1 ring-primary-100" suppressHydrationWarning>
+              {mounted && isUpcoming && user && (
+                <div className="rounded-2xl bg-white/70 p-6 shadow-inner ring-1 ring-primary-100">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Your RSVP</p>
@@ -383,7 +388,6 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
               <section
                 aria-labelledby="attendees"
                 className="space-y-5 rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-primary-100"
-                suppressHydrationWarning
               >
                 <div className="flex items-center justify-between">
                   <h2
@@ -411,7 +415,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
         sidebar={
           <div className="space-y-4">
             {/* Host Info */}
-            <div className="rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-primary-100" suppressHydrationWarning>
+            <div className="rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-primary-100">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
                 Host
               </h3>
@@ -431,7 +435,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
                   </button>
                 </div>
               </div>
-              {!isOwner && (
+              {mounted && !isOwner && (
                 <button
                   type="button"
                   onClick={handleContactHost}
@@ -461,11 +465,15 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
               <dl className="space-y-2 text-sm">
                 <div>
                   <dt className="text-gray-500">Status</dt>
-                  <dd className="text-gray-900 font-medium" suppressHydrationWarning>
-                    {isUpcoming ? (
-                      <span className="text-green-600">Upcoming</span>
+                  <dd className="text-gray-900 font-medium">
+                    {mounted ? (
+                      isUpcoming ? (
+                        <span className="text-green-600">Upcoming</span>
+                      ) : (
+                        <span className="text-gray-500">Past Event</span>
+                      )
                     ) : (
-                      <span className="text-gray-500">Past Event</span>
+                      <span className="text-gray-400">Loading...</span>
                     )}
                   </dd>
                 </div>
