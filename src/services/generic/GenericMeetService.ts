@@ -322,9 +322,9 @@ export async function fetchMeetupsByAuthor(pubkey: string): Promise<MeetupEvent[
  */
 export async function fetchMeetupById(pubkey: string, dTag: string): Promise<MeetupEvent | null> {
   try {
+    // Query by d-tag only (like Shop service) - pubkey kept for backward compatibility
     const filter: Filter = {
       kinds: [MEETUP_CONFIG.kinds.MEETUP],
-      authors: [pubkey],
       '#d': [dTag],
       limit: 1,
     };
