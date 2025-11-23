@@ -151,7 +151,7 @@ export function useRSVP(eventDTag: string, eventPubkey: string) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [signer, isAuthenticated, eventDTag, eventPubkey, loadRSVPs]);
+  }, [getSigner, isAuthenticated, eventDTag, eventPubkey, loadRSVPs]);
 
   /**
    * Get RSVP counts by status

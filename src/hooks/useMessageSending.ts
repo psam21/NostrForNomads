@@ -174,7 +174,7 @@ export const useMessageSending = () => {
       setSendError(errorMessage);
       setIsSending(false);
     }
-  }, [signer]);
+  }, [getSigner]);
 
   /**
    * Clear send error

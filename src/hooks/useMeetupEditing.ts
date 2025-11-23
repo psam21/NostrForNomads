@@ -158,7 +158,7 @@ export function useMeetupEditing() {
 
       return { success: false, error: appError.message };
     }
-  }, [signer]);
+  }, [getSigner]);
 
   return {
     updateMeetupContent,
