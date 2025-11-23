@@ -323,26 +323,69 @@ export async function fetchMeetupsByAuthor(pubkey: string): Promise<MeetupEvent[
  */
 export async function fetchMeetupById(pubkey: string, dTag: string): Promise<MeetupEvent | null> {
   try {
+    logger.info('Fetching meetup by dTag', {
+      service: 'GenericMeetService',
+      method: 'fetchMeetupById',
+      dTag,
+      pubkey: pubkey ? pubkey.substring(0, 8) + '...' : 'not provided',
+    });
+
     // Query by d-tag only - DO NOT filter by system tag for backward compatibility
     // dTag is already specific enough and we need to support old meetups without the tag
     const filter: Filter = {
       kinds: [MEETUP_CONFIG.kinds.MEETUP],
       '#d': [dTag],
-      limit: 1,
+      limit: 50, // Increased from 1 to handle replaceable events properly
     };
+
+    logger.info('Querying relays for meetup', {
+      service: 'GenericMeetService',
+      method: 'fetchMeetupById',
+      filter: JSON.stringify(filter),
+    });
 
     const queryResult = await queryEvents([filter as Record<string, unknown>]);
 
+    logger.info('Relay query result for meetup', {
+      service: 'GenericMeetService',
+      method: 'fetchMeetupById',
+      success: queryResult.success,
+      eventCount: queryResult.events.length,
+      relayCount: queryResult.relayCount,
+      dTag,
+    });
+
     if (!queryResult.success || queryResult.events.length === 0) {
+      logger.warn('Meetup not found', {
+        service: 'GenericMeetService',
+        method: 'fetchMeetupById',
+        dTag,
+        success: queryResult.success,
+        eventCount: queryResult.events.length,
+        error: queryResult.error,
+      });
       return null;
     }
 
     const latestEvent = queryResult.events.sort((a, b) => b.created_at - a.created_at)[0];
-    return parseMeetupEvent(latestEvent);
+    const parsed = parseMeetupEvent(latestEvent);
+    
+    if (!parsed) {
+      logger.error('Failed to parse meetup event', new Error('Parse returned null'), {
+        service: 'GenericMeetService',
+        method: 'fetchMeetupById',
+        dTag,
+        eventId: latestEvent.id,
+      });
+    }
+    
+    return parsed;
   } catch (error) {
     logger.error('Failed to fetch meetup by ID', error instanceof Error ? error : new Error('Unknown error'), {
       service: 'GenericMeetService',
       method: 'fetchMeetupById',
+      dTag,
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
     return null;
   }
