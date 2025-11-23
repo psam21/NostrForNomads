@@ -248,26 +248,28 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
         backHref={backHref}
         backLabel="Back to meetups"
         customButtons={
-          <>
-            <button
-              type="button"
-              onClick={handleAddToCalendar}
-              className="btn-outline-sm inline-flex items-center justify-center gap-2"
-              aria-label="Add to calendar"
-            >
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Add to Calendar</span>
-            </button>
-            
-            <button
-              type="button"
-              onClick={handleShare}
-              className="btn-outline-sm inline-flex items-center justify-center"
-              aria-label="Share meetup"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
-          </>
+          mounted ? (
+            <>
+              <button
+                type="button"
+                onClick={handleAddToCalendar}
+                className="btn-outline-sm inline-flex items-center justify-center gap-2"
+                aria-label="Add to calendar"
+              >
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Add to Calendar</span>
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleShare}
+                className="btn-outline-sm inline-flex items-center justify-center"
+                aria-label="Share meetup"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </>
+          ) : null
         }
       />
 
