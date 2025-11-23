@@ -360,8 +360,7 @@ export default function MyRSVPsPage() {
                   <MeetupCard 
                     meetup={meetup}
                     variant="grid"
-                    showRSVPButton={true}
-                    onRSVP={handleRSVP}
+                    showRSVPButton={false}
                   />
                 </div>
               );
