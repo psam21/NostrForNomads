@@ -71,7 +71,7 @@ export const MeetupForm = ({
     uploadProgress: editingHook.updateProgress,
     currentStep: editingHook.updateProgress?.step || 'idle',
     error: editingHook.updateError,
-    result: editingHook.updateResult,
+    result: null, // Generic hook doesn't track result - form handles redirect directly
     publishMeetup: async (data: MeetupData, attachmentFiles: File[]) => {
       const result = await editingHook.updateMeetupContent(
         defaultValues.dTag!,
