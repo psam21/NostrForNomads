@@ -107,11 +107,35 @@ export const MEETUP_CONFIG = {
 
   /**
    * Image upload configuration
+   * 
+   * Design Decision: Single Image Per Meetup
+   * ========================================
+   * Unlike Contributions, Shop, and Work features which support multiple images,
+   * Meetup events are intentionally limited to a single hero image. This design
+   * choice aligns with calendar event best practices:
+   * 
+   * Rationale:
+   * - Calendar events typically feature one prominent hero/banner image
+   * - Simplified UX for event creators - faster meetup creation
+   * - Consistent visual presentation in event cards and listings
+   * - Reduced cognitive load for attendees browsing multiple events
+   * - Better performance for event calendars with many entries
+   * - Matches industry standards (Meetup.com, Eventbrite, Lu.ma, etc.)
+   * 
+   * Implementation:
+   * - MeetupForm only shows single image upload (not attachment manager)
+   * - MeetService stores single image in media.images[0]
+   * - Frontend displays this single image as the event banner
+   * 
+   * If future requirements demand multiple images (e.g., photo galleries),
+   * the infrastructure supports it via the media.images array, but UX and
+   * service layer should be carefully designed to maintain simplicity.
    */
   image: {
     maxSize: 5 * 1024 * 1024, // 5MB
     acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'],
     defaultAspectRatio: 16 / 9,
+    maxCount: 1, // Single image per meetup (see rationale above)
   },
 
   /**

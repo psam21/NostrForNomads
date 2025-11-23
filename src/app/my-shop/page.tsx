@@ -9,6 +9,8 @@ import { useMyShopProducts } from '@/hooks/useMyShopProducts';
 import { useMyShopStore } from '@/stores/useMyShopStore';
 import { UnifiedProductCard } from '@/components/generic/UnifiedProductCard';
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
+import { StatCard } from '@/components/generic/StatCard';
+import { StatBreakdown } from '@/components/generic/StatBreakdown';
 import { ProductCardData } from '@/types/shop';
 import { PRODUCT_CATEGORIES, PRODUCT_CONDITIONS } from '@/config/shop';
 import { logger } from '@/services/core/LoggingService';
@@ -230,68 +232,57 @@ export default function MyShopPage() {
         {!isLoadingProducts && !loadError && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Products */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Products</p>
-                  <p className="text-3xl font-bold text-primary-900 mt-1">{statistics.total}</p>
-                </div>
-                <div className="p-3 bg-primary-100 rounded-full">
-                  <Store className="w-6 h-6 text-primary-600" />
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Total Products"
+              value={statistics.total}
+              color="primary"
+              icon={<Store className="w-6 h-6" />}
+            />
 
             {/* By Category */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Category</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byCategory).slice(0, 3).map(([category, count]) => {
+            <StatBreakdown
+              title="By Category"
+              items={Object.entries(statistics.byCategory)
+                .sort(([, a], [, b]) => b - a)
+                .map(([category, count]) => {
                   const cat = PRODUCT_CATEGORIES.find(c => c.id === category);
-                  return (
-                    <div key={category} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{cat?.name || category}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
+                  return {
+                    label: cat?.name || category,
+                    value: count,
+                  };
                 })}
-                {Object.keys(statistics.byCategory).length > 3 && (
-                  <p className="text-xs text-gray-500 pt-1">+{Object.keys(statistics.byCategory).length - 3} more</p>
-                )}
-              </div>
-            </div>
+              maxVisible={3}
+              emptyMessage="No products yet"
+            />
 
             {/* By Condition */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Condition</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byCondition).map(([condition, count]) => {
+            <StatBreakdown
+              title="By Condition"
+              items={Object.entries(statistics.byCondition)
+                .sort(([, a], [, b]) => b - a)
+                .map(([condition, count]) => {
                   const cond = PRODUCT_CONDITIONS.find(c => c.id === condition);
-                  return (
-                    <div key={condition} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{cond?.name || condition}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
+                  return {
+                    label: cond?.name || condition,
+                    value: count,
+                  };
                 })}
-              </div>
-            </div>
+              maxVisible={3}
+              emptyMessage="No products yet"
+            />
 
             {/* Total Value */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Est. Total Value</p>
-                  <p className="text-2xl font-bold text-primary-900 mt-1">${statistics.totalValue.toFixed(2)}</p>
-                  <p className="text-xs text-gray-500 mt-1">USD listings only</p>
-                </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Est. Total Value"
+              value={`$${statistics.totalValue.toFixed(2)}`}
+              color="green"
+              description="USD listings only"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
           </div>
         )}
 

@@ -9,6 +9,8 @@ import { useNostrSigner } from '@/hooks/useNostrSigner';
 import { fetchContributionsByAuthor, deleteContribution, fetchContributionById } from '@/services/business/ContributionService';
 import { UnifiedContributionCard, UnifiedContributionData } from '@/components/generic/UnifiedContributionCard';
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
+import { StatCard } from '@/components/generic/StatCard';
+import { StatBreakdown } from '@/components/generic/StatBreakdown';
 import { ContributionCardData } from '@/types/contributions';
 import { CONTRIBUTION_TYPES, getNomadCategories } from '@/config/contributions';
 import { logger } from '@/services/core/LoggingService';
@@ -126,8 +128,13 @@ export default function MyContributionsPage() {
 
   // Statistics
   const statistics = useMemo(() => {
+    const now = Math.floor(Date.now() / 1000);
+    const thirtyDaysAgo = now - (30 * 24 * 60 * 60);
     const byType: Record<string, number> = {};
     const byCategory: Record<string, number> = {};
+
+    let activeCount = 0;
+    let pastCount = 0;
 
     contributions.forEach(contribution => {
       // Count by contribution type
@@ -135,10 +142,19 @@ export default function MyContributionsPage() {
 
       // Count by category
       byCategory[contribution.category] = (byCategory[contribution.category] || 0) + 1;
+
+      // Count active (created in last 30 days) vs past
+      if (contribution.createdAt >= thirtyDaysAgo) {
+        activeCount++;
+      } else {
+        pastCount++;
+      }
     });
 
     return {
       total: contributions.length,
+      active: activeCount,
+      past: pastCount,
       byType,
       byCategory,
     };
@@ -268,59 +284,60 @@ export default function MyContributionsPage() {
       <div className="container-width py-8">
         {/* Statistics Dashboard */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Contributions */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Contributions</p>
-                  <p className="text-3xl font-bold text-primary-900 mt-1">{statistics.total}</p>
-                </div>
-                <div className="p-3 bg-primary-100 rounded-full">
-                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Total Contributions"
+              value={statistics.total}
+              color="primary"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              }
+            />
 
-            {/* By Contribution Type */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Contribution Type</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byType).slice(0, 3).map(([type, count]) => {
+            {/* Active (Last 30 Days) */}
+            <StatCard
+              label="Active"
+              value={statistics.active}
+              color="green"
+              description="Last 30 days"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              }
+            />
+
+            {/* Past */}
+            <StatCard
+              label="Past"
+              value={statistics.past}
+              color="gray"
+              description="Older than 30 days"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+
+            {/* By Type Breakdown */}
+            <StatBreakdown
+              title="By Type"
+              items={Object.entries(statistics.byType)
+                .sort(([, a], [, b]) => b - a)
+                .map(([type, count]) => {
                   const contributionType = CONTRIBUTION_TYPES.find(t => t.id === type);
-                  return (
-                    <div key={type} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{contributionType?.name || type}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
+                  return {
+                    label: contributionType?.name || type,
+                    value: count,
+                  };
                 })}
-                {Object.keys(statistics.byType).length > 3 && (
-                  <p className="text-xs text-gray-500 pt-1">+{Object.keys(statistics.byType).length - 3} more types</p>
-                )}
-              </div>
-            </div>
-
-            {/* By Category */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Category</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byCategory).slice(0, 3).map(([category, count]) => {
-                  const cat = getNomadCategories().find(c => c.id === category);
-                  return (
-                    <div key={category} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{cat?.name || category}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
-                })}
-                {Object.keys(statistics.byCategory).length > 3 && (
-                  <p className="text-xs text-gray-500 pt-1">+{Object.keys(statistics.byCategory).length - 3} more categories</p>
-                )}
-              </div>
-            </div>
+              maxVisible={3}
+              emptyMessage="No contributions yet"
+            />
           </div>
         )}
 

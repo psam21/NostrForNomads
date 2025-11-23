@@ -9,6 +9,8 @@ import { useNostrSigner } from '@/hooks/useNostrSigner';
 import { fetchWorkByAuthor, deleteWork, fetchWorkById } from '@/services/business/WorkService';
 import { UnifiedWorkCard, UnifiedWorkData } from '@/components/generic/UnifiedWorkCard';
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
+import { StatCard } from '@/components/generic/StatCard';
+import { StatBreakdown } from '@/components/generic/StatBreakdown';
 import { WORK_CATEGORIES, WORK_JOB_TYPES } from '@/config/work';
 import { logger } from '@/services/core/LoggingService';
 import { Search, Briefcase, Plus } from 'lucide-react';
@@ -176,11 +178,14 @@ export default function MyWorkPage() {
       totalPayRate += work.payRate;
     });
 
+    const avgPayRate = workItems.length > 0 ? totalPayRate / workItems.length : 0;
+
     return {
       total: workItems.length,
       byJobType,
       byCategory,
-      averagePayRate: workItems.length > 0 ? Math.round(totalPayRate / workItems.length) : 0,
+      averagePayRate: avgPayRate,
+      formattedAvgPayRate: `$${Math.round(avgPayRate)}`,
     };
   }, [workItems]);
 
@@ -319,59 +324,63 @@ export default function MyWorkPage() {
       <div className="container-width py-8">
         {/* Statistics Dashboard */}
         {!isLoading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Opportunities */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Opportunities</p>
-                  <p className="text-3xl font-bold text-primary-900 mt-1">{statistics.total}</p>
-                </div>
-                <div className="p-3 bg-primary-100 rounded-full">
-                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Total Opportunities"
+              value={statistics.total}
+              color="primary"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              }
+            />
 
             {/* By Job Type */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Job Type</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byJobType).slice(0, 3).map(([type, count]) => {
+            <StatBreakdown
+              title="By Job Type"
+              items={Object.entries(statistics.byJobType)
+                .sort(([, a], [, b]) => b - a)
+                .map(([type, count]) => {
                   const jobType = WORK_JOB_TYPES.find(t => t.id === type);
-                  return (
-                    <div key={type} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{jobType?.name || type}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
+                  return {
+                    label: jobType?.name || type,
+                    value: count,
+                  };
                 })}
-                {Object.keys(statistics.byJobType).length > 3 && (
-                  <p className="text-xs text-gray-500 pt-1">+{Object.keys(statistics.byJobType).length - 3} more types</p>
-                )}
-              </div>
-            </div>
+              maxVisible={3}
+              emptyMessage="No opportunities yet"
+            />
 
             {/* By Category */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <p className="text-sm font-medium text-gray-600 mb-3">By Category</p>
-              <div className="space-y-2">
-                {Object.entries(statistics.byCategory).slice(0, 3).map(([category, count]) => {
+            <StatBreakdown
+              title="By Category"
+              items={Object.entries(statistics.byCategory)
+                .sort(([, a], [, b]) => b - a)
+                .map(([category, count]) => {
                   const cat = WORK_CATEGORIES.find(c => c.id === category);
-                  return (
-                    <div key={category} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-700">{cat?.name || category}</span>
-                      <span className="font-semibold text-primary-900">{count}</span>
-                    </div>
-                  );
+                  return {
+                    label: cat?.name || category,
+                    value: count,
+                  };
                 })}
-                {Object.keys(statistics.byCategory).length > 3 && (
-                  <p className="text-xs text-gray-500 pt-1">+{Object.keys(statistics.byCategory).length - 3} more categories</p>
-                )}
-              </div>
-            </div>
+              maxVisible={3}
+              emptyMessage="No opportunities yet"
+            />
+
+            {/* Average Pay Rate */}
+            <StatCard
+              label="Average Pay Rate"
+              value={statistics.formattedAvgPayRate}
+              color="green"
+              description="Per hour"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
           </div>
         )}
 

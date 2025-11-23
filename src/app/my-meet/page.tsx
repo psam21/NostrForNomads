@@ -10,6 +10,8 @@ import { useNostrSigner } from '@/hooks/useNostrSigner';
 import { deleteMeetup, fetchMeetupByDTag } from '@/services/business/MeetService';
 import { MyMeetupCard } from '@/components/generic/MyMeetupCard';
 import { DeleteConfirmationModal } from '@/components/generic/DeleteConfirmationModal';
+import { StatCard } from '@/components/generic/StatCard';
+import { StatBreakdown } from '@/components/generic/StatBreakdown';
 import { Calendar, Plus, Search, Filter } from 'lucide-react';
 import { logger } from '@/services/core/LoggingService';
 import { MEETUP_CONFIG } from '@/config/meetup';
@@ -213,62 +215,48 @@ export default function MyMeetPage() {
         {!isLoading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Meetups */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Meetups</p>
-                  <p className="text-3xl font-bold text-primary-900 mt-1">{statistics.total}</p>
-                </div>
-                <div className="p-3 bg-primary-100 rounded-full">
-                  <Calendar className="w-6 h-6 text-primary-600" />
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Total Meetups"
+              value={statistics.total}
+              color="primary"
+              icon={<Calendar className="w-6 h-6" />}
+            />
 
             {/* Upcoming */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                  <p className="text-3xl font-bold text-green-900 mt-1">{statistics.upcoming}</p>
-                </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Upcoming"
+              value={statistics.upcoming}
+              color="green"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              }
+            />
 
             {/* Past */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Past Events</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.past}</p>
-                </div>
-                <div className="p-3 bg-gray-100 rounded-full">
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Past Events"
+              value={statistics.past}
+              color="gray"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
 
             {/* Total RSVPs */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total RSVPs</p>
-                  <p className="text-3xl font-bold text-blue-900 mt-1">{statistics.totalRSVPs}</p>
-                </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              label="Total RSVPs"
+              value={statistics.totalRSVPs}
+              color="blue"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              }
+            />
           </div>
         )}
 
