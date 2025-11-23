@@ -30,7 +30,7 @@ interface MeetupEditingState {
  * @returns Object with updateMeetupContent function and state
  */
 export function useMeetupEditing() {
-  const { signer } = useNostrSigner();
+  const { getSigner } = useNostrSigner();
   
   const [state, setState] = useState<MeetupEditingState>({
     isUpdating: false,
@@ -51,9 +51,12 @@ export function useMeetupEditing() {
     updatedData: MeetupData,
     imageFile: File | null = null
   ): Promise<MeetupPublishingResult> => {
-    if (!signer) {
-      const error = 'No signer available. Please sign in first.';
-      logger.error('Update meetup failed: no signer', new Error(error), {
+    let signer;
+    try {
+      signer = await getSigner();
+    } catch (error) {
+      const errorMsg = 'No signer available. Please sign in first.';
+      logger.error('Update meetup failed: no signer', error instanceof Error ? error : new Error(errorMsg), {
         service: 'useMeetupEditing',
         method: 'updateMeetupContent',
       });
@@ -61,11 +64,11 @@ export function useMeetupEditing() {
       setState({
         isUpdating: false,
         updateProgress: null,
-        updateError: error,
+        updateError: errorMsg,
         updateResult: null,
       });
       
-      return { success: false, error };
+      return { success: false, error: errorMsg };
     }
 
     try {

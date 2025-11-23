@@ -41,8 +41,9 @@ export const useNostrSigner = () => {
   }, [nsec]);
 
   // Helper to get signer when needed (LAZY - only called when signing events)
+  // Caches result in store for reuse
   const getSigner = async (): Promise<NostrSigner> => {
-    const { isAuthenticated, user, nsec: nsecFromStore } = useAuthStore.getState();
+    const { isAuthenticated, user, nsec: nsecFromStore, signer: cachedSigner } = useAuthStore.getState();
     
     if (!isAuthenticated || !user) {
       throw new AppError(
@@ -54,6 +55,11 @@ export const useNostrSigner = () => {
       );
     }
     
+    // Return cached signer if available
+    if (cachedSigner) {
+      return cachedSigner;
+    }
+    
     // Priority 1: Nsec user (has nsec in store)
     if (nsecFromStore) {
       logger.info('Getting signer from nsec', {
@@ -62,11 +68,16 @@ export const useNostrSigner = () => {
         userPubkey: user.pubkey.substring(0, 8) + '...',
       });
       
+      let resolvedSigner: NostrSigner;
       if (nsecSigner) {
-        return await nsecSigner;
+        resolvedSigner = await nsecSigner;
+      } else {
+        resolvedSigner = await createNsecSigner(nsecFromStore);
       }
       
-      return await createNsecSigner(nsecFromStore);
+      // Cache in store
+      setSigner(resolvedSigner);
+      return resolvedSigner;
     }
     
     // Priority 2: Extension user (no nsec, must use window.nostr)
@@ -76,6 +87,9 @@ export const useNostrSigner = () => {
         method: 'getSigner',
         userPubkey: user.pubkey.substring(0, 8) + '...',
       });
+      
+      // Cache in store
+      setSigner(window.nostr);
       return window.nostr;
     }
     
@@ -90,7 +104,7 @@ export const useNostrSigner = () => {
   };
 
   // Simple detection: Only check if extension exists for non-authenticated users (sign-in button)
-  // For authenticated users, trust Zustand state and get signer lazily when needed
+  // For authenticated users, get signer once and cache it
   useEffect(() => {
     const { isAuthenticated, user } = useAuthStore.getState();
     
@@ -109,24 +123,32 @@ export const useNostrSigner = () => {
       return;
     }
     
-    // For authenticated users: trust Zustand, set available based on auth method
+    // For authenticated users: get and cache signer once
     if (isAuthenticated && user) {
       const hasNsec = !!nsec;
       const hasExtension = typeof window !== 'undefined' && !!window.nostr;
       
       // Available if they have nsec OR extension
       setSignerAvailable(hasNsec || hasExtension);
-      useAuthStore.getState().setLoading(false);
       
-      logger.info('Authenticated user - signer will be retrieved lazily when needed', {
-        service: 'useNostrSigner',
-        method: 'useEffect',
-        hasNsec,
-        hasExtension,
-        userPubkey: user.pubkey.substring(0, 8) + '...',
+      // Get signer once to cache it (for decryption hooks that need it immediately)
+      getSigner().then(() => {
+        logger.info('Signer cached for authenticated user', {
+          service: 'useNostrSigner',
+          method: 'useEffect',
+          userPubkey: user.pubkey.substring(0, 8) + '...',
+        });
+        useAuthStore.getState().setLoading(false);
+      }).catch((error) => {
+        logger.error('Failed to get signer for authenticated user', error instanceof Error ? error : new Error('Unknown error'), {
+          service: 'useNostrSigner',
+          method: 'useEffect',
+          userPubkey: user.pubkey.substring(0, 8) + '...',
+        });
+        useAuthStore.getState().setLoading(false);
       });
     }
-  }, [nsec, setSignerAvailable]);
+  }, [nsec, setSignerAvailable, getSigner]);
 
   return { 
     isAvailable, 

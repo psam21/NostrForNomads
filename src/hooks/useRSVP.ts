@@ -16,7 +16,7 @@ import { ErrorCode, HttpStatus, ErrorCategory, ErrorSeverity } from '@/errors/Er
  */
 export function useRSVP(eventDTag: string, eventPubkey: string) {
   const { user, isAuthenticated } = useAuthStore();
-  const { signer } = useNostrSigner();
+  const { getSigner } = useNostrSigner();
   const userPubkey = user?.pubkey;
 
   const [allRSVPs, setAllRSVPs] = useState<ParsedRSVP[]>([]);
@@ -87,7 +87,7 @@ export function useRSVP(eventDTag: string, eventPubkey: string) {
     status: 'accepted' | 'declined' | 'tentative',
     comment?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!signer || !isAuthenticated) {
+    if (!isAuthenticated) {
       const error = 'Please sign in to RSVP';
       logger.error('RSVP failed: not authenticated', new Error(error), {
         service: 'useRSVP',
@@ -107,6 +107,9 @@ export function useRSVP(eventDTag: string, eventPubkey: string) {
 
       setIsSubmitting(true);
       setError(null);
+
+      // Get signer lazily when needed
+      const signer = await getSigner();
 
       const rsvpData: RSVPData = {
         eventDTag,

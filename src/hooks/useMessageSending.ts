@@ -23,7 +23,7 @@ interface SendMessageOptions {
 }
 
 export const useMessageSending = () => {
-  const { signer } = useNostrSigner();
+  const { getSigner } = useNostrSigner();
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
 
@@ -43,14 +43,19 @@ export const useMessageSending = () => {
     context?: ConversationContext,
     options?: SendMessageOptions
   ) => {
-    if (!signer) {
-      const error = 'No signer detected. Please sign in.';
+    // Get signer lazily when actually needed
+    let signer;
+    try {
+      signer = await getSigner();
+    } catch (error) {
+      const errorMsg = 'No signer detected. Please sign in.';
       logger.warn('Cannot send message without signer', {
         service: 'useMessageSending',
         method: 'sendMessage',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
-      setSendError(error);
-      options?.onError?.(error);
+      setSendError(errorMsg);
+      options?.onError?.(errorMsg);
       return;
     }
 
