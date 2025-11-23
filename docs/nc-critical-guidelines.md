@@ -1,6 +1,6 @@
 # CRITICAL GUIDELINES - NON-NEGOTIABLE
 
-**FOR: All developers and AI agents working on this codebase**
+**FOR: All developers and contributors working on this codebase**
 **CONTEXT LIMIT FRIENDLY: Essential rules only. No exceptions.**
 
 ---
@@ -192,7 +192,7 @@ Hook → Manually build events → Publish    // ARCHITECTURAL VIOLATION
 
 ## ⚡ MANDATORY WORKFLOW
 
-### Build → Fix → Commit → Push → Verify
+### Build → Fix → Commit → Push → Verify → ANALYZE LOGS
 
 **EVERY. SINGLE. TIME.**
 
@@ -203,6 +203,23 @@ Hook → Manually build events → Publish    // ARCHITECTURAL VIOLATION
 5. **Verify:** User tests on https://nostrcoin.vercel.app and not localhost
 6. **Confirm:** Get explicit confirmation before marking complete
 7. **Avoid:** Creating new documentation without permission
+8. **ANALYZE EVERY LINE OF USER LOGS - NO EXCEPTIONS:**
+   - **MANDATORY:** Read EVERY SINGLE LINE when user provides logs
+   - **MANDATORY:** Report ALL issues found in logs TO USER proactively
+   - **FORBIDDEN:** Ignoring ANY log line
+   - **FORBIDDEN:** Waiting for user to point out issues visible in logs
+   - **Pattern Detection:**
+     - Success message + User still on same page = Missing redirect/navigation
+     - API success + No state update = Broken data flow
+     - Event published + Page not updated = Cache/state issue
+     - Form submitted + No confirmation = Missing feedback
+   - **Example Failure (Meet Edit Nov 2025):**
+     - User logs: "✅ Meetup updated successfully"
+     - User behavior: "but the page still stays in the form"
+     - Developer response: Said nothing about missing redirect
+     - **FAILURE:** Developer saw success logs, didn't report missing redirect until user complained
+   - **NEW MANDATE:** Find issues in logs and report to user vs user having to report
+   - **ACCOUNTABILITY:** If user reports issue after providing logs = YOU FAILED TO ANALYZE PROPERLY
 
 **🚨 CRITICAL BUILD RULE:**
 
@@ -417,11 +434,11 @@ Hook → Manually build events → Publish    // ARCHITECTURAL VIOLATION
 
 ---
 
-## 🚀 EFFICIENCY FOR AI AGENTS
+## 🚀 EFFICIENCY FOR CONTRIBUTORS
 
 ### Context Window Optimization
 
-**When you have limited context:**
+**Essential workflow steps:**
 
 1. **Read this file FIRST** - It contains critical patterns
 2. **Check shop implementation** - It's the reference pattern
@@ -448,6 +465,8 @@ Hook → Manually build events → Publish    // ARCHITECTURAL VIOLATION
 - 🚩 Saying "verified" without testing CRUD flows (Create/Read/Update/Delete)
 - 🚩 Comparing patterns but not comparing code line-by-line with reference
 - 🚩 Missing ~300+ lines of code compared to reference but saying "complete"
+- 🚩 User provides logs, you ignore ANY line = FAILED LOG ANALYSIS
+- 🚩 User reports issue after giving you logs = YOU SHOULD HAVE FOUND IT FIRST
 
 ---
 
@@ -657,6 +676,15 @@ if (window.nostr && isAuthenticated && user) {
 5. Have you compared line counts with reference? (e.g., 865 lines vs 551 lines = 314 missing)
 6. Have you listed ALL missing functions with code examples?
 7. Have you tested on production (not localhost)?
+8. **When user provides logs, have you analyzed EVERY SINGLE LINE?** ⚠️ (THIS IS WHERE MEET EDIT FAILED)
+   - Read the ENTIRE log, not just error lines
+   - Look for: Success messages without corresponding navigation/state changes
+   - Look for: Completed operations without user feedback
+   - Look for: API responses without UI updates
+   - **REPORT issues TO USER proactively** - Don't wait for them to complain
+   - **Example:** User logs had "✅ Meetup updated successfully" but said "page still stays in form"
+   - **Your job:** See success log + no redirect mention = REPORT missing redirect immediately
+   - **FAILURE MODE:** User has to say "but the page hasnt redirected" after giving you logs = YOU IGNORED LOG ANALYSIS
 
 ---
 

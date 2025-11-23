@@ -307,7 +307,7 @@ export const MeetupForm = ({
             type="text"
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
-            className={`input-field ${validationErrors.name ? 'border-red-500' : ''}`}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${validationErrors.name ? 'border-red-500' : 'border-gray-300'}`}
             placeholder="e.g., Digital Nomad Coffee Meetup"
             disabled={isPublishing}
             maxLength={100}
