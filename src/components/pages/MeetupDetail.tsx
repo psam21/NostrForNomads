@@ -218,7 +218,8 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
 
   // Header actions (owner only)
   const headerActions = useMemo(() => {
-    if (!isOwner) return [];
+    // Wait for client hydration before showing owner actions
+    if (!mounted || !isOwner) return [];
 
     return [
       {
@@ -236,7 +237,7 @@ export function MeetupDetail({ meetup, backHref = '/meet', onEdit, onDelete }: M
         type: 'secondary' as const,
       },
     ];
-  }, [isOwner, onEdit, meetup.dTag, router]);
+  }, [mounted, isOwner, onEdit, meetup.dTag, router]);
 
   return (
     <div className="space-y-10">
