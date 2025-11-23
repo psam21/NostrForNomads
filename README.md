@@ -78,6 +78,16 @@ Built on battle-tested protocols (Nostr + Bitcoin), not venture-backed extractio
   - Full CRUD operations (My Work dashboard)
   - Remote-first, location-flexible opportunities
 
+**Meetups & Events**
+- **🤝 Meet** (Live in Production)
+  - Organize local meetups and events with **0% commission**
+  - 4 types: Social Gathering, Workshop, Conference, Networking
+  - Virtual and in-person events with RSVP tracking
+  - Full CRUD operations (My Meet dashboard)
+  - NIP-52 calendar events for time-based discovery
+  - Multi-media event listings (images)
+  - RSVP management with accepted/declined/tentative status
+
 ### 🚀 Coming Soon (6-12 Months)
 
 - **💰 Work Escrow** - Lightning-based escrow for safe payments
@@ -767,12 +777,14 @@ For 15 years, we've been told:
 **Current Phase**: Production MVP with active users
 
 **Metrics (as of November 2025)**
-- ✅ 12 NIPs implemented (01, 05, 07, 09, 17, 19, 23, 33, 44, 78, 94, 96)
+- ✅ 12 NIPs implemented (01, 05, 07, 09, 17, 19, 23, 33, 44, 52, 78, 94, 96)
+- ✅ 10 Event kinds (Kinds 0, 1, 3, 5, 7, 10002, 30023, 30078, 31923, 31925)
+- ✅ 13 Features in production (Profiles, Articles, Messaging, Shop, My Shop, Work, My Work, Meet, My Meet, Contributions, Payments, Relay Management, User Activity)
 - ✅ 8 high-reliability global relays integrated
 - ✅ Service-Oriented Architecture (4-layer design with 20+ services)
 - ✅ Production deployment on Vercel
 - ✅ 99.9% uptime target
-- ✅ Full CRUD for Shop, Work, and Contributions features
+- ✅ Full CRUD for Shop, Work, Meet, and Contributions features
 - 🚀 Early adopter user base growing
 - 🚀 Community feedback driving roadmap
 

@@ -34,6 +34,7 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - **NIP-23**: Long-form content - articles, blog posts (Kind 30023) ✅
 - **NIP-33**: Parameterized replaceable events - unique dTag, update-in-place ✅
 - **NIP-44**: Encrypted payloads (v2) - ChaCha20 + HMAC-SHA256 for NIP-17 encryption ✅
+- **NIP-52**: Calendar events - time-based events for meetups (Kind 31923 + 31925) ✅
 - **NIP-78**: Application-specific data - Kind 30078 for cart/settings storage ✅
 - **NIP-94**: File metadata - imeta tags for media attachments ✅
 
@@ -60,6 +61,8 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - **Kind 24242**: Blossom authorization - signed auth events for Blossom file uploads ✅
 - **Kind 30023**: Long-form content - NIP-23/NIP-33 parameterized replaceable events (Shop, Work, Contributions) ✅
 - **Kind 30078**: Application-specific data - NIP-78 for cart and settings storage ✅
+- **Kind 31923**: Calendar event - NIP-52 time-based calendar events for meetups (replaceable) ✅
+- **Kind 31925**: Calendar RSVP - NIP-52 RSVP events for meetup attendance (replaceable per user) ✅
 
 ### Event Kinds Implemented but Not Yet Used
 
@@ -180,11 +183,43 @@ Reference document for Nostr protocol implementation across Nostr for Nomads (nc
 - Full integration with relays, Blossom uploads, NIP-33 replaceable events
 - Implements ContentDetailService pattern for work opportunity details
 
-### Travel, Meetups
+### Meet (Meetups & Events)
 
-- **Status**: Removed/Not Started - features deprecated or not implemented
+- **Status**: Production - location-based meetup organizer
+- **My Meet**: Full CRUD operations for user's own Kind 31923 meetup events
+  - Create/edit/delete meetups via Kind 31923 calendar events (NIP-52)
+  - NIP-09 deletion events for removing meetups
+  - Multi-attachment support via Blossom (images)
+  - Tag pattern: `nostr-for-nomads-meetup`
+  - Statistics dashboard: Total meetups, upcoming, past, total RSVPs
+  - Filters: Search, meetup type, status (upcoming/past)
+  - RSVP management: Track RSVPs via Kind 31925 events
+- **Public Meet**: Browse all meetups from network
+  - Fetches Kind 31923 events (with and without system tag for backward compatibility)
+  - Meetup cards with date, time, location (virtual/physical)
+  - RSVP functionality with status tracking (accepted/declined/tentative)
+  - Click to view meetup details with full RSVP list
+- **Service architecture**:
+  - `MeetService` - Business logic orchestration
+  - `GenericMeetService` - Relay queries and parsing
+  - `GenericEventService.createCalendarEvent()` - NIP-52 event creation
+  - `GenericEventService.createRSVPEvent()` - RSVP event creation
+  - `usePublicMeetups` - Public meetup discovery hook
+  - `useMyMeetups` - Personal meetup management hook
+- **NIP-52 implementation**:
+  - Calendar events with time-based queries
+  - Required tags: `d`, `t` (system tag), `title`, `name`, `start`, `location`, `p` (host)
+  - Optional tags: `end`, `timezone`, `g` (geohash), `image`, `virtual`, `meetup-type`
+  - Participant tracking via p-tags with roles (host, co-host)
+  - RSVP events with `a` tag referencing parent meetup
+  - Deterministic dTag for replaceability: `rsvp:{eventDTag}`
+- **dTag prefix**: `meetup-{timestamp}-{random}` for stable IDs
+- Full integration with relays, Blossom uploads, NIP-33 replaceable events
+
+### Travel
+
+- **Status**: Removed - feature deprecated
 - Travel route removed from application
-- Meetups planned for future releases
 - No code, no UI, no services
 
 ### Explore & Contribute
@@ -449,14 +484,14 @@ The application uses 8 high-reliability Nostr relays with comprehensive NIP supp
 
 ---
 
-**Last Updated**: November 22, 2025  
+**Last Updated**: November 23, 2025  
 **Codebase Version**: Next.js 15.4.6, React 18, nostr-tools 2.17.0, blossom-client-sdk 4.1.0  
-**Active NIPs**: 11 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44, NIP-78, NIP-94 + Blossom)  
-**Active Event Kinds**: 8 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023, Kind 30078)  
-**Production Features**: 11 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, My Shop, Shop, My Work, Work, User Event Log)  
+**Active NIPs**: 12 implemented (NIP-01, NIP-05, NIP-07, NIP-09, NIP-17, NIP-19, NIP-23, NIP-33, NIP-44, NIP-52, NIP-78, NIP-94 + Blossom)  
+**Active Event Kinds**: 10 kinds (Kind 0, Kind 1, Kind 5, Kind 14, Kind 1059, Kind 24242, Kind 30023, Kind 30078, Kind 31923, Kind 31925)  
+**Production Features**: 13 features (Sign Up, Sign In, Profile, Messages, Explore, Contribute, My Contributions, My Shop, Shop, My Work, Work, My Meet, Meet, User Event Log)  
 **UI Only Features**: 1 feature (Payments)  
-**Removed Features**: 2 features (Meetings, Travel)  
-**Planned Features**: 2 features (Cart, Meetups)
+**Removed Features**: 1 feature (Travel)  
+**Planned Features**: 1 feature (Cart)
 
 **Architecture**: Service-Oriented Architecture (SOA) with strict layer separation
 
